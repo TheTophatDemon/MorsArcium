@@ -7,6 +7,8 @@ using System;
 
 namespace Mors_Arcium
 {
+    //TODO: Slope glitches when top hits
+        //Make collision_top work all the time
     public class MorsArcium : Game
     {
         GraphicsDeviceManager graphics;

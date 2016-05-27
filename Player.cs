@@ -26,6 +26,7 @@ namespace Mors_Arcium
             type = Gameplay.TYPE_PLAYER;
             sourceRect = new Rectangle(0, pt * 32, 32, 32);
             hitboxSize = new Vector2(8, 16); //Half of the actual hitbox's size
+            hitboxOffset = new Vector2(0, 0);
             origin = new Vector2(16, 16);
             switch (pt)
             {

@@ -20,6 +20,9 @@ namespace Mors_Arcium
         int time;
         int ticks;
         int fps;
+        Vector2 cameraOffset = new Vector2(160, 120);
+
+        public Player player;
 
         public Gameplay(MorsArcium g)
         {
@@ -29,9 +32,9 @@ namespace Mors_Arcium
         {
             entities = new Entity[8, 128];
             tilemap = new Tilemap(this, game.textures[5], 52, 24);
-            Player p = new Player(this, 0);
-            p.position = new Vector2(200.0f, 0.0f);
-            AddEntity(p);
+            player = new Player(this, 0);
+            player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
+            AddEntity(player);
         }
         public void Update(GameTime gt)
         {
@@ -57,6 +60,7 @@ namespace Mors_Arcium
                 tilemap.data[x, y] = -1;
                 tilemap.RefreshTiles();
             }
+            cameraPosition = player.position - cameraOffset;
             if (time == gt.TotalGameTime.Seconds)
             {
                 ticks += 1;
@@ -80,7 +84,7 @@ namespace Mors_Arcium
                     {
                         entities[x, y].Draw(sp);
 #if DEBUG
-                        sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
+                        //sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
 #endif
                     }
                 }
