@@ -9,7 +9,6 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //Make separate class for each player class
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RenderTarget2D renderTarget;
@@ -66,6 +65,7 @@ namespace Mors_Arcium
             LoadTexture("Content/textures/buttons.png");    //4
             LoadTexture("Content/textures/tileset.png");    //5
             LoadTexture("Content/textures/hitbox.png");     //6
+            LoadTexture("Content/textures/particles.png");  //7
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);

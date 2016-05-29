@@ -16,6 +16,7 @@ namespace Mors_Arcium
         
         public Entity[,] entities;
         public Tilemap tilemap;
+        private Particle[] particles;
 
         int time;
         int ticks;
@@ -31,8 +32,9 @@ namespace Mors_Arcium
         public void Initialize()
         {
             entities = new Entity[8, 128];
+            particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 78, 24);
-            player = new Player(this, 0);
+            player = new MrBPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             AddEntity(player);
         }
@@ -67,6 +69,17 @@ namespace Mors_Arcium
                     if (entities[x, y] != null)
                     {
                         entities[x, y].Update(gt);
+                    }
+                }
+            }
+            for (int i = 0; i < particles.Length; i++)
+            {
+                if (particles[i] != null)
+                {
+                    particles[i].Update(gt);
+                    if (particles[i].killMe)
+                    {
+                        particles[i] = null;
                     }
                 }
             }
@@ -111,6 +124,10 @@ namespace Mors_Arcium
                     }
                 }
             }
+            for (int i = 0; i < particles.Length; i++)
+            {
+                if (particles[i] != null) particles[i].Draw(sp);
+            }
             sp.End();
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.DrawString(game.font1, "FPS: " + fps, Vector2.Zero, Color.White);
@@ -139,6 +156,17 @@ namespace Mors_Arcium
         {
             entities[e.type, e.index] = null;
             e = null;
+        }
+        public void AddParticle(Particle p)
+        {
+            for (int i = 0; i < particles.Length; i++)
+            {
+                if (particles[i] == null)
+                {
+                    particles[i] = p;
+                    break;
+                }
+            }
         }
     }
 }
