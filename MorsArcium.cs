@@ -7,10 +7,9 @@ using System;
 
 namespace Mors_Arcium
 {
-    //TODO: Slope glitches when top hits
-        //Make collision_top work all the time
     public class MorsArcium : Game
     {
+        //TODO: Attacking / Animation Blending
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RenderTarget2D renderTarget;
@@ -24,7 +23,11 @@ namespace Mors_Arcium
         public Random random;
 
         public float scaleFactor = 1.0f;
+
         int textureIndex = 0;
+        private bool pause = false;
+        private bool skip = false;
+        private bool henry = false;
         Rectangle thing;
         public MorsArcium()
         {
@@ -74,7 +77,17 @@ namespace Mors_Arcium
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            game.Update(gameTime);
+#if DEBUG
+            if (Keyboard.GetState().IsKeyDown(Keys.P)) pause = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.O) && !henry) skip = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.I)) pause = false;
+            henry = Keyboard.GetState().IsKeyDown(Keys.O);
+#endif
+            if (!pause || skip)
+            {
+                game.Update(gameTime);
+                skip = false;
+            }
         }
         protected override void Draw(GameTime gameTime)
         {

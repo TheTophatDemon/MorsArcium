@@ -31,7 +31,7 @@ namespace Mors_Arcium
         public void Initialize()
         {
             entities = new Entity[8, 128];
-            tilemap = new Tilemap(this, game.textures[5], 52, 24);
+            tilemap = new Tilemap(this, game.textures[5], 78, 24);
             player = new Player(this, 0);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             AddEntity(player);
@@ -39,6 +39,27 @@ namespace Mors_Arcium
         public void Update(GameTime gt)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                player.Jump();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                player.spriteEffects = SpriteEffects.None;
+                player.Walk();
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                player.spriteEffects = SpriteEffects.FlipHorizontally;
+                player.Walk();
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.J))
+            {
+                player.Attack();
+            }
+
             for (int x = 0; x < entities.GetLength(0); x++)
             {
                 for (int y = 0; y < entities.GetLength(1); y++)
@@ -49,6 +70,7 @@ namespace Mors_Arcium
                     }
                 }
             }
+            
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 int x = (int)Math.Floor(((float)(Mouse.GetState().Position.X / game.scaleFactor) + cameraPosition.X) / 16);

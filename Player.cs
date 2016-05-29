@@ -12,12 +12,28 @@ namespace Mors_Arcium
         public const int TYPE_ELI = 2;
         public const int TYPE_BUG = 3;
 
-        SpriteEffects spriteEffects;
+        public SpriteEffects spriteEffects;
         public int playerType = 0;
 
         Animation idleAnimation;
         Animation walkAnimation;
         Animation jumpAnimation;
+        Animation attackAnimation;
+        Animation walkAttackAnimation;
+
+        private float gravity = 0.0f;
+        private float jump = 0.0f;
+        private float walk = 0.0f;
+
+        private float jumpHeight = 5.0f;
+        private float acceleration = 0.25f;
+        private float walkSpeed = 2.77f;
+        private int attackSpeed = 70;
+
+        private bool tryingToJump = false;
+        private bool attacking = false;
+        private int cooldown = 0;
+        
 
         public Player(Gameplay g, int pt) : base(g)
         {
@@ -40,6 +56,12 @@ namespace Mors_Arcium
                     jumpAnimation.frames = new int[] { 7, 8, 9, 10 };
                     jumpAnimation.speed = 3;
                     jumpAnimation.looping = false;
+                    attackAnimation.frames = new int[] { 11, 11 };
+                    attackAnimation.looping = false;
+                    attackAnimation.speed = 3;
+                    walkAttackAnimation.frames = new int[] { 12, 13, 14, 15 };
+                    walkAttackAnimation.looping = true;
+                    walkAttackAnimation.speed = 3;
                     break;
                 case TYPE_WIZARD:
 
@@ -47,27 +69,122 @@ namespace Mors_Arcium
             }
             animation = idleAnimation;
         }
+        public void Jump()
+        {
+            tryingToJump = true;
+            if (collision_bottom)
+            {
+                jump = -jumpHeight;
+                gravity = 0.0f;
+                //onSlope = -1;
+            }
+            
+        }
+        public void Walk()
+        {
+            if (spriteEffects == SpriteEffects.None)
+            {
+                walk += acceleration;
+                if (walk > walkSpeed) walk = walkSpeed;
+            }
+            else
+            {
+                walk += -acceleration;
+                if (walk < -walkSpeed) walk = -walkSpeed;
+            }
+        }
+        public void Attack()
+        {
+            if (cooldown == 0)
+            {
+                attacking = true;
+                cooldown = attackSpeed;
+                if (animation.frames == walkAnimation.frames)
+                {
+                    animation = walkAttackAnimation;
+                    frame = 0;
+                }
+                else if (animation.frames == idleAnimation.frames)
+                {
+                    animation = attackAnimation;
+                    frame = 0;
+                }
+                else
+                {
+                    
+                }
+            }
+        }
         public override void Update(GameTime gt)
         {
+            if (jump != 0.0f)
+            {
+                if (animation.frames != jumpAnimation.frames)
+                {
+                    animation = jumpAnimation;
+                    frame = 0;
+                }
+            }
+            else
+            {
+                if (Math.Abs(walk) > 0.5f)
+                {
+                    if (animation.frames != walkAnimation.frames)
+                    {
+                        animation = walkAnimation;
+                        
+                    }
+                    if (attacking) animation = walkAttackAnimation;
+                }
+                else
+                {
+                    if (animation.frames != idleAnimation.frames)
+                    {
+                        animation = idleAnimation;
+                    }
+                    if (attacking && animation.frames != attackAnimation.frames)
+                    {
+                        animation = attackAnimation;
+                        frame = 0;
+                        anim = 0;
+                    }
+                }
+            }
+            if (cooldown > 0) cooldown -= 1;
+            if (cooldown < attackSpeed - 20) attacking = false;
+            walk *= 0.9f;
+            if (Math.Abs(walk) < 0.1f) walk = 0.0f;
+            gravity += 0.15f;
+            if (gravity > 8.0f) gravity = 8.0f;
+            if ((collision_bottom && onSlope == -1) || (onSlope == -1 && wasOnSlope != -1))
+            {
+                //Console.WriteLine("BEPIS");
+                gravity = 0.0f;
+            }
+            if (collision_bottom)
+            {
+                if (!tryingToJump) jump = 0.0f;
+            }
+            if (!tryingToJump || gravity + jump > 0.0f)
+            {
+                jump = jump + 0.15f;
+                if (Math.Abs(jump) <= 0.15f) jump = 0.0f;
+            }
+            if (collision_top)
+            {
+                jump = 0.0f;
+            }
+            speed = new Vector2(walk, gravity + jump);
+            /*
             speed = Vector2.Zero;
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-            {
-                speed.X = 2f;
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.A))
-            {
-                speed.X = -2f;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
-            {
-                speed.Y = -2f;
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                speed.Y = 2f;
-            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) speed.Y = 2.5f;
+            if (Keyboard.GetState().IsKeyDown(Keys.A)) speed.X = -2.5f;
+            if (Keyboard.GetState().IsKeyDown(Keys.D)) speed.X = 2.5f;
+            if (Keyboard.GetState().IsKeyDown(Keys.W)) speed.Y = -2.5f;*/
+            
             TryMove(speed);
             Animate();
+            tryingToJump = false;
         }
         public override void Draw(SpriteBatch sp)
         {
@@ -95,11 +212,11 @@ namespace Mors_Arcium
                         }
                     }
                 }
-                if (frame != lastFrame)
-                {
+                //if (frame != lastFrame)
+                //{
                     sourceRect.X = animation.frames[frame] * 32;
-                }
-                lastFrame = frame;
+                //}
+                //lastFrame = frame;
             }
         }
     }

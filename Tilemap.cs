@@ -25,10 +25,11 @@ namespace Mors_Arcium
                     data[x, y] = -1;
                 }
             }
+            float offset = (float)game.game.random.NextDouble() * 100.0f;
             int hh = 0;
             for (int x = 0; x < w; x++)
             {
-                hh = (int)Math.Floor(Noise.Generate(x * 0.0625f) * 10f);
+                hh = (int)Math.Floor(Noise.Generate((x * 0.0625f) + offset) * 10f);
                 for (int y = (height / 2) + hh; y < height; y++)
                 {
                     data[x, y] = 5;
