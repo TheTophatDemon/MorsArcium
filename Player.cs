@@ -20,6 +20,7 @@ namespace Mors_Arcium
         Animation jumpAnimation;
         Animation attackAnimation;
         Animation walkAttackAnimation;
+        Animation aboutToAttackAnimation;
 
         private float gravity = 0.0f;
         private float jump = 0.0f;
@@ -33,6 +34,8 @@ namespace Mors_Arcium
         private bool tryingToJump = false;
         private bool attacking = false;
         private int cooldown = 0;
+
+        private string animationState = "idle";
         
 
         public Player(Gameplay g, int pt) : base(g)
@@ -62,6 +65,10 @@ namespace Mors_Arcium
                     walkAttackAnimation.frames = new int[] { 12, 13, 14, 15 };
                     walkAttackAnimation.looping = true;
                     walkAttackAnimation.speed = 3;
+                    aboutToAttackAnimation.frames = new int[] { 23 };
+                    aboutToAttackAnimation.looping = false;
+                    aboutToAttackAnimation.speed = 3;
+                    aboutToAttackAnimation.transition = true;
                     break;
                 case TYPE_WIZARD:
 
@@ -93,7 +100,7 @@ namespace Mors_Arcium
                 if (walk < -walkSpeed) walk = -walkSpeed;
             }
         }
-        public void Attack()
+        public virtual void Attack()
         {
             if (cooldown == 0)
             {
@@ -115,41 +122,63 @@ namespace Mors_Arcium
                 }
             }
         }
-        public override void Update(GameTime gt)
+        protected virtual void ChangeAnimationState(string st)
+        {
+            string lastState = animationState;
+            animationState = st;
+            if (lastState != st)
+            {
+                frame = 0;
+                anim = 0;
+            }
+            if ((lastState == "idle" || lastState == "walk") && (st == "idle_attack" || st == "walk_attack"))
+            {
+                animation = aboutToAttackAnimation;
+            }
+            else if ((lastState == "idle_attack" || lastState == "walk_attack") && (st == "idle" || st == "walk"))
+            {
+                animation = aboutToAttackAnimation;
+            }
+            else
+            {
+                SyncAnimationWithState();
+            }
+        }
+        protected virtual void UpdateAnimationState()
         {
             if (jump != 0.0f)
             {
-                if (animation.frames != jumpAnimation.frames)
-                {
-                    animation = jumpAnimation;
-                    frame = 0;
-                }
+                ChangeAnimationState("jump");
             }
             else
             {
                 if (Math.Abs(walk) > 0.5f)
                 {
-                    if (animation.frames != walkAnimation.frames)
+                    if (!attacking)
                     {
-                        animation = walkAnimation;
-                        
+                        ChangeAnimationState("walk");
                     }
-                    if (attacking) animation = walkAttackAnimation;
+                    else
+                    {
+                        ChangeAnimationState("walk_attack");
+                    }
                 }
                 else
                 {
-                    if (animation.frames != idleAnimation.frames)
+                    if (!attacking)
                     {
-                        animation = idleAnimation;
+                        ChangeAnimationState("idle");
                     }
-                    if (attacking && animation.frames != attackAnimation.frames)
+                    else
                     {
-                        animation = attackAnimation;
-                        frame = 0;
-                        anim = 0;
+                        ChangeAnimationState("idle_attack");
                     }
                 }
             }
+        }
+        public override void Update(GameTime gt)
+        {
+            UpdateAnimationState();
             if (cooldown > 0) cooldown -= 1;
             if (cooldown < attackSpeed - 20) attacking = false;
             walk *= 0.9f;
@@ -210,6 +239,10 @@ namespace Mors_Arcium
                         {
                             frame = animation.frames.Length - 1;
                         }
+                        if (animation.transition)
+                        {
+                            SyncAnimationWithState();
+                        }
                     }
                 }
                 //if (frame != lastFrame)
@@ -217,6 +250,27 @@ namespace Mors_Arcium
                     sourceRect.X = animation.frames[frame] * 32;
                 //}
                 //lastFrame = frame;
+            }
+        }
+        protected virtual void SyncAnimationWithState()
+        {
+            switch (animationState)
+            {
+                case "idle":
+                    animation = idleAnimation;
+                    break;
+                case "walk":
+                    animation = walkAnimation;
+                    break;
+                case "jump":
+                    animation = jumpAnimation;
+                    break;
+                case "idle_attack":
+                    animation = attackAnimation;
+                    break;
+                case "walk_attack":
+                    animation = walkAttackAnimation;
+                    break;
             }
         }
     }

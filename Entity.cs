@@ -9,6 +9,7 @@ namespace Mors_Arcium
         public int[] frames;
         public int speed;
         public bool looping;
+        public bool transition;
     }
     public abstract class Entity
     {

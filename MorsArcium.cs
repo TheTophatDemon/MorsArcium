@@ -9,7 +9,7 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Attacking / Animation Blending
+        //Make separate class for each player class
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RenderTarget2D renderTarget;
