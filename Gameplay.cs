@@ -14,7 +14,7 @@ namespace Mors_Arcium
         public Vector2 cameraPosition;
         public float cameraRotation;
         public MorsArcium game;
-        
+
         public Entity[,] entities;
         public Tilemap tilemap;
         private Particle[] particles;
@@ -132,6 +132,24 @@ namespace Mors_Arcium
 #if DEBUG
                         //sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
 #endif
+                        for (int i = 0; i < entities[x, y].collisionMask.Length; i++)
+                        {
+                            int type = entities[x, y].collisionMask[i];
+                            for (int j = 0; j < entities.GetLength(1); j++)
+                            {
+                                if (entities[type, j] != entities[x, y] && entities[type, j] != null)
+                                {
+                                    if (entities[x, y].position.X + entities[x, y].hitboxSize.X + entities[x, y].hitboxOffset.X > entities[type, j].position.X - entities[type, j].hitboxSize.X + entities[type, j].hitboxOffset.X
+                                        && entities[x, y].position.X - entities[x, y].hitboxSize.X + entities[x, y].hitboxOffset.X < entities[type, j].position.X + entities[type, j].hitboxSize.X + entities[type, j].hitboxOffset.X
+                                        && entities[x, y].position.Y + entities[x, y].hitboxSize.Y + entities[x, y].hitboxOffset.Y > entities[type, j].position.Y - entities[type, j].hitboxSize.Y + entities[type, j].hitboxOffset.Y
+                                        && entities[x, y].position.Y - entities[x, y].hitboxSize.Y + entities[x, y].hitboxOffset.Y < entities[type, j].position.Y + entities[type, j].hitboxSize.Y + entities[type, j].hitboxOffset.Y
+                                    )
+                                    {
+                                        entities[x, y].Collide(entities[type, j]);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -141,7 +159,10 @@ namespace Mors_Arcium
             }
             sp.End();
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
-            sp.DrawString(game.font1, "FPS: " + fps, Vector2.Zero, Color.White);
+            sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
+            sp.Draw(game.textures[2], Vector2.Zero, new Rectangle(0, 0, 117, 32), Color.White);
+            sp.Draw(game.textures[2], new Rectangle(12, 2, 4 + player.health, 12), new Rectangle(0, 97, 1, 1), Color.White);
+            sp.Draw(game.textures[2], new Rectangle(12, 18, 4 + player.magic, 12), new Rectangle(0, 98, 1, 1), Color.White);
             sp.End();
         }
         public void AddEntity(Entity e)
@@ -199,6 +220,17 @@ namespace Mors_Arcium
                                 tilemap.data[tx + xx, ty + yy] = -1;
                             }
                         }
+                    }
+                }
+            }
+            for (int i = 0; i < entities.GetLength(1); i++)
+            {
+                if (entities[TYPE_PLAYER, i] != null)
+                {
+                    if (Vector2.Distance(pos, entities[TYPE_PLAYER, i].position) < radius + entities[TYPE_PLAYER, i].hitboxSize.X)
+                    {
+                        Player p = (Player)entities[TYPE_PLAYER, i];
+                        p.Damage(damage);
                     }
                 }
             }

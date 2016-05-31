@@ -10,8 +10,11 @@ namespace Mors_Arcium
         Vector2 initSpd;
         Vector2 lastPos;
         float timer = 100;
-        public Crab(Gameplay g, Vector2 pos, Vector2 initialSpeed) : base(g)
+        public static int[] CrabCollisionMask = new int[] { Gameplay.TYPE_PLAYER };
+        Player owner;
+        public Crab(Gameplay g, Vector2 pos, Vector2 initialSpeed, Player own) : base(g)
         {
+            collisionMask = CrabCollisionMask;
             texture = g.game.textures[3];
             type = Gameplay.TYPE_PROJECTILE;
             sourceRect = new Rectangle(0, 0, 16, 16);
@@ -21,6 +24,7 @@ namespace Mors_Arcium
             speed = initialSpeed;
             position = pos;
             initSpd = initialSpeed;
+            owner = own;
         }
         public override void Update(GameTime gt)
         {
@@ -73,7 +77,10 @@ namespace Mors_Arcium
         }
         public override void Collide(Entity perpetrator)
         {
-            
+            if (perpetrator != owner && perpetrator.type == Gameplay.TYPE_PLAYER)
+            {
+                timer = -1;
+            }
         }
     }
 }

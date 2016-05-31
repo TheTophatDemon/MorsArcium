@@ -7,7 +7,8 @@ namespace Mors_Arcium
 {
     public class Player : Entity
     {
-
+        public int health = 100;
+        public int magic = 100;
         public SpriteEffects spriteEffects;
 
         protected float gravity = 0.0f;
@@ -25,10 +26,11 @@ namespace Mors_Arcium
         public int aimDirection = 0;
 
         protected string animationState = "idle";
-        
 
+        public static int[] PlayerCollisionMask = new int[] { Gameplay.TYPE_PROJECTILE, Gameplay.TYPE_PLAYER };
         public Player(Gameplay g) : base(g)
         {
+            collisionMask = PlayerCollisionMask;
             texture = g.game.textures[0];
             type = Gameplay.TYPE_PLAYER;
             sourceRect = new Rectangle(0, 0, 32, 32);
@@ -139,9 +141,13 @@ namespace Mors_Arcium
         {
             sp.Draw(texture, position, sourceRect, Color.White, rotation, origin, scale, spriteEffects, 0);
         }
+        public void Damage(int amount)
+        {
+            health -= amount;
+        }
         public override void Collide(Entity perpetrator)
         {
-
+            
         }
         private void Animate()
         {

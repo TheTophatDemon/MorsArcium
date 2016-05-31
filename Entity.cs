@@ -36,6 +36,7 @@ namespace Mors_Arcium
         protected bool collision_right;
         protected int onSlope = -1;
         protected int wasOnSlope = -1;
+        public int[] collisionMask;
         public Entity(Gameplay g)
         {
             game = g;

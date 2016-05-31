@@ -9,6 +9,8 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
+        //TODO: Teleport
+        //TODO: Health
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

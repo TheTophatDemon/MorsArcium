@@ -64,11 +64,11 @@ namespace Mors_Arcium
             {
                 if (spriteEffects == SpriteEffects.None)
                 {
-                    game.AddEntity(new Crab(game, position, new Vector2(2f, -aimDirection * 4f)));
+                    game.AddEntity(new Crab(game, position, new Vector2(2f, -aimDirection * 4f), this));
                 }
                 else
                 {
-                    game.AddEntity(new Crab(game, position, new Vector2(-2f, -aimDirection * 4f)));
+                    game.AddEntity(new Crab(game, position, new Vector2(-2f, -aimDirection * 4f), this));
                 }
                 eyeFlash = new Particle(game, position + flashOffset, Vector2.Zero, 5, 8, 0);
                 game.AddParticle(eyeFlash);
