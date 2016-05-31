@@ -9,6 +9,7 @@ namespace Mors_Arcium
     public class Gameplay
     {
         public const int TYPE_PLAYER = 0;
+        public const int TYPE_PROJECTILE = 1;
 
         public Vector2 cameraPosition;
         public float cameraRotation;
@@ -41,23 +42,33 @@ namespace Mors_Arcium
         public void Update(GameTime gt)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (Keyboard.GetState().IsKeyDown(game.JUMP))
             {
                 player.Jump();
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            if (Keyboard.GetState().IsKeyDown(game.RIGHT))
             {
                 player.spriteEffects = SpriteEffects.None;
                 player.Walk();
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.A))
+            else if (Keyboard.GetState().IsKeyDown(game.LEFT))
             {
                 player.spriteEffects = SpriteEffects.FlipHorizontally;
                 player.Walk();
             }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.J))
+            if (Keyboard.GetState().IsKeyDown(game.UP))
+            {
+                player.aimDirection = 1;
+            }
+            else if (Keyboard.GetState().IsKeyDown(game.DOWN))
+            {
+                player.aimDirection = -1;
+            }
+            else
+            {
+                player.aimDirection = 0;
+            }
+            if (Keyboard.GetState().IsKeyDown(game.ATTACK))
             {
                 player.Attack();
             }
@@ -167,6 +178,32 @@ namespace Mors_Arcium
                     break;
                 }
             }
+        }
+        public void Explode(float x, float y, float radius, int damage)
+        {
+            int tx = (int)Math.Round(x / 16);
+            int ty = (int)Math.Round(y / 16);
+            int tr = (int)Math.Ceiling(radius / 16);
+            Vector2 pos = new Vector2(x, y);
+            for (int yy = -tr; yy < tr; yy++)
+            {
+                for (int xx = -tr; xx < tr; xx++)
+                {
+                    if (tx + xx > 0 && tx + xx < tilemap.width && ty + yy > 0 && ty + yy < tilemap.height)
+                    {
+                        if (tilemap.data[tx + xx, ty + yy] != -1)
+                        {
+                            float dist = Vector2.Distance(pos, new Vector2(((tx + xx) * 16) + 8, ((ty + yy) * 16) + 8));
+                            if (dist < radius)
+                            {
+                                tilemap.data[tx + xx, ty + yy] = -1;
+                            }
+                        }
+                    }
+                }
+            }
+            tilemap.RefreshTiles();
+            AddParticle(new Particle(this, pos - new Vector2(radius), Vector2.Zero, 3, 32, 2));
         }
     }
 }

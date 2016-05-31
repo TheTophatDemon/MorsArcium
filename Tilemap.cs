@@ -150,14 +150,14 @@ namespace Mors_Arcium
                                 data[x, y] = 1;
                             }
                         }
-                        if (x < width - 1)
-                        {
-                            if (data[x, y] == 0 && data[x + 1, y] == 2)
-                            {
-                                data[x, y] = 1;
-                                data[x + 1, y] = 1;
-                            }
-                        }
+                        //if (x < width - 1)
+                       // {
+                        //    if (data[x, y] == 0 && data[x + 1, y] == 2)
+                       //     {
+                        //        data[x, y] = 1;
+                        //        data[x + 1, y] = 1;
+                        //    }
+                       // }
                     }
                 }
             }

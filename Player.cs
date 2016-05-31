@@ -22,6 +22,7 @@ namespace Mors_Arcium
         protected bool tryingToJump = false;
         protected bool attacking = false;
         protected int cooldown = 0;
+        public int aimDirection = 0;
 
         protected string animationState = "idle";
         

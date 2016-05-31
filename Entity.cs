@@ -191,7 +191,8 @@ namespace Mors_Arcium
                // {
                     if (game.tilemap.data[(int)potentialSlopes[i].X, (int)potentialSlopes[i].Y] == 0) // "/"
                     {
-                        if (position.X + spd.X + hitboxSize.X + hitboxOffset.X >= tx && position.X + spd.X  <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16 && spd.Y >= 0.0f)
+                        //This test is being failed (Spd.y > 0)
+                        if (position.X + spd.X + hitboxSize.X + hitboxOffset.X >= tx && position.X + spd.X  <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16 )
                         {
                             float dx = position.X + spd.X + hitboxSize.X + hitboxOffset.X - tx;
                             if (dx > 16) dx = 16;
@@ -210,7 +211,7 @@ namespace Mors_Arcium
                     }
                     else // "\"
                     {
-                        if (position.X + spd.X >= tx && position.X + spd.X - hitboxSize.X + hitboxOffset.X <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16 && spd.Y >= 0.0f)
+                        if (position.X + spd.X >= tx && position.X + spd.X - hitboxSize.X + hitboxOffset.X <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16)
                         {
                             float dx = position.X + spd.X - hitboxSize.X + hitboxOffset.X - tx;
                             if (dx > 16) dx = 16;

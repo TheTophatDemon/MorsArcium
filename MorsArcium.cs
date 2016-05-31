@@ -9,6 +9,14 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
+        public Keys UP = Keys.W;
+        public Keys DOWN = Keys.S;
+        public Keys RIGHT = Keys.D;
+        public Keys LEFT = Keys.A;
+        public Keys JUMP = Keys.Space;
+        public Keys ATTACK = Keys.J;
+        public Keys SPECIAL = Keys.K;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RenderTarget2D renderTarget;
@@ -23,7 +31,6 @@ namespace Mors_Arcium
 
         public float scaleFactor = 1.0f;
 
-        int textureIndex = 0;
         private bool pause = false;
         private bool skip = false;
         private bool henry = false;
@@ -45,27 +52,24 @@ namespace Mors_Arcium
             thing = new Rectangle(0, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
             renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
         }
-        private void LoadTexture(string path)
+        private void LoadTexture(string path, int index)
         {
-            textures[textureIndex] = Content.Load<Texture2D>("textures/" + Path.GetFileNameWithoutExtension(path));
-            textureIndex += 1;
+            textures[index] = Content.Load<Texture2D>("textures/" + Path.GetFileNameWithoutExtension(path));
         }
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            textureIndex = 0;
             font1 = Content.Load<SpriteFont>("Font1");
 
             textures = new Texture2D[512];
 
-            LoadTexture("Content/textures/characters.png"); //0
-            LoadTexture("Content/textures/explosion.png");  //1
-            LoadTexture("Content/textures/hud.png");        //2
-            LoadTexture("Content/textures/projectiles.png");//3
-            LoadTexture("Content/textures/buttons.png");    //4
-            LoadTexture("Content/textures/tileset.png");    //5
-            LoadTexture("Content/textures/hitbox.png");     //6
-            LoadTexture("Content/textures/particles.png");  //7
+            LoadTexture("Content/textures/characters.png", 0); //0
+            LoadTexture("Content/textures/hud.png", 2);        //2
+            LoadTexture("Content/textures/projectiles.png", 3);//3
+            LoadTexture("Content/textures/buttons.png", 4);    //4
+            LoadTexture("Content/textures/tileset.png", 5);    //5
+            LoadTexture("Content/textures/hitbox.png", 6);     //6
+            LoadTexture("Content/textures/particles.png", 7);  //7
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);

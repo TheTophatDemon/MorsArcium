@@ -62,6 +62,14 @@ namespace Mors_Arcium
             base.Attack();
             if (cooldown == 0)
             {
+                if (spriteEffects == SpriteEffects.None)
+                {
+                    game.AddEntity(new Crab(game, position, new Vector2(2f, -aimDirection * 4f)));
+                }
+                else
+                {
+                    game.AddEntity(new Crab(game, position, new Vector2(-2f, -aimDirection * 4f)));
+                }
                 eyeFlash = new Particle(game, position + flashOffset, Vector2.Zero, 5, 8, 0);
                 game.AddParticle(eyeFlash);
                 attacking = true;
@@ -75,10 +83,6 @@ namespace Mors_Arcium
                 {
                     animation = attackAnimation;
                     frame = 0;
-                }
-                else
-                {
-
                 }
             }
         }

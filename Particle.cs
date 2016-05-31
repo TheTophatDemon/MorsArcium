@@ -36,6 +36,11 @@ namespace Mors_Arcium
                     baseX = 24;
                     baseY = 0;
                     break;
+                case 2: //Explosion
+                    numFrames = 4;
+                    baseX = 0;
+                    baseY = 8;
+                    break;
             }
             rect = new Rectangle(baseX, baseY, size, size);
         }
