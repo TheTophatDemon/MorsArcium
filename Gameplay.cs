@@ -157,12 +157,13 @@ namespace Mors_Arcium
             {
                 if (particles[i] != null) particles[i].Draw(sp);
             }
+            
             sp.End();
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
             sp.Draw(game.textures[2], Vector2.Zero, new Rectangle(0, 0, 117, 32), Color.White);
-            sp.Draw(game.textures[2], new Rectangle(12, 2, 4 + player.health, 12), new Rectangle(0, 97, 1, 1), Color.White);
-            sp.Draw(game.textures[2], new Rectangle(12, 18, 4 + player.magic, 12), new Rectangle(0, 98, 1, 1), Color.White);
+            sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), new Rectangle(0, 97, 1, 1), Color.White);
+            sp.Draw(game.textures[2], new Rectangle(12, 18, (player.magic / player.maxMagic) * 104, 12), new Rectangle(0, 98, 1, 1), Color.White);
             sp.End();
         }
         public void AddEntity(Entity e)

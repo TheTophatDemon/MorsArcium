@@ -7,6 +7,8 @@ namespace Mors_Arcium
 {
     public class Player : Entity
     {
+        public int maxHealth = 100;
+        public int maxMagic = 100;
         public int health = 100;
         public int magic = 100;
         public SpriteEffects spriteEffects;
@@ -77,6 +79,10 @@ namespace Mors_Arcium
         {
             
         }
+        public virtual void Special()
+        {
+            //yep. that's right. it's literally nothing. and it's not going to be anything, either. heh heh heh... ya get it?
+        }
         protected virtual void ChangeAnimationState(string st)
         {
             string lastState = animationState;
@@ -96,6 +102,7 @@ namespace Mors_Arcium
             UpdateAnimationState();
             if (cooldown > 0) cooldown -= 1;
             if (cooldown < attackSpeed - 20) attacking = false;
+            if (magic < maxMagic) magic += 1;
             walk *= 0.9f;
             if (Math.Abs(walk) < 0.1f) walk = 0.0f;
             gravity += 0.15f;

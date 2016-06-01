@@ -9,8 +9,8 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Teleport
-        //TODO: Health
+        //TODO: Teleport & Magic
+        //TODO: Dying
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -46,12 +46,12 @@ namespace Mors_Arcium
         {
             base.Initialize();
             Window.Title = "MORS ARCIUM";
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
+            graphics.PreferredBackBufferWidth = 960;
+            graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
             IsMouseVisible = true;
-            scaleFactor = graphics.PreferredBackBufferHeight / 240f;
-            thing = new Rectangle(0, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
+            scaleFactor = GraphicsDevice.Viewport.Height / 240f;
+            thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
             renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
         }
         private void LoadTexture(string path, int index)

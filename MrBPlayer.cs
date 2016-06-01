@@ -41,6 +41,9 @@ namespace Mors_Arcium
             aboutToAttackAnimation.speed = 3;
             aboutToAttackAnimation.transition = true;
             animation = idleAnimation;
+            maxHealth = 70;
+            maxMagic = 100;
+            health = 70;
         }
         public override void Update(GameTime gt)
         {
