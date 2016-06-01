@@ -13,9 +13,11 @@ namespace Mors_Arcium
         Animation attackAnimation;
         Animation walkAttackAnimation;
         Animation aboutToAttackAnimation;
+        Animation teleportAnimation;
         Particle eyeFlash;
         static Vector2 flashOffset = new Vector2(-7, -7);
         static Vector2 flashOffset2 = new Vector2(-2, -7);
+        bool teleporting = false;
         public MrBPlayer(Gameplay g) : base(g)
         {
 
@@ -40,6 +42,9 @@ namespace Mors_Arcium
             aboutToAttackAnimation.looping = false;
             aboutToAttackAnimation.speed = 3;
             aboutToAttackAnimation.transition = true;
+            teleportAnimation.frames = new int[] { 16, 17, 18, 19, 18, 17, 16 };
+            teleportAnimation.looping = false;
+            teleportAnimation.speed = 3;
             animation = idleAnimation;
             maxHealth = 70;
             maxMagic = 100;
@@ -47,6 +52,37 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
+            if (animationState == "teleport")
+            {
+                walk = 0.0f;
+                gravity = -0.15f;
+                jump = 0.0f;
+                if (frame == 2 && anim == 0)
+                {
+                    if (spriteEffects == SpriteEffects.None)
+                    {
+                        Vector2 newPos = position + new Vector2(128.0f, 0.0f);
+                        while (game.tilemap.CollideRect(newPos.X + hitboxOffset.X, newPos.Y + hitboxOffset.Y, hitboxSize.X, hitboxSize.Y))
+                        {
+                            newPos.Y -= 32.0f;
+                        }
+                        position = newPos;
+                    }
+                    else
+                    {
+                        Vector2 newPos = position + new Vector2(-128.0f, 0.0f);
+                        while (game.tilemap.CollideRect(newPos.X + hitboxOffset.X, newPos.Y + hitboxOffset.Y, hitboxSize.X, hitboxSize.Y))
+                        {
+                            newPos.Y -= 32.0f;
+                        }
+                        position = newPos;
+                    }
+                }
+                else if (frame == 6 && anim == 2)
+                {
+                    ChangeAnimationState("jump");
+                }
+            }
             base.Update(gt);
             if (eyeFlash != null)
             {
@@ -89,6 +125,15 @@ namespace Mors_Arcium
                 }
             }
         }
+        public override void Special()
+        {
+            if (magic >= 50 && animationState != "teleport")
+            {
+                magic -= 50;
+                teleporting = true;
+                ChangeAnimationState("teleport");
+            }
+        }
         protected override void ChangeAnimationState(string st)
         {
             string lastState = animationState;
@@ -109,32 +154,35 @@ namespace Mors_Arcium
         protected override void UpdateAnimationState()
         {
             base.UpdateAnimationState();
-            if (jump != 0.0f)
+            if (animationState != "teleport")
             {
-                ChangeAnimationState("jump");
-            }
-            else
-            {
-                if (Math.Abs(walk) > 0.5f)
+                if (jump != 0.0f)
                 {
-                    if (!attacking)
-                    {
-                        ChangeAnimationState("walk");
-                    }
-                    else
-                    {
-                        ChangeAnimationState("walk_attack");
-                    }
+                    ChangeAnimationState("jump");
                 }
                 else
                 {
-                    if (!attacking)
+                    if (Math.Abs(walk) > 0.5f)
                     {
-                        ChangeAnimationState("idle");
+                        if (!attacking)
+                        {
+                            ChangeAnimationState("walk");
+                        }
+                        else
+                        {
+                            ChangeAnimationState("walk_attack");
+                        }
                     }
                     else
                     {
-                        ChangeAnimationState("idle_attack");
+                        if (!attacking)
+                        {
+                            ChangeAnimationState("idle");
+                        }
+                        else
+                        {
+                            ChangeAnimationState("idle_attack");
+                        }
                     }
                 }
             }
@@ -158,6 +206,9 @@ namespace Mors_Arcium
                     break;
                 case "walk_attack":
                     animation = walkAttackAnimation;
+                    break;
+                case "teleport":
+                    animation = teleportAnimation;
                     break;
             }
         }

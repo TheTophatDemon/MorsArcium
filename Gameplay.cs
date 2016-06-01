@@ -23,6 +23,7 @@ namespace Mors_Arcium
         int ticks;
         int fps;
         Vector2 cameraOffset = new Vector2(160, 120);
+        bool terrainModified = false;
 
         public Player player;
 
@@ -72,6 +73,10 @@ namespace Mors_Arcium
             {
                 player.Attack();
             }
+            if (Keyboard.GetState().IsKeyDown(game.SPECIAL))
+            {
+                player.Special();
+            }
 
             for (int x = 0; x < entities.GetLength(0); x++)
             {
@@ -107,6 +112,11 @@ namespace Mors_Arcium
                 tilemap.RefreshTiles();
             }
             cameraPosition = player.position - cameraOffset;
+            if (terrainModified)
+            {
+                terrainModified = false;
+                tilemap.RefreshTiles();
+            }
             if (time == gt.TotalGameTime.Seconds)
             {
                 ticks += 1;
@@ -163,7 +173,7 @@ namespace Mors_Arcium
             sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
             sp.Draw(game.textures[2], Vector2.Zero, new Rectangle(0, 0, 117, 32), Color.White);
             sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), new Rectangle(0, 97, 1, 1), Color.White);
-            sp.Draw(game.textures[2], new Rectangle(12, 18, (player.magic / player.maxMagic) * 104, 12), new Rectangle(0, 98, 1, 1), Color.White);
+            sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), new Rectangle(0, 98, 1, 1), Color.White);
             sp.End();
         }
         public void AddEntity(Entity e)
@@ -235,7 +245,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            tilemap.RefreshTiles();
+            terrainModified = true;
             AddParticle(new Particle(this, pos - new Vector2(radius), Vector2.Zero, 3, 32, 2));
         }
     }

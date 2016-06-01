@@ -170,5 +170,32 @@ namespace Mors_Arcium
         {
             return (int)Math.Floor((float)index / (tileset.Width / 16)) * 16;
         }
+        public bool CollideRect(float x, float y, float w, float h) //The rectangle is centered, mind you!
+        {
+            int tl = (int)Math.Floor((x - w) / 16.0f) - 1;
+            int tu = (int)Math.Floor((y - h) / 16.0f) - 1;
+            int tr = tl + (int)Math.Ceiling(w / 8.0f) + 2;
+            int tb = tu + (int)Math.Ceiling(h / 8.0f) + 2;
+            tl = (int)Math.Min(width, Math.Max(0, tl));
+            tr = (int)Math.Min(width, Math.Max(0, tr));
+            tu = (int)Math.Min(height, Math.Max(0, tu));
+            tb = (int)Math.Min(height, Math.Max(0, tb));
+            for (int yy = tu; yy < tb; yy++)
+            {
+                for (int xx = tl; xx < tr; xx++)
+                {
+                    int tx = xx * 16;
+                    int ty = yy * 16;
+                    if (data[xx, yy] != -1)
+                    {
+                        if (x + w > tx && x - w < tx + 16 && y + h > ty && y - h < ty + 16)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

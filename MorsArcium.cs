@@ -9,8 +9,8 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Teleport & Magic
         //TODO: Dying
+        //TODO: Teleport particles
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
