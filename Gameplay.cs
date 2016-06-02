@@ -24,8 +24,15 @@ namespace Mors_Arcium
         int fps;
         Vector2 cameraOffset = new Vector2(160, 120);
         bool terrainModified = false;
+        Vector2 deathThingy;
+        Rectangle deathThingyRect = new Rectangle(0, 32, 120, 65);
+        Rectangle hbRect = new Rectangle(0, 97, 1, 1);
+        Rectangle mbRect = new Rectangle(0, 98, 1, 1);
+        Rectangle mbhbRect = new Rectangle(0, 0, 117, 32);
 
         public Player player;
+        public float fadeIn;
+        public float fadeOut;
 
         public Gameplay(MorsArcium g)
         {
@@ -33,51 +40,62 @@ namespace Mors_Arcium
         }
         public void Initialize()
         {
+            deathThingy = new Vector2(100, 240);
             entities = new Entity[8, 128];
             particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 78, 24);
             player = new MrBPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             AddEntity(player);
+            fadeOut = 0f;
+            fadeIn = 1.0f;
         }
         public void Update(GameTime gt)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
-            if (Keyboard.GetState().IsKeyDown(game.JUMP))
+            if (!player.dead)
             {
-                player.Jump();
-            }
-            if (Keyboard.GetState().IsKeyDown(game.RIGHT))
-            {
-                player.spriteEffects = SpriteEffects.None;
-                player.Walk();
-            }
-            else if (Keyboard.GetState().IsKeyDown(game.LEFT))
-            {
-                player.spriteEffects = SpriteEffects.FlipHorizontally;
-                player.Walk();
-            }
-            if (Keyboard.GetState().IsKeyDown(game.UP))
-            {
-                player.aimDirection = 1;
-            }
-            else if (Keyboard.GetState().IsKeyDown(game.DOWN))
-            {
-                player.aimDirection = -1;
+                if (Keyboard.GetState().IsKeyDown(game.JUMP))
+                {
+                    player.Jump();
+                }
+                if (Keyboard.GetState().IsKeyDown(game.RIGHT))
+                {
+                    player.spriteEffects = SpriteEffects.None;
+                    player.Walk();
+                }
+                else if (Keyboard.GetState().IsKeyDown(game.LEFT))
+                {
+                    player.spriteEffects = SpriteEffects.FlipHorizontally;
+                    player.Walk();
+                }
+                if (Keyboard.GetState().IsKeyDown(game.UP))
+                {
+                    player.aimDirection = 1;
+                }
+                else if (Keyboard.GetState().IsKeyDown(game.DOWN))
+                {
+                    player.aimDirection = -1;
+                }
+                else
+                {
+                    player.aimDirection = 0;
+                }
+                if (Keyboard.GetState().IsKeyDown(game.ATTACK))
+                {
+                    player.Attack();
+                }
+                if (Keyboard.GetState().IsKeyDown(game.SPECIAL))
+                {
+                    player.Special();
+                }
             }
             else
             {
-                player.aimDirection = 0;
+                deathThingy.Y -= (deathThingy.Y - 72f) / 4;
+                if (deathThingy.Y < 73) deathThingy.Y = 72;
+                player.deathTimer += 1;
             }
-            if (Keyboard.GetState().IsKeyDown(game.ATTACK))
-            {
-                player.Attack();
-            }
-            if (Keyboard.GetState().IsKeyDown(game.SPECIAL))
-            {
-                player.Special();
-            }
-
             for (int x = 0; x < entities.GetLength(0); x++)
             {
                 for (int y = 0; y < entities.GetLength(1); y++)
@@ -127,6 +145,10 @@ namespace Mors_Arcium
                 ticks = 0;
                 time = gt.TotalGameTime.Seconds;
             }
+            if (player.deathTimer > 200)
+            {
+                Initialize();
+            }
         }
         public void Draw(SpriteBatch sp)
         {
@@ -171,9 +193,28 @@ namespace Mors_Arcium
             sp.End();
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
-            sp.Draw(game.textures[2], Vector2.Zero, new Rectangle(0, 0, 117, 32), Color.White);
-            sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), new Rectangle(0, 97, 1, 1), Color.White);
-            sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), new Rectangle(0, 98, 1, 1), Color.White);
+            sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
+            sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), hbRect, Color.White);
+            sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), mbRect, Color.White);
+            if (player.dead)
+            {
+                sp.Draw(game.textures[2], deathThingy, deathThingyRect, Color.White);
+                if (player.deathTimer == 150)
+                {
+                    fadeOut = 1.0f;
+                }
+            }
+            if (fadeOut > 0.0f)
+            {
+                fadeOut -= 0.025f;
+                if (fadeOut < 0.025f) fadeOut = 0.025f;
+                sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * (1.0f - fadeOut));
+            }
+            if (fadeIn > 0.0f)
+            {
+                fadeIn -= 0.025f;
+                sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * fadeIn);
+            }
             sp.End();
         }
         public void AddEntity(Entity e)

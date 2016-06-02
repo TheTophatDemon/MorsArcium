@@ -14,6 +14,7 @@ namespace Mors_Arcium
         Animation walkAttackAnimation;
         Animation aboutToAttackAnimation;
         Animation teleportAnimation;
+        Animation deathAnimation;
         Particle eyeFlash;
         static Vector2 flashOffset = new Vector2(-7, -7);
         static Vector2 flashOffset2 = new Vector2(-2, -7);
@@ -45,6 +46,9 @@ namespace Mors_Arcium
             teleportAnimation.frames = new int[] { 16, 17, 18, 19, 18, 17, 16 };
             teleportAnimation.looping = false;
             teleportAnimation.speed = 3;
+            deathAnimation.frames = new int[] { 20, 21, 22 };
+            deathAnimation.looping = false;
+            deathAnimation.speed = 5;
             animation = idleAnimation;
             maxHealth = 70;
             maxMagic = 100;
@@ -52,6 +56,7 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.T)) health -= 1;
             if (animationState == "teleport")
             {
                 walk = 0.0f;
@@ -65,7 +70,13 @@ namespace Mors_Arcium
                         while (game.tilemap.CollideRect(newPos.X + hitboxOffset.X, newPos.Y + hitboxOffset.Y, hitboxSize.X, hitboxSize.Y))
                         {
                             newPos.Y -= 32.0f;
-                        }
+                        }/*
+                        for (int i = 0; i < 20; i++)
+                        {
+                            Vector2 shit = newPos - position;
+                            shit.Normalize();
+                            game.AddParticle(new Particle(game, position + new Vector2(game.game.random.Next(-16, 16), game.game.random.Next(-16, 16)), shit, 3, 8, 1));
+                        }*/
                         position = newPos;
                     }
                     else
@@ -154,7 +165,7 @@ namespace Mors_Arcium
         protected override void UpdateAnimationState()
         {
             base.UpdateAnimationState();
-            if (animationState != "teleport")
+            if (animationState != "teleport" && animationState != "dead")
             {
                 if (jump != 0.0f)
                 {
@@ -209,6 +220,9 @@ namespace Mors_Arcium
                     break;
                 case "teleport":
                     animation = teleportAnimation;
+                    break;
+                case "dead":
+                    animation = deathAnimation;
                     break;
             }
         }

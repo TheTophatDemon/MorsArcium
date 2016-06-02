@@ -28,6 +28,8 @@ namespace Mors_Arcium
         public int aimDirection = 0;
 
         protected string animationState = "idle";
+        public bool dead = false;
+        public int deathTimer = 0;
 
         public static int[] PlayerCollisionMask = new int[] { Gameplay.TYPE_PROJECTILE, Gameplay.TYPE_PLAYER };
         public Player(Gameplay g) : base(g)
@@ -132,6 +134,11 @@ namespace Mors_Arcium
             {
                 jump = 0.0f;
             }
+            if (deathTimer > 0)
+            {
+                walk = 0.0f;
+                jump = 0.0f;
+            }
             speed = new Vector2(walk, gravity + jump);
             /*
             speed = Vector2.Zero;
@@ -143,6 +150,22 @@ namespace Mors_Arcium
             TryMove(speed);
             Animate();
             tryingToJump = false;
+            if (health <= 0 && deathTimer == 0)
+            {
+                health = 0;
+                deathTimer = 1;
+                ChangeAnimationState("dead");
+            }
+            if (deathTimer >= 1)
+            {
+                deathTimer += 1;
+                if (deathTimer == 100)
+                {
+                    dead = true;
+                    game.Explode(position.X, position.Y, 16f, 15);
+                    game.RemoveEntity(this);
+                }
+            }
         }
         public override void Draw(SpriteBatch sp)
         {
