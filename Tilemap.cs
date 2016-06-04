@@ -169,8 +169,12 @@ namespace Mors_Arcium
                         {
                             if ((!leftTile && (!bottomLeftTile || !topRightTile)) || (!rightTile && (!bottomRightTile || !topLeftTile)))
                             {
-                                jumpNodes[jumpNodeCount] = new Vector2((x * 16), (y * 16));
-                                jumpNodeCount += 1;
+                                if (((x + 1 < width && data[x + 1, y] > 2 && !leftTile)
+                                    || (x - 1 >= 0 && data[x - 1, y] > 2 && !rightTile)) || data[x, y] == 1)
+                                {
+                                    jumpNodes[jumpNodeCount] = new Vector2((x * 16), (y * 16));
+                                    jumpNodeCount += 1;
+                                }
                             }
                         }
                     }
