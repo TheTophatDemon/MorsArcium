@@ -33,6 +33,7 @@ namespace Mors_Arcium
         public Player player;
         public float fadeIn;
         public float fadeOut;
+        public int numCPUs = 5;
 
         public Gameplay(MorsArcium g)
         {
@@ -46,6 +47,13 @@ namespace Mors_Arcium
             tilemap = new Tilemap(this, game.textures[5], 78, 24);
             player = new MrBPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
+            for (int i = 0; i < numCPUs; i++)
+            {
+                MrBPlayer p = new MrBPlayer(this);
+                p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                AddEntity(p);
+                p = null;
+            }
             AddEntity(player);
             fadeOut = 0f;
             fadeIn = 1.0f;
@@ -102,7 +110,25 @@ namespace Mors_Arcium
                 {
                     if (entities[x, y] != null)
                     {
+                        if (entities[x, y].type == TYPE_PLAYER && entities[x, y] != player)
+                        {
+                            Player p = (Player)entities[x, y];
+                            p.UpdateCPU();
+                            p = null;
+                        }
                         entities[x, y].Update(gt);
+                    }
+                }
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.T))
+            {
+                for (int i = 0; i < entities.GetLength(1); i++)
+                {
+                    if (entities[TYPE_PLAYER, i] != null)
+                    {
+                        Player p = (Player)entities[TYPE_PLAYER, i];
+                        p.target = player;
+                        p = null;
                     }
                 }
             }
@@ -135,7 +161,7 @@ namespace Mors_Arcium
                 terrainModified = false;
                 tilemap.RefreshTiles();
             }
-            if (time == gt.TotalGameTime.Seconds)
+            if (time == DateTime.Now.Second)
             {
                 ticks += 1;
             }
@@ -143,7 +169,7 @@ namespace Mors_Arcium
             {
                 fps = ticks;
                 ticks = 0;
-                time = gt.TotalGameTime.Seconds;
+                time = DateTime.Now.Second;
             }
             if (player.deathTimer > 200)
             {
@@ -252,28 +278,32 @@ namespace Mors_Arcium
                 }
             }
         }
-        public void Explode(float x, float y, float radius, int damage)
+        public void Explode(float x, float y, float radius, int damage, bool hurtTerrain = false)
         {
             int tx = (int)Math.Round(x / 16);
             int ty = (int)Math.Round(y / 16);
             int tr = (int)Math.Ceiling(radius / 16);
             Vector2 pos = new Vector2(x, y);
-            for (int yy = -tr; yy < tr; yy++)
+            if (hurtTerrain)
             {
-                for (int xx = -tr; xx < tr; xx++)
+                for (int yy = -tr; yy < tr; yy++)
                 {
-                    if (tx + xx > 0 && tx + xx < tilemap.width && ty + yy > 0 && ty + yy < tilemap.height)
+                    for (int xx = -tr; xx < tr; xx++)
                     {
-                        if (tilemap.data[tx + xx, ty + yy] != -1)
+                        if (tx + xx > 0 && tx + xx < tilemap.width && ty + yy > 0 && ty + yy < tilemap.height)
                         {
-                            float dist = Vector2.Distance(pos, new Vector2(((tx + xx) * 16) + 8, ((ty + yy) * 16) + 8));
-                            if (dist < radius)
+                            if (tilemap.data[tx + xx, ty + yy] != -1)
                             {
-                                tilemap.data[tx + xx, ty + yy] = -1;
+                                float dist = Vector2.Distance(pos, new Vector2(((tx + xx) * 16) + 8, ((ty + yy) * 16) + 8));
+                                if (dist < radius)
+                                {
+                                    tilemap.data[tx + xx, ty + yy] = -1;
+                                }
                             }
                         }
                     }
                 }
+                terrainModified = true;
             }
             for (int i = 0; i < entities.GetLength(1); i++)
             {
@@ -286,7 +316,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            terrainModified = true;
+            
             AddParticle(new Particle(this, pos - new Vector2(radius), Vector2.Zero, 3, 32, 2));
         }
     }

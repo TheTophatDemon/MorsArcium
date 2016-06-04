@@ -9,7 +9,8 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Dying
+        //TODO: Teach the AI to "Give Up"
+
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -45,7 +46,7 @@ namespace Mors_Arcium
         {
             base.Initialize();
             Window.Title = "MORS ARCIUM";
-            Window.Position = new Point(32, 32);
+            Window.Position = new Point(64, 64);
             graphics.PreferredBackBufferWidth = 960;
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();

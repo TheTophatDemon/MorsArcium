@@ -56,7 +56,7 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.T)) health -= 1;
+            //if (Keyboard.GetState().IsKeyDown(Keys.T)) health -= 1;
             if (animationState == "teleport")
             {
                 walk = 0.0f;
@@ -110,7 +110,7 @@ namespace Mors_Arcium
         public override void Attack()
         {
             base.Attack();
-            if (cooldown == 0)
+            if (cooldown == 0 && animationState != "teleport" && deathTimer == 0)
             {
                 if (spriteEffects == SpriteEffects.None)
                 {

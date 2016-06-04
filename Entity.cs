@@ -265,9 +265,9 @@ namespace Mors_Arcium
                     {
                         if (game.tilemap.data[x, y] != -1)
                         {
-                            if (position.X + hitboxSize.X + hitboxOffset.X > x * 16 && position.X - hitboxSize.X + hitboxOffset.X < (x * 16) + 16 && position.Y + spd.Y - hitboxSize.Y + hitboxOffset.Y > y * 16 && position.Y - hitboxSize.Y + spd.Y + hitboxOffset.Y < (y * 16) + 16)
+                            if (position.X + hitboxSize.X + spd.X + hitboxOffset.X > x * 16 && position.X - hitboxSize.X + spd.X + hitboxOffset.X < (x * 16) + 16 && position.Y + spd.Y - hitboxSize.Y + hitboxOffset.Y > y * 16 && position.Y - hitboxSize.Y + spd.Y + hitboxOffset.Y < (y * 16) + 16)
                             {
-                                spd = Vector2.Zero;
+                                if ((onSlope == 0 && spd.X > 0.0f) || (onSlope == 1 && spd.X < 0.0f)) spd = Vector2.Zero;
                             }
                         }
                     }

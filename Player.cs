@@ -31,6 +31,11 @@ namespace Mors_Arcium
         public bool dead = false;
         public int deathTimer = 0;
 
+        public int hurtTimer = 0;
+
+        public Player target;
+        private string aiState = "";
+
         public static int[] PlayerCollisionMask = new int[] { Gameplay.TYPE_PROJECTILE, Gameplay.TYPE_PLAYER };
         public Player(Gameplay g) : base(g)
         {
@@ -85,6 +90,37 @@ namespace Mors_Arcium
         {
             //yep. that's right. it's literally nothing. and it's not going to be anything, either. heh heh heh... ya get it?
         }
+        public virtual void UpdateCPU()
+        {
+            if (target != null)
+            {
+                if (target.position.X < position.X)
+                {
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+                }
+                else
+                {
+                    spriteEffects = SpriteEffects.None;
+                }
+                Walk();
+                for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
+                {
+                    if (position.X + hitboxOffset.X + hitboxSize.X > game.tilemap.jumpNodes[i].X - 24.0f && position.X + hitboxOffset.X - hitboxSize.X < game.tilemap.jumpNodes[i].X + 24.0f)
+                    {
+                        bool fnickel = false;
+                        if (position.Y + hitboxOffset.Y + hitboxSize.Y <= game.tilemap.jumpNodes[i].Y + 16)
+                        {
+                            fnickel = true;
+                        }
+                        else if (target.position.Y < position.Y)
+                        {
+                            fnickel = true;
+                        }
+                        if (fnickel) Jump();
+                    }
+                }
+            }
+        }
         protected virtual void ChangeAnimationState(string st)
         {
             string lastState = animationState;
@@ -101,6 +137,7 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
+            if (hurtTimer > 0) hurtTimer -= 1;
             UpdateAnimationState();
             if (cooldown > 0) cooldown -= 1;
             if (cooldown < attackSpeed - 20) attacking = false;
@@ -169,11 +206,15 @@ namespace Mors_Arcium
         }
         public override void Draw(SpriteBatch sp)
         {
-            sp.Draw(texture, position, sourceRect, Color.White, rotation, origin, scale, spriteEffects, 0);
+            if (hurtTimer == 0 || hurtTimer % 4 == 0)
+            {
+                sp.Draw(texture, position, sourceRect, Color.White, rotation, origin, scale, spriteEffects, 0);
+            }
         }
         public void Damage(int amount)
         {
             health -= amount;
+            hurtTimer = 30;
         }
         public override void Collide(Entity perpetrator)
         {

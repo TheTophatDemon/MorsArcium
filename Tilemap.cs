@@ -10,6 +10,8 @@ namespace Mors_Arcium
         public int width;
         public int height;
         public Texture2D tileset;
+        public Vector2[] jumpNodes;
+        public int jumpNodeCount = 0;
         Gameplay game;
         public Tilemap(Gameplay g, Texture2D tile, int w, int h)
         {
@@ -35,6 +37,7 @@ namespace Mors_Arcium
                     data[x, y] = 5;
                 }
             }
+            jumpNodes = new Vector2[width];
             RefreshTiles();
         }
         public void Draw(SpriteBatch sp)
@@ -52,15 +55,24 @@ namespace Mors_Arcium
                     }
                 }
             }
+            for (int i = 0; i < jumpNodeCount; i++)
+            {
+                if (jumpNodes[i] != null)
+                {
+                    sp.Draw(tileset, jumpNodes[i], new Rectangle(32, 32, 16, 16), Color.FloralWhite * 0.5f);
+                }
+            }
         }
         public void RefreshTiles()
         {
+            jumpNodeCount = 0;
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    if (data[x, y] > -1 && data[x, y] < 11)
+                    if (data[x, y] > -1)
                     {
+
                         bool leftTile = false, rightTile = false, topTile = false, bottomTile = false, topLeftTile = false, topRightTile = false, bottomLeftTile = false, bottomRightTile = false;
                         if (x - 1 >= 0)
                         {
@@ -94,70 +106,73 @@ namespace Mors_Arcium
                         {
                             bottomTile = (data[x, y + 1] > -1) ? true : false;
                         }
-                        if (!topTile && !bottomTile && !rightTile && !leftTile)
+                        if (data[x, y] < 11)
                         {
-                            data[x, y] = -1;
+                            if (!topTile && !bottomTile && !rightTile && !leftTile)
+                            {
+                                data[x, y] = -1;
+                            }
+                            else
+                            {
+                                data[x, y] = 5;
+                                if (!topTile && leftTile && rightTile)
+                                {
+                                    data[x, y] = 1;
+                                }
+                                else if (!topTile && !leftTile && rightTile && bottomTile && (topRightTile || bottomLeftTile))
+                                {
+                                    data[x, y] = 0;
+                                }
+                                else if (!topTile && leftTile && !rightTile && bottomTile && (topLeftTile || bottomRightTile))
+                                {
+                                    data[x, y] = 2;
+                                }
+                                else if (!bottomTile && !leftTile && rightTile && topTile)
+                                {
+                                    data[x, y] = 6;
+                                }
+                                else if (!bottomTile && leftTile && !rightTile && topTile)
+                                {
+                                    data[x, y] = 7;
+                                }
+                                else if (!topRightTile && rightTile && topTile)
+                                {
+                                    data[x, y] = 3;
+                                }
+                                else if (!topLeftTile && leftTile && topTile)
+                                {
+                                    data[x, y] = 4;
+                                }
+                                else if (!topTile && !leftTile && !rightTile && bottomTile)
+                                {
+                                    data[x, y] = 1;
+                                }
+                                else if (!topTile && !leftTile && rightTile && !topRightTile && !bottomLeftTile)
+                                {
+                                    data[x, y] = 1;
+                                }
+                                else if (!topTile && leftTile && !rightTile && !topLeftTile && !bottomRightTile)
+                                {
+                                    data[x, y] = 1;
+                                }
+                                else if (!topTile && !leftTile && rightTile && !bottomTile && (topRightTile || bottomLeftTile))
+                                {
+                                    data[x, y] = 1;
+                                }
+                                else if (!topTile && leftTile && !rightTile && !bottomTile && (topLeftTile || bottomRightTile))
+                                {
+                                    data[x, y] = 1;
+                                }
+                            }
                         }
-                        else
+                        if (!topTile && (!leftTile || !rightTile))
                         {
-                            data[x, y] = 5;
-                            if (!topTile && leftTile && rightTile)
+                            if ((!leftTile && (!bottomLeftTile || !topRightTile)) || (!rightTile && (!bottomRightTile || !topLeftTile)))
                             {
-                                data[x, y] = 1;
-                            }
-                            else if (!topTile && !leftTile && rightTile && bottomTile && (topRightTile || bottomLeftTile) )
-                            {
-                                data[x, y] = 0;
-                            }
-                            else if (!topTile && leftTile && !rightTile && bottomTile && (topLeftTile || bottomRightTile))
-                            {
-                                data[x, y] = 2;
-                            }
-                            else if (!bottomTile && !leftTile && rightTile && topTile)
-                            {
-                                data[x, y] = 6;
-                            }
-                            else if (!bottomTile && leftTile && !rightTile && topTile)
-                            {
-                                data[x, y] = 7;
-                            }
-                            else if (!topRightTile && rightTile && topTile)
-                            {
-                                data[x, y] = 3;
-                            }
-                            else if (!topLeftTile && leftTile && topTile)
-                            {
-                                data[x, y] = 4;
-                            }
-                            else if (!topTile && !leftTile && !rightTile && bottomTile)
-                            {
-                                data[x, y] = 1;
-                            }
-                            else if (!topTile && !leftTile && rightTile && !topRightTile && !bottomLeftTile)
-                            {
-                                data[x, y] = 1;
-                            }
-                            else if (!topTile && leftTile && !rightTile && !topLeftTile && !bottomRightTile)
-                            {
-                                data[x, y] = 1;
-                            }
-                            else if (!topTile && !leftTile && rightTile && !bottomTile && (topRightTile || bottomLeftTile))
-                            {
-                                data[x, y] = 1;
-                            }
-                            else if (!topTile && leftTile && !rightTile && !bottomTile && (topLeftTile || bottomRightTile))
-                            {
-                                data[x, y] = 1;
+                                jumpNodes[jumpNodeCount] = new Vector2((x * 16), (y * 16));
+                                jumpNodeCount += 1;
                             }
                         }
-                        //if (x < width - 1)
-                       // {
-                        //    if (data[x, y] == 0 && data[x + 1, y] == 2)
-                       //     {
-                        //        data[x, y] = 1;
-                        //        data[x + 1, y] = 1;
-                        //    }
-                       // }
                     }
                 }
             }

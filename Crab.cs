@@ -23,7 +23,7 @@ namespace Mors_Arcium
             origin = new Vector2(8, 8);
             speed = initialSpeed;
             position = pos;
-            initSpd = initialSpeed;
+            initSpd = new Vector2(Math.Abs(initialSpeed.X), Math.Abs(initialSpeed.Y));
             owner = own;
         }
         public override void Update(GameTime gt)
@@ -32,11 +32,11 @@ namespace Mors_Arcium
             {
                 if (speed.X > 0.0f)
                 {
-                    speed.X = -Math.Abs(initSpd.X);
+                    speed.X = -initSpd.X;
                 }
                 else if (speed.X < 0.0f)
                 {
-                    speed.X = Math.Abs(initSpd.X);
+                    speed.X = initSpd.X;
                 }
             }
             speed.Y += 0.15f;
@@ -68,7 +68,7 @@ namespace Mors_Arcium
             if (timer < 0)
             {
                 game.RemoveEntity(this);
-                game.Explode(position.X, position.Y + 8.0f, 16f, 10);
+                game.Explode(position.X, position.Y + 8.0f, 24f, 10);
             }
         }
         public override void Draw(SpriteBatch sp)
@@ -79,7 +79,12 @@ namespace Mors_Arcium
         {
             if (perpetrator != owner && perpetrator.type == Gameplay.TYPE_PLAYER)
             {
-                timer = -1;
+                Player p = (Player)perpetrator;
+                if (p.deathTimer == 0)
+                {
+                    timer = -1;
+                }
+                p = null;
             }
         }
     }
