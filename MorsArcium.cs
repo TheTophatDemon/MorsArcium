@@ -9,9 +9,11 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Teach the AI to "Give Up"
-            // (Separate where they're going vs. Target)
+        //Balance running away somehow
 
+        //Implement other classes
+        //Teleportation for CPU's
+        //Cyber Cacti
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

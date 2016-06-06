@@ -34,7 +34,11 @@ namespace Mors_Arcium
         public int hurtTimer = 0;
 
         public Player target;
-        private string aiState = "";
+        protected string aiState = "chase";
+        protected int giveUpTimer = 0;
+        protected float lastX = 0.0f;
+        protected float runDistance;
+        protected float runOrigin;
 
         public static int[] PlayerCollisionMask = new int[] { Gameplay.TYPE_PROJECTILE, Gameplay.TYPE_PLAYER };
         public Player(Gameplay g) : base(g)
@@ -90,35 +94,175 @@ namespace Mors_Arcium
         {
             //yep. that's right. it's literally nothing. and it's not going to be anything, either. heh heh heh... ya get it?
         }
+        public virtual void CPUAttack()
+        {
+            walk = 0.0f;
+            if (target.position.X < position.X)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            else
+            {
+                spriteEffects = SpriteEffects.None;
+            }
+            Attack();
+            if (target.position.Y < position.Y)
+            {
+                aimDirection = -1;
+            }
+            else if (target.position.Y > position.Y + hitboxOffset.Y + hitboxSize.Y)
+            {
+                aimDirection = 1;
+            }
+            else
+            {
+                aimDirection = 0;
+            }
+            if (Math.Abs(target.position.X - position.X) > 160.0f)
+            {
+                aiState = "chase";
+            }
+        }
+        public virtual void CPUChase()
+        {
+            if (Vector2.Distance(target.position, position) < 96.0f && position.X < (game.tilemap.width * 16) - 64.0f && position.X > 64.0f)
+            {
+                aiState = "attack";
+            }
+            if (target.position.X < position.X)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            else
+            {
+                spriteEffects = SpriteEffects.None;
+            }
+            Walk();
+            if (position.X == lastX)
+            {
+                giveUpTimer += 1;
+                if (giveUpTimer > 100)
+                {
+                    giveUpTimer = 0;
+                    aiState = "run";
+                    runOrigin = position.X;
+
+                    if (spriteEffects == SpriteEffects.FlipHorizontally)
+                    {
+                        spriteEffects = SpriteEffects.None;
+                        runDistance = ((game.tilemap.width * 16) - 64) - position.X;
+                    }
+                    else
+                    {
+                        spriteEffects = SpriteEffects.FlipHorizontally;
+                        runDistance = position.X - 64.0f;
+                    }
+                }
+            }
+            else
+            {
+                giveUpTimer = 0;
+            }
+        }
+        public virtual void CPURun()
+        {
+            Walk();
+            if (Math.Abs(position.X - runOrigin) >= runDistance)
+            {
+                aiState = "chase";
+            }
+            if (position.X < 64.0f || position.X > (game.tilemap.width * 16) - 64.0f)
+            {
+                aiState = "run";
+                if (position.X < 64.0f)
+                {
+                    runOrigin = position.X;
+                    spriteEffects = SpriteEffects.None;
+                    runDistance = 64.0f;
+                }
+                else if (position.X > (game.tilemap.width * 16) - 64.0f)
+                {
+                    runOrigin = position.X;
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+                    runDistance = 64.0f;
+                }
+            }
+        }
+        public virtual void CPUDodge()
+        {
+            for (int i = 0; i < game.entities.GetLength(1); i++)
+            {
+                if (game.entities[Gameplay.TYPE_PROJECTILE, i] != null)
+                {
+                    Projectile p = (Projectile)game.entities[Gameplay.TYPE_PROJECTILE, i];
+                    if (p.owner != this)
+                    {
+                        if (Vector2.Distance(p.position, position) < p.dodgeDistance - game.game.random.Next(0, 14))
+                        {
+                            if (p.position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
+                            {
+                                Jump();
+                            }
+                            else
+                            {
+                                aiState = "run";
+                                runOrigin = position.X;
+                                runDistance = 64.0f;
+                                if (p.position.X > position.X)
+                                {
+                                    spriteEffects = SpriteEffects.None;
+                                }
+                                else
+                                {
+                                    spriteEffects = SpriteEffects.FlipHorizontally;
+                                }
+                            }
+                            p = null;
+                            break;
+                        }
+                    }
+                    p = null;
+                }
+            }
+        }
         public virtual void UpdateCPU()
         {
             if (target != null)
             {
-                if (target.position.X < position.X)
+                if (aiState == "chase")
                 {
-                    spriteEffects = SpriteEffects.FlipHorizontally;
+                    CPUChase();
                 }
-                else
+                else if (aiState == "run")
                 {
-                    spriteEffects = SpriteEffects.None;
+                    CPURun();
                 }
-                Walk();
-                for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
+                else if (aiState == "attack")
                 {
-                    if (position.X + hitboxOffset.X + hitboxSize.X > game.tilemap.jumpNodes[i].X - 24.0f && position.X + hitboxOffset.X - hitboxSize.X < game.tilemap.jumpNodes[i].X + 24.0f)
+                    CPUAttack();
+                }
+                //Jump at jump nodes
+                if (aiState == "run" || aiState == "chase")
+                {
+                    for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
                     {
-                        bool fnickel = false;
-                        if (position.Y + hitboxOffset.Y + hitboxSize.Y <= game.tilemap.jumpNodes[i].Y + 16)
+                        if (position.X + hitboxOffset.X + hitboxSize.X > game.tilemap.jumpNodes[i].X - 24.0f && position.X + hitboxOffset.X - hitboxSize.X < game.tilemap.jumpNodes[i].X + 24.0f)
                         {
-                            fnickel = true;
+                            bool fnickel = false;
+                            if (position.Y + hitboxOffset.Y - hitboxSize.Y <= game.tilemap.jumpNodes[i].Y + 16)
+                            {
+                                fnickel = true;
+                            }
+                            else if (target.position.Y < position.Y)
+                            {
+                                fnickel = true;
+                            }
+                            if (fnickel) Jump();
                         }
-                        else if (target.position.Y < position.Y)
-                        {
-                            fnickel = true;
-                        }
-                        if (fnickel) Jump();
                     }
                 }
+                //DODGE!!!!
+                CPUDodge();
             }
         }
         protected virtual void ChangeAnimationState(string st)
@@ -183,7 +327,11 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.A)) speed.X = -2.5f;
             if (Keyboard.GetState().IsKeyDown(Keys.D)) speed.X = 2.5f;
             if (Keyboard.GetState().IsKeyDown(Keys.W)) speed.Y = -2.5f;*/
-            
+            lastX = position.X;
+            if (target != null)
+            {
+                //Console.WriteLine("POOTIS");
+            }
             TryMove(speed);
             Animate();
             tryingToJump = false;
@@ -193,6 +341,12 @@ namespace Mors_Arcium
                 deathTimer = 1;
                 ChangeAnimationState("dead");
             }
+            if (position.Y + hitboxOffset.Y - hitboxSize.Y - 128 > game.tilemap.height * 16 && deathTimer == 0)
+            {
+                health = 0;
+                deathTimer = 99;
+                Console.WriteLine("THIS IS MADNESS!");
+            }
             if (deathTimer >= 1)
             {
                 deathTimer += 1;
@@ -200,7 +354,14 @@ namespace Mors_Arcium
                 {
                     dead = true;
                     game.Explode(position.X, position.Y, 16f, 15);
-                    game.RemoveEntity(this);
+                    for(int i = 0; i < 5; i++)
+                    {
+                        Particle p = new Particle(game, position, new Vector2(((float)game.game.random.NextDouble() * 5f) - 2.5f, -((float)game.game.random.NextDouble() * 2.5f) - 1.5f), 100, 8, 3);
+                        p.baseX = game.game.random.Next(9, 13) * 8;
+                        game.AddParticle(p);
+                        p = null;
+                    }
+                    killMe = true;
                 }
             }
         }
@@ -213,12 +374,23 @@ namespace Mors_Arcium
         }
         public void Damage(int amount)
         {
-            health -= amount;
-            hurtTimer = 30;
+            if (hurtTimer == 0)
+            {
+                health -= amount;
+                hurtTimer = 30;
+            }
         }
         public override void Collide(Entity perpetrator)
         {
-            
+            if (perpetrator is Projectile)
+            {
+                Projectile p = (Projectile)perpetrator;
+                if (p.owner != this)
+                {
+                    target = (Player)p.owner;
+                }
+                p = null;
+            }
         }
         private void Animate()
         {

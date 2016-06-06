@@ -33,7 +33,7 @@ namespace Mors_Arcium
         public Player player;
         public float fadeIn;
         public float fadeOut;
-        public int numCPUs = 5;
+        public int numCPUs = 10;
 
         public Gameplay(MorsArcium g)
         {
@@ -44,7 +44,7 @@ namespace Mors_Arcium
             deathThingy = new Vector2(100, 240);
             entities = new Entity[8, 128];
             particles = new Particle[128];
-            tilemap = new Tilemap(this, game.textures[5], 78, 24);
+            tilemap = new Tilemap(this, game.textures[5], 197, 24);
             player = new MrBPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             for (int i = 0; i < numCPUs; i++)
@@ -63,6 +63,7 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
             if (!player.dead)
             {
+                if (Keyboard.GetState().IsKeyDown(Keys.U)) player.health += 5;
                 if (Keyboard.GetState().IsKeyDown(game.JUMP))
                 {
                     player.Jump();
@@ -117,6 +118,10 @@ namespace Mors_Arcium
                             p = null;
                         }
                         entities[x, y].Update(gt);
+                        if (entities[x, y].killMe)
+                        {
+                            RemoveEntity(entities[x, y]);
+                        }
                     }
                 }
             }

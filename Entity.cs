@@ -23,6 +23,7 @@ namespace Mors_Arcium
         public int index;
         public Vector2 hitboxSize;
         public Vector2 hitboxOffset;
+        public bool killMe = false;
 
         protected Animation animation;
         protected int anim = 0;

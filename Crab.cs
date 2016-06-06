@@ -5,14 +5,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Mors_Arcium
 {
-    public class Crab : Entity
+    public class Crab : Projectile
     {
         Vector2 initSpd;
         Vector2 lastPos;
         float timer = 100;
         public static int[] CrabCollisionMask = new int[] { Gameplay.TYPE_PLAYER };
-        Player owner;
-        public Crab(Gameplay g, Vector2 pos, Vector2 initialSpeed, Player own) : base(g)
+        public Crab(Gameplay g, Vector2 pos, Vector2 initialSpeed, Entity own) : base(g, own)
         {
             collisionMask = CrabCollisionMask;
             texture = g.game.textures[3];
@@ -25,6 +24,7 @@ namespace Mors_Arcium
             position = pos;
             initSpd = new Vector2(Math.Abs(initialSpeed.X), Math.Abs(initialSpeed.Y));
             owner = own;
+            dodgeDistance = 32.0f;
         }
         public override void Update(GameTime gt)
         {
@@ -65,10 +65,11 @@ namespace Mors_Arcium
                 }
             }
             timer -= 1;
-            if (timer < 0)
+            if (timer == 0)
             {
-                game.RemoveEntity(this);
+                timer -= 1;
                 game.Explode(position.X, position.Y + 8.0f, 24f, 10);
+                killMe = true;
             }
         }
         public override void Draw(SpriteBatch sp)
@@ -82,7 +83,7 @@ namespace Mors_Arcium
                 Player p = (Player)perpetrator;
                 if (p.deathTimer == 0)
                 {
-                    timer = -1;
+                    timer = 1;
                 }
                 p = null;
             }

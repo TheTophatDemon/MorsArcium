@@ -39,6 +39,7 @@ namespace Mors_Arcium
             }
             jumpNodes = new Vector2[width];
             RefreshTiles();
+            RefreshTiles(); //Fix jumpin off cliffs and walking into walls
         }
         public void Draw(SpriteBatch sp)
         {
@@ -55,13 +56,13 @@ namespace Mors_Arcium
                     }
                 }
             }
-            for (int i = 0; i < jumpNodeCount; i++)
+            /*for (int i = 0; i < jumpNodeCount; i++)
             {
                 if (jumpNodes[i] != null)
                 {
                     sp.Draw(tileset, jumpNodes[i], new Rectangle(32, 32, 16, 16), Color.FloralWhite * 0.5f);
                 }
-            }
+            }*/
         }
         public void RefreshTiles()
         {

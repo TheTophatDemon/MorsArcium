@@ -15,8 +15,9 @@ namespace Mors_Arcium
         private int numFrames;
         private Rectangle rect;
         private Gameplay game;
-        private int baseX, baseY;
+        public int baseX, baseY;
         public bool killMe = false; //Later...
+        public int particleType;
         public Particle(Gameplay g, Vector2 pos, Vector2 vel, float anmSpd, int sz, int type)
         {
             game = g;
@@ -24,6 +25,7 @@ namespace Mors_Arcium
             velocity = vel;
             animSpeed = anmSpd;
             size = sz;
+            particleType = type;
             switch (type)
             {
                 case 0: //Mr./b/'s eye flash thing
@@ -41,11 +43,19 @@ namespace Mors_Arcium
                     baseX = 0;
                     baseY = 8;
                     break;
+                case 3: //Gore
+                    numFrames = 1;
+                    break;
             }
             rect = new Rectangle(baseX, baseY, size, size);
         }
         public void Update(GameTime gt)
         {
+            if (particleType == 3)
+            {
+                velocity.Y += 0.178f;
+                rect.X = baseX + (frame * size);
+            }
             position += velocity;
             anim += 1;
             if (anim > animSpeed)

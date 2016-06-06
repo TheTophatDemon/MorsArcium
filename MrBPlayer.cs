@@ -18,7 +18,7 @@ namespace Mors_Arcium
         Particle eyeFlash;
         static Vector2 flashOffset = new Vector2(-7, -7);
         static Vector2 flashOffset2 = new Vector2(-2, -7);
-        bool teleporting = false;
+        bool desperate = false;
         public MrBPlayer(Gameplay g) : base(g)
         {
 
@@ -56,7 +56,38 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
-            //if (Keyboard.GetState().IsKeyDown(Keys.T)) health -= 1;
+            if (health < 20 && aiState == "attack" && target != null && !desperate)
+            {
+                
+                if (Math.Abs(target.position.X - position.X) > 176.0f)
+                {
+                    aiState = "chase";
+                }
+                else
+                {
+                    if (position.X < 64.0f || position.X > (game.tilemap.width * 16) - 64.0f)
+                    {
+                        desperate = true;
+                        aiState = "attack";
+                        
+                    }
+                    else
+                    {
+                        aiState = "run";
+                        runOrigin = position.X;
+                        if (target.position.X > position.X)
+                        {
+                            runDistance = 300;
+                            spriteEffects = SpriteEffects.FlipHorizontally;
+                        }
+                        else if (target.position.X < position.X)
+                        {
+                            runDistance = 300;
+                            spriteEffects = SpriteEffects.None;
+                        }
+                    }
+                }
+            }
             if (animationState == "teleport")
             {
                 walk = 0.0f;
@@ -95,6 +126,7 @@ namespace Mors_Arcium
                 }
             }
             base.Update(gt);
+            
             if (eyeFlash != null)
             {
                 if (eyeFlash.killMe)
@@ -138,10 +170,9 @@ namespace Mors_Arcium
         }
         public override void Special()
         {
-            if (magic >= 50 && animationState != "teleport")
+            if (magic >= 50 && animationState != "teleport" && deathTimer == 0)
             {
                 magic -= 50;
-                teleporting = true;
                 ChangeAnimationState("teleport");
             }
         }
