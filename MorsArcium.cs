@@ -9,11 +9,10 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //Balance running away somehow
-
         //Implement other classes
-        //Teleportation for CPU's
-        //Cyber Cacti
+        //Android Controls
+        //CPU Idle state
+        //Pausing
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -69,13 +68,14 @@ namespace Mors_Arcium
 
             textures = new Texture2D[512];
 
-            LoadTexture("Content/textures/characters.png", 0); //0
-            LoadTexture("Content/textures/hud.png", 2);        //2
-            LoadTexture("Content/textures/projectiles.png", 3);//3
-            LoadTexture("Content/textures/buttons.png", 4);    //4
-            LoadTexture("Content/textures/tileset.png", 5);    //5
-            LoadTexture("Content/textures/hitbox.png", 6);     //6
-            LoadTexture("Content/textures/particles.png", 7);  //7
+            LoadTexture("Content/textures/characters.png", 0);
+            LoadTexture("Content/textures/hud.png", 2);        
+            LoadTexture("Content/textures/projectiles.png", 3);
+            LoadTexture("Content/textures/buttons.png", 4);    
+            LoadTexture("Content/textures/tileset.png", 5);    
+            LoadTexture("Content/textures/hitbox.png", 6);    
+            LoadTexture("Content/textures/particles.png", 7);  
+            LoadTexture("Content/textures/misc.png", 8); 
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);

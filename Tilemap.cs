@@ -29,12 +29,20 @@ namespace Mors_Arcium
             }
             float offset = (float)game.game.random.NextDouble() * 100.0f;
             int hh = 0;
+            //int phh = 0;
             for (int x = 0; x < w; x++)
             {
+                //phh = hh;
                 hh = (int)Math.Floor(Noise.Generate((x * 0.0625f) + offset) * 10f);
                 for (int y = (height / 2) + hh; y < height; y++)
                 {
                     data[x, y] = 5;
+                }
+                if (g.game.random.Next(0, 10) == 1)
+                {
+                    Prop p = new Prop(game, Prop.cyberCactus, new Vector2(x * 16, ((height / 2) + hh - 2) * 16));
+                    g.AddEntity(p);
+                    p = null;
                 }
             }
             jumpNodes = new Vector2[width];

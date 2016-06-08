@@ -88,6 +88,16 @@ namespace Mors_Arcium
                     }
                 }
             }
+            if (position.X < 0.0f)
+            {
+                spriteEffects = SpriteEffects.None;
+                Special();
+            }
+            else if (position.X > game.tilemap.width * 16)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+                Special();
+            }
             if (animationState == "teleport")
             {
                 walk = 0.0f;
@@ -255,6 +265,44 @@ namespace Mors_Arcium
                 case "dead":
                     animation = deathAnimation;
                     break;
+            }
+        }
+        public override void CPUDodge()
+        {
+            for (int i = 0; i < game.entities.GetLength(1); i++)
+            {
+                if (game.entities[Gameplay.TYPE_PROJECTILE, i] != null)
+                {
+                    Projectile p = (Projectile)game.entities[Gameplay.TYPE_PROJECTILE, i];
+                    if (p.owner != this)
+                    {
+                        if (Vector2.Distance(p.position, position) < p.dodgeDistance - game.game.random.Next(0, 14))
+                        {
+                            if (p.position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
+                            {
+                                Jump();
+                            }
+                            else
+                            {
+                                aiState = "run";
+                                runOrigin = position.X;
+                                runDistance = 64.0f;
+                                if (p.position.X > position.X)
+                                {
+                                    spriteEffects = SpriteEffects.None;
+                                }
+                                else
+                                {
+                                    spriteEffects = SpriteEffects.FlipHorizontally;
+                                }
+                                Special();
+                            }
+                            p = null;
+                            break;
+                        }
+                    }
+                    p = null;
+                }
             }
         }
     }

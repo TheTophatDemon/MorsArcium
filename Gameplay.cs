@@ -8,8 +8,10 @@ namespace Mors_Arcium
 {
     public class Gameplay
     {
-        public const int TYPE_PLAYER = 0;
-        public const int TYPE_PROJECTILE = 1;
+        public const int TYPE_PLAYER = 7;
+        public const int TYPE_PROJECTILE = 5;
+        public const int TYPE_PROP = 1;
+        public const int TYPE_ITEM = 3;
 
         public Vector2 cameraPosition;
         public float cameraRotation;
@@ -34,6 +36,11 @@ namespace Mors_Arcium
         public float fadeIn;
         public float fadeOut;
         public int numCPUs = 10;
+        public int numPlayers = 11;
+        public int wave = 0;
+        public int waveTimer = 0;
+        private float waveAlpha = 0.0f;
+        private int healthPackTimer = 500;
 
         public Gameplay(MorsArcium g)
         {
@@ -57,13 +64,43 @@ namespace Mors_Arcium
             AddEntity(player);
             fadeOut = 0f;
             fadeIn = 1.0f;
+            wave = 0;
+            waveTimer = 0;
+            waveAlpha = 0.0f;
+            numPlayers = numCPUs + 1;
         }
         public void Update(GameTime gt)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
             if (!player.dead)
             {
+#if DEBUG
                 if (Keyboard.GetState().IsKeyDown(Keys.U)) player.health += 5;
+                if (Keyboard.GetState().IsKeyDown(Keys.T))
+                {
+                    for (int i = 0; i < entities.GetLength(1); i++)
+                    {
+                        if (entities[TYPE_PLAYER, i] != null)
+                        {
+                            Player p = (Player)entities[TYPE_PLAYER, i];
+                            p.target = player;
+                            p = null;
+                        }
+                    }
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Y))
+                {
+                    for (int i = 0; i < entities.GetLength(1); i++)
+                    {
+                        if (entities[TYPE_PLAYER, i] != null && entities[TYPE_PLAYER, i] != player)
+                        {
+                            Player p = (Player)entities[TYPE_PLAYER, i];
+                            p.health = 0;
+                            p = null;
+                        }
+                    }
+                }
+#endif
                 if (Keyboard.GetState().IsKeyDown(game.JUMP))
                 {
                     player.Jump();
@@ -105,6 +142,15 @@ namespace Mors_Arcium
                 if (deathThingy.Y < 73) deathThingy.Y = 72;
                 player.deathTimer += 1;
             }
+            if (healthPackTimer > 0)
+            {
+                healthPackTimer -= 1;
+                if (healthPackTimer == 0)
+                {
+                    AddEntity(new HealthPack(this, new Vector2(game.random.Next(0, tilemap.width * 16), -64.0f)));
+                    healthPackTimer = game.random.Next(250, 1000);
+                }
+            }
             for (int x = 0; x < entities.GetLength(0); x++)
             {
                 for (int y = 0; y < entities.GetLength(1); y++)
@@ -118,6 +164,27 @@ namespace Mors_Arcium
                             p = null;
                         }
                         entities[x, y].Update(gt);
+                        if (entities[x, y].collisions)
+                        {
+                            for (int i = 0; i < entities[x, y].collisionMask.Length; i++)
+                            {
+                                int type = entities[x, y].collisionMask[i];
+                                for (int j = 0; j < entities.GetLength(1); j++)
+                                {
+                                    if (entities[type, j] != entities[x, y] && entities[type, j] != null)
+                                    {
+                                        if (entities[x, y].position.X + entities[x, y].hitboxSize.X + entities[x, y].hitboxOffset.X > entities[type, j].position.X - entities[type, j].hitboxSize.X + entities[type, j].hitboxOffset.X
+                                            && entities[x, y].position.X - entities[x, y].hitboxSize.X + entities[x, y].hitboxOffset.X < entities[type, j].position.X + entities[type, j].hitboxSize.X + entities[type, j].hitboxOffset.X
+                                            && entities[x, y].position.Y + entities[x, y].hitboxSize.Y + entities[x, y].hitboxOffset.Y > entities[type, j].position.Y - entities[type, j].hitboxSize.Y + entities[type, j].hitboxOffset.Y
+                                            && entities[x, y].position.Y - entities[x, y].hitboxSize.Y + entities[x, y].hitboxOffset.Y < entities[type, j].position.Y + entities[type, j].hitboxSize.Y + entities[type, j].hitboxOffset.Y
+                                        )
+                                        {
+                                            entities[x, y].Collide(entities[type, j]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if (entities[x, y].killMe)
                         {
                             RemoveEntity(entities[x, y]);
@@ -125,18 +192,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.T))
-            {
-                for (int i = 0; i < entities.GetLength(1); i++)
-                {
-                    if (entities[TYPE_PLAYER, i] != null)
-                    {
-                        Player p = (Player)entities[TYPE_PLAYER, i];
-                        p.target = player;
-                        p = null;
-                    }
-                }
-            }
+            
             for (int i = 0; i < particles.Length; i++)
             {
                 if (particles[i] != null)
@@ -166,6 +222,31 @@ namespace Mors_Arcium
                 terrainModified = false;
                 tilemap.RefreshTiles();
             }
+            if (player.deathTimer == 0 && numPlayers == 1 && waveTimer == 0)
+            {
+                wave += 1;
+                waveTimer = 200;
+            }
+
+            if (waveTimer > 0)
+            {
+                waveTimer -= 1;
+                if (waveTimer == 0)
+                {
+                    for (int i = 0; i < numCPUs; i++)
+                    {
+                        MrBPlayer p = new MrBPlayer(this);
+                        p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                        AddEntity(p);
+                        p = null;
+                        numPlayers += 1;
+                    }
+                }
+            }
+            if (player.deathTimer > 200)
+            {
+                Initialize();
+            }
             if (time == DateTime.Now.Second)
             {
                 ticks += 1;
@@ -175,10 +256,6 @@ namespace Mors_Arcium
                 fps = ticks;
                 ticks = 0;
                 time = DateTime.Now.Second;
-            }
-            if (player.deathTimer > 200)
-            {
-                Initialize();
             }
         }
         public void Draw(SpriteBatch sp)
@@ -195,24 +272,7 @@ namespace Mors_Arcium
 #if DEBUG
                         //sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
 #endif
-                        for (int i = 0; i < entities[x, y].collisionMask.Length; i++)
-                        {
-                            int type = entities[x, y].collisionMask[i];
-                            for (int j = 0; j < entities.GetLength(1); j++)
-                            {
-                                if (entities[type, j] != entities[x, y] && entities[type, j] != null)
-                                {
-                                    if (entities[x, y].position.X + entities[x, y].hitboxSize.X + entities[x, y].hitboxOffset.X > entities[type, j].position.X - entities[type, j].hitboxSize.X + entities[type, j].hitboxOffset.X
-                                        && entities[x, y].position.X - entities[x, y].hitboxSize.X + entities[x, y].hitboxOffset.X < entities[type, j].position.X + entities[type, j].hitboxSize.X + entities[type, j].hitboxOffset.X
-                                        && entities[x, y].position.Y + entities[x, y].hitboxSize.Y + entities[x, y].hitboxOffset.Y > entities[type, j].position.Y - entities[type, j].hitboxSize.Y + entities[type, j].hitboxOffset.Y
-                                        && entities[x, y].position.Y - entities[x, y].hitboxSize.Y + entities[x, y].hitboxOffset.Y < entities[type, j].position.Y + entities[type, j].hitboxSize.Y + entities[type, j].hitboxOffset.Y
-                                    )
-                                    {
-                                        entities[x, y].Collide(entities[type, j]);
-                                    }
-                                }
-                            }
-                        }
+                        
                     }
                 }
             }
@@ -227,6 +287,19 @@ namespace Mors_Arcium
             sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
             sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), hbRect, Color.White);
             sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), mbRect, Color.White);
+            sp.DrawString(game.font1, "WAVE " + wave, new Vector2(240, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
+            if (waveTimer > 0)
+            {
+                if (waveTimer >= 190)
+                {
+                    waveAlpha += 0.1f;
+                }
+                else if (waveTimer <= 10)
+                {
+                    waveAlpha -= 0.1f;
+                }
+                sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+            }
             if (player.dead)
             {
                 sp.Draw(game.textures[2], deathThingy, deathThingyRect, Color.White);

@@ -33,7 +33,7 @@ namespace Mors_Arcium
 
         public int hurtTimer = 0;
 
-        public Player target;
+        public Entity target;
         protected string aiState = "chase";
         protected int giveUpTimer = 0;
         protected float lastX = 0.0f;
@@ -223,6 +223,16 @@ namespace Mors_Arcium
                     }
                     p = null;
                 }
+                else if (game.entities[Gameplay.TYPE_ITEM, i] != null)
+                {
+                    if (game.entities[Gameplay.TYPE_ITEM, i] is HealthPack)
+                    {
+                        if (Math.Abs(game.entities[Gameplay.TYPE_ITEM, i].position.X - position.X) < 160 && aiState != "attack" && health < maxHealth / 2)
+                        {
+                            target = game.entities[Gameplay.TYPE_ITEM, i];
+                        }
+                    }
+                }
             }
         }
         public virtual void UpdateCPU()
@@ -263,6 +273,16 @@ namespace Mors_Arcium
                 }
                 //DODGE!!!!
                 CPUDodge();
+                if (target is Player)
+                {
+                    Player p = (Player)target;
+                    if (p.deathTimer != 0)
+                    {
+                        target = null;
+                    }
+                    p = null;
+                }
+                
             }
         }
         protected virtual void ChangeAnimationState(string st)
@@ -362,6 +382,7 @@ namespace Mors_Arcium
                         p = null;
                     }
                     killMe = true;
+                    game.numPlayers -= 1;
                 }
             }
         }

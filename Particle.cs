@@ -18,6 +18,7 @@ namespace Mors_Arcium
         public int baseX, baseY;
         public bool killMe = false; //Later...
         public int particleType;
+        private float alpha = 1.0f;
         public Particle(Gameplay g, Vector2 pos, Vector2 vel, float anmSpd, int sz, int type)
         {
             game = g;
@@ -46,6 +47,11 @@ namespace Mors_Arcium
                 case 3: //Gore
                     numFrames = 1;
                     break;
+                case 4: //Health
+                    numFrames = 1;
+                    baseX = (14 + g.game.random.Next(0, 2)) * 8;
+                    baseY = 0;
+                    break;
             }
             rect = new Rectangle(baseX, baseY, size, size);
         }
@@ -54,7 +60,14 @@ namespace Mors_Arcium
             if (particleType == 3)
             {
                 velocity.Y += 0.178f;
+            }
+            if (particleType == 3 || particleType == 4)
+            {
                 rect.X = baseX + (frame * size);
+            }
+            if (particleType == 4 && anim > 15)
+            {
+                alpha -= 0.1f;
             }
             position += velocity;
             anim += 1;
@@ -72,7 +85,7 @@ namespace Mors_Arcium
         }
         public void Draw(SpriteBatch sp)
         {
-            sp.Draw(game.game.textures[7], position, rect, Color.White);
+            sp.Draw(game.game.textures[7], position, rect, Color.White * alpha);
         }
     }
 }
