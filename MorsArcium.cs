@@ -11,8 +11,9 @@ namespace Mors_Arcium
     {
         //Implement other classes
         //Android Controls
-        //CPU Idle state
-        //Pausing
+        //Joystick Controls?
+        //Wizard Bullets
+        //Bullet shells
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -35,9 +36,10 @@ namespace Mors_Arcium
 
         public float scaleFactor = 1.0f;
 
-        private bool pause = false;
+        public bool pause = false;
         private bool skip = false;
         private bool henry = false;
+        private bool grecc = false;
         Rectangle thing;
         public MorsArcium()
         {
@@ -93,6 +95,12 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.I)) pause = false;
             henry = Keyboard.GetState().IsKeyDown(Keys.O);
 #endif
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) && !grecc)
+            {
+                pause = !pause;
+            }
+            grecc = Keyboard.GetState().IsKeyDown(Keys.Enter);
+            
             if (!pause || skip)
             {
                 game.Update(gameTime);

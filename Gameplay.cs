@@ -31,6 +31,7 @@ namespace Mors_Arcium
         Rectangle hbRect = new Rectangle(0, 97, 1, 1);
         Rectangle mbRect = new Rectangle(0, 98, 1, 1);
         Rectangle mbhbRect = new Rectangle(0, 0, 117, 32);
+        Rectangle pauseThingyRect = new Rectangle(0, 99, 124, 25);
 
         public Player player;
         public float fadeIn;
@@ -52,7 +53,7 @@ namespace Mors_Arcium
             entities = new Entity[8, 128];
             particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
-            player = new MrBPlayer(this);
+            player = new WizardPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             for (int i = 0; i < numCPUs; i++)
             {
@@ -318,6 +319,10 @@ namespace Mors_Arcium
             {
                 fadeIn -= 0.025f;
                 sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * fadeIn);
+            }
+            if (game.pause)
+            {
+                sp.Draw(game.textures[2], new Vector2(100, 72), pauseThingyRect, Color.White);
             }
             sp.End();
         }

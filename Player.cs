@@ -12,6 +12,7 @@ namespace Mors_Arcium
         public int health = 100;
         public int magic = 100;
         public SpriteEffects spriteEffects;
+        protected int sheetOffset;
 
         protected float gravity = 0.0f;
         protected float jump = 0.0f;
@@ -110,7 +111,7 @@ namespace Mors_Arcium
             {
                 aimDirection = -1;
             }
-            else if (target.position.Y > position.Y + hitboxOffset.Y + hitboxSize.Y)
+            else if (target.position.Y > position.Y)// + hitboxOffset.Y + hitboxSize.Y
             {
                 aimDirection = 1;
             }
@@ -125,7 +126,7 @@ namespace Mors_Arcium
         }
         public virtual void CPUChase()
         {
-            if (Vector2.Distance(target.position, position) < 96.0f && position.X < (game.tilemap.width * 16) - 64.0f && position.X > 64.0f)
+            if (Vector2.Distance(target.position, position) < 96.0f && position.X < (game.tilemap.width * 16) - 64.0f && position.X > 64.0f && target is Player)
             {
                 aiState = "attack";
             }
@@ -230,6 +231,7 @@ namespace Mors_Arcium
                         if (Math.Abs(game.entities[Gameplay.TYPE_ITEM, i].position.X - position.X) < 160 && aiState != "attack" && health < maxHealth / 2)
                         {
                             target = game.entities[Gameplay.TYPE_ITEM, i];
+                            aiState = "chase";
                         }
                     }
                 }
@@ -251,26 +253,7 @@ namespace Mors_Arcium
                 {
                     CPUAttack();
                 }
-                //Jump at jump nodes
-                if (aiState == "run" || aiState == "chase")
-                {
-                    for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
-                    {
-                        if (position.X + hitboxOffset.X + hitboxSize.X > game.tilemap.jumpNodes[i].X - 24.0f && position.X + hitboxOffset.X - hitboxSize.X < game.tilemap.jumpNodes[i].X + 24.0f)
-                        {
-                            bool fnickel = false;
-                            if (position.Y + hitboxOffset.Y - hitboxSize.Y <= game.tilemap.jumpNodes[i].Y + 16)
-                            {
-                                fnickel = true;
-                            }
-                            else if (target.position.Y < position.Y)
-                            {
-                                fnickel = true;
-                            }
-                            if (fnickel) Jump();
-                        }
-                    }
-                }
+                
                 //DODGE!!!!
                 CPUDodge();
                 if (target is Player)
@@ -282,7 +265,57 @@ namespace Mors_Arcium
                     }
                     p = null;
                 }
-                
+
+            }
+            else
+            {
+                Walk();
+                if (position.X < 64.0f)
+                {
+                    spriteEffects = SpriteEffects.None;
+                }
+                else if (position.X > (game.tilemap.width - 4) * 16)
+                {
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+                }
+                for (int i = 0; i < game.entities.GetLength(1); i++)
+                {
+                    if (game.entities[Gameplay.TYPE_PLAYER, i] != null && game.entities[Gameplay.TYPE_PLAYER, i] != this)
+                    {
+                        if (Math.Abs(game.entities[Gameplay.TYPE_PLAYER, i].position.X - position.X) < 160)
+                        {
+                            target = game.entities[Gameplay.TYPE_PLAYER, i];
+                            break;
+                        }
+                    }
+                }
+            }
+            //Jump at jump nodes
+            if (aiState == "run" || aiState == "chase")
+            {
+                for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
+                {
+                    if (position.X + hitboxOffset.X + hitboxSize.X > game.tilemap.jumpNodes[i].X - 24.0f && position.X + hitboxOffset.X - hitboxSize.X < game.tilemap.jumpNodes[i].X + 24.0f)
+                    {
+                        bool fnickel = false;
+                        if (target != null)
+                        {
+                            if (position.Y + hitboxOffset.Y - hitboxSize.Y <= game.tilemap.jumpNodes[i].Y + 16)
+                            {
+                                fnickel = true;
+                            }
+                            else if (target.position.Y < position.Y)
+                            {
+                                fnickel = true;
+                            }
+                        }
+                        else
+                        {
+                            fnickel = true;
+                        }
+                        if (fnickel) Jump();
+                    }
+                }
             }
         }
         protected virtual void ChangeAnimationState(string st)
@@ -304,7 +337,7 @@ namespace Mors_Arcium
             if (hurtTimer > 0) hurtTimer -= 1;
             UpdateAnimationState();
             if (cooldown > 0) cooldown -= 1;
-            if (cooldown < attackSpeed - 20) attacking = false;
+            if (cooldown < attackSpeed - 20 || cooldown == 0) attacking = false;
             if (magic < maxMagic) magic += 1;
             walk *= 0.9f;
             if (Math.Abs(walk) < 0.1f) walk = 0.0f;
@@ -437,7 +470,8 @@ namespace Mors_Arcium
                 }
                 //if (frame != lastFrame)
                 //{
-                    sourceRect.X = animation.frames[frame] * 32;
+                    sourceRect.X = (animation.frames[frame] % (texture.Width / 32)) * 32;
+                    sourceRect.Y = sheetOffset;
                 //}
                 //lastFrame = frame;
             }
