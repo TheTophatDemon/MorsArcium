@@ -12,8 +12,9 @@ namespace Mors_Arcium
         //Implement other classes
         //Android Controls
         //Joystick Controls?
-        //Wizard Bullets
-        //Bullet shells
+        //Wizard Shield (Or maybe lightning instead?)
+        //Nerf the Wizard
+        //Become who you kill
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

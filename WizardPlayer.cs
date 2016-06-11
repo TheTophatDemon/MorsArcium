@@ -22,12 +22,12 @@ namespace Mors_Arcium
         Animation deathAnimation;
         public WizardPlayer(Gameplay g) : base(g)
         {
-            attackSpeed = 5;
-            maxHealth = 150;
+            attackSpeed = 10;
+            maxHealth = 100;
             maxMagic = 150;
-            health = 150;
+            health = 100;
             magic = 150;
-            walkSpeed = 2.2f;
+            walkSpeed = 2.0f;
             jumpHeight = 4.5f;
             //29 + frame
             idleAnimation.frames = new int[] { 0, 1 };
@@ -67,6 +67,14 @@ namespace Mors_Arcium
             {
                 attacking = true;
                 cooldown = attackSpeed;
+                float spdx = 8.0f;
+                if (spriteEffects == SpriteEffects.FlipHorizontally) spdx = -8.0f;
+                Bullet b = new Bullet(game, position + new Vector2(spdx * 1.25f, (aimDirection * 8.0f) + 4), new Vector2(spdx, aimDirection * 8), this);
+                game.AddEntity(b);
+                b = null;
+                Particle p = new Particle(game, position, new Vector2(((float)game.game.random.NextDouble() * 2.5f) * -Math.Sign(spdx), -0.5f), 100, 8, 5);
+                game.AddParticle(p);
+                p = null;
             }
         }
         protected override void ChangeAnimationState(string st)
@@ -98,11 +106,11 @@ namespace Mors_Arcium
                     animation = jumpAnimation;
                     break;
                 case "attack":
-                    if (aimDirection == 1)
+                    if (aimDirection == -1)
                     {
                         animation = attackUpAnimation;
                     }
-                    else if (aimDirection == -1)
+                    else if (aimDirection == 1)
                     {
                         animation = attackDownAnimation;
                     }
@@ -112,11 +120,11 @@ namespace Mors_Arcium
                     }
                     break;
                 case "walk_attack":
-                    if (aimDirection == 1)
+                    if (aimDirection == -1)
                     {
                         animation = walkAttackUpAnimation;
                     }
-                    else if (aimDirection == -1)
+                    else if (aimDirection == 1)
                     {
                         animation = walkAttackDownAnimation;
                     }
@@ -126,11 +134,11 @@ namespace Mors_Arcium
                     }
                     break;
                 case "jump_attack":
-                    if (aimDirection == 1)
+                    if (aimDirection == -1)
                     {
                         animation = jumpAttackUpAnimation;
                     }
-                    else if (aimDirection == -1)
+                    else if (aimDirection == 1)
                     {
                         animation = jumpAttackDownAnimation;
                     }

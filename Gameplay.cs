@@ -55,19 +55,36 @@ namespace Mors_Arcium
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
             player = new WizardPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
-            for (int i = 0; i < numCPUs; i++)
-            {
-                MrBPlayer p = new MrBPlayer(this);
-                p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                AddEntity(p);
-                p = null;
-            }
+            SpawnEnemies();
             AddEntity(player);
             fadeOut = 0f;
             fadeIn = 1.0f;
             wave = 0;
             waveTimer = 0;
             waveAlpha = 0.0f;
+            numPlayers = numCPUs + 1;
+        }
+        private void SpawnEnemies()
+        {
+            for (int i = 0; i < numCPUs; i++)
+            {
+                int t = game.random.Next(0, 2);
+                switch (t)
+                {
+                    case 0:
+                        MrBPlayer p = new MrBPlayer(this);
+                        p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                        AddEntity(p);
+                        p = null;
+                        break;
+                    case 1:
+                        WizardPlayer w = new WizardPlayer(this);
+                        w.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                        AddEntity(w);
+                        w = null;
+                        break;
+                }
+            }
             numPlayers = numCPUs + 1;
         }
         public void Update(GameTime gt)
@@ -118,11 +135,11 @@ namespace Mors_Arcium
                 }
                 if (Keyboard.GetState().IsKeyDown(game.UP))
                 {
-                    player.aimDirection = 1;
+                    player.aimDirection = -1;
                 }
                 else if (Keyboard.GetState().IsKeyDown(game.DOWN))
                 {
-                    player.aimDirection = -1;
+                    player.aimDirection = 1;
                 }
                 else
                 {
@@ -234,14 +251,7 @@ namespace Mors_Arcium
                 waveTimer -= 1;
                 if (waveTimer == 0)
                 {
-                    for (int i = 0; i < numCPUs; i++)
-                    {
-                        MrBPlayer p = new MrBPlayer(this);
-                        p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                        AddEntity(p);
-                        p = null;
-                        numPlayers += 1;
-                    }
+                    SpawnEnemies();
                 }
             }
             if (player.deathTimer > 200)

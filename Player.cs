@@ -107,11 +107,11 @@ namespace Mors_Arcium
                 spriteEffects = SpriteEffects.None;
             }
             Attack();
-            if (target.position.Y < position.Y)
+            if (target.position.Y + target.hitboxOffset.Y + target.hitboxSize.Y < position.Y)
             {
                 aimDirection = -1;
             }
-            else if (target.position.Y > position.Y)// + hitboxOffset.Y + hitboxSize.Y
+            else if (target.position.Y + target.hitboxOffset.Y - target.hitboxSize.Y > position.Y)// + hitboxOffset.Y + hitboxSize.Y
             {
                 aimDirection = 1;
             }

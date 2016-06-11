@@ -52,20 +52,25 @@ namespace Mors_Arcium
                     baseX = (14 + g.game.random.Next(0, 2)) * 8;
                     baseY = 0;
                     break;
+                case 5: //Bullet Casing
+                    numFrames = 2;
+                    baseX = 0;
+                    baseY = 40;
+                    break;
             }
             rect = new Rectangle(baseX, baseY, size, size);
         }
         public void Update(GameTime gt)
         {
-            if (particleType == 3)
+            if (particleType == 3 || particleType == 5)
             {
                 velocity.Y += 0.178f;
             }
-            if (particleType == 3 || particleType == 4)
+            if (particleType == 3 || particleType == 4 || particleType == 5)
             {
                 rect.X = baseX + (frame * size);
             }
-            if (particleType == 4 && anim > 15)
+            if ((particleType == 4 || particleType == 5) && anim > 15)
             {
                 alpha -= 0.1f;
             }
