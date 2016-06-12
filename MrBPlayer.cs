@@ -303,6 +303,17 @@ namespace Mors_Arcium
                     }
                     p = null;
                 }
+                else if (game.entities[Gameplay.TYPE_ITEM, i] != null)
+                {
+                    if (game.entities[Gameplay.TYPE_ITEM, i] is HealthPack)
+                    {
+                        if (Math.Abs(game.entities[Gameplay.TYPE_ITEM, i].position.X - position.X) < 160 && health < maxHealth / 2)
+                        {
+                            target = game.entities[Gameplay.TYPE_ITEM, i];
+                            aiState = "chase";
+                        }
+                    }
+                }
             }
         }
     }

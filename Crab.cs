@@ -68,7 +68,7 @@ namespace Mors_Arcium
             if (timer == 0)
             {
                 timer -= 1;
-                game.Explode(position.X, position.Y + 8.0f, 24f, 7);
+                game.Explode(position.X, position.Y + 8.0f, 24f, 7, false, this.owner);
                 killMe = true;
             }
         }

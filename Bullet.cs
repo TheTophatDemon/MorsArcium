@@ -43,7 +43,7 @@ namespace Mors_Arcium
                 if (p.deathTimer == 0)
                 {
                     killMe = true;
-                    p.Damage(damage);
+                    p.Damage(damage, this.owner);
                 }
                 p = null;
             }

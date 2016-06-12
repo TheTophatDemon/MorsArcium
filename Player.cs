@@ -141,7 +141,7 @@ namespace Mors_Arcium
             Walk();
             if (position.X == lastX)
             {
-                giveUpTimer += 1;
+                //giveUpTimer += 1;
                 if (giveUpTimer > 100)
                 {
                     giveUpTimer = 0;
@@ -204,7 +204,7 @@ namespace Mors_Arcium
                             {
                                 Jump();
                             }
-                            else
+                            else if (this is MrBPlayer)
                             {
                                 aiState = "run";
                                 runOrigin = position.X;
@@ -228,7 +228,7 @@ namespace Mors_Arcium
                 {
                     if (game.entities[Gameplay.TYPE_ITEM, i] is HealthPack)
                     {
-                        if (Math.Abs(game.entities[Gameplay.TYPE_ITEM, i].position.X - position.X) < 160 && aiState != "attack" && health < maxHealth / 2)
+                        if (Math.Abs(game.entities[Gameplay.TYPE_ITEM, i].position.X - position.X) < 160 && health < maxHealth / 2)
                         {
                             target = game.entities[Gameplay.TYPE_ITEM, i];
                             aiState = "chase";
@@ -239,7 +239,7 @@ namespace Mors_Arcium
         }
         public virtual void UpdateCPU()
         {
-            if (target != null)
+            if (target != null && target != this)
             {
                 if (aiState == "chase")
                 {
@@ -265,7 +265,10 @@ namespace Mors_Arcium
                     }
                     p = null;
                 }
-
+                if (target is HealthPack)
+                {
+                    target = null;
+                }
             }
             else
             {
@@ -388,6 +391,8 @@ namespace Mors_Arcium
             TryMove(speed);
             Animate();
             tryingToJump = false;
+            if (health > maxHealth) health = maxHealth;
+            if (magic > maxMagic) magic = maxMagic;
             if (health <= 0 && deathTimer == 0)
             {
                 health = 0;
@@ -426,12 +431,21 @@ namespace Mors_Arcium
                 sp.Draw(texture, position, sourceRect, Color.White, rotation, origin, scale, spriteEffects, 0);
             }
         }
-        public void Damage(int amount)
+        public void Damage(int amount, Entity perpetrator = null)
         {
             if (hurtTimer == 0)
             {
                 health -= amount;
                 hurtTimer = 30;
+            }
+            if (perpetrator != null && health <= 0)
+            {
+                if (perpetrator is Player)
+                {
+                    Player p = (Player)perpetrator;
+                    p.ChangeInto(sourceRect.Y);
+                    p = null;
+                }
             }
         }
         public override void Collide(Entity perpetrator)
@@ -479,6 +493,39 @@ namespace Mors_Arcium
         protected virtual void SyncAnimationWithState()
         {
             
+        }
+        public void ChangeInto(int srcRctY)
+        {
+            if (srcRctY != sourceRect.Y)
+            {
+                switch (srcRctY)
+                {
+                    case 0: //Mr. /b/
+                        MrBPlayer b = new MrBPlayer(game);
+                        b.position = position;
+                        b.health = health;
+                        b.magic = magic;
+                        game.AddEntity(b);
+                        if (game.player == this)
+                        {
+                            game.player = b;
+                        }
+                        killMe = true;
+                        break;
+                    case 32: //Wizard
+                        WizardPlayer w = new WizardPlayer(game);
+                        w.position = position;
+                        w.health = health;
+                        w.magic = magic;
+                        game.AddEntity(w);
+                        if (game.player == this)
+                        {
+                            game.player = w;
+                        }
+                        killMe = true;
+                        break;
+                }
+            }
         }
     }
 }

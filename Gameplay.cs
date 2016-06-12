@@ -371,7 +371,7 @@ namespace Mors_Arcium
                 }
             }
         }
-        public void Explode(float x, float y, float radius, int damage, bool hurtTerrain = false)
+        public void Explode(float x, float y, float radius, int damage, bool hurtTerrain = false, Entity perpetrator = null)
         {
             int tx = (int)Math.Round(x / 16);
             int ty = (int)Math.Round(y / 16);
@@ -405,7 +405,7 @@ namespace Mors_Arcium
                     if (Vector2.Distance(pos, entities[TYPE_PLAYER, i].position) < radius + entities[TYPE_PLAYER, i].hitboxSize.X)
                     {
                         Player p = (Player)entities[TYPE_PLAYER, i];
-                        p.Damage(damage);
+                        p.Damage(damage, perpetrator);
                     }
                 }
             }

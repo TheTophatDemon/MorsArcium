@@ -29,7 +29,7 @@ namespace Mors_Arcium
         protected int anim = 0;
         protected int frame = 0;
         protected int lastFrame = 0;
-        protected Rectangle sourceRect;
+        public Rectangle sourceRect;
         protected Gameplay game;
         protected bool collision_bottom;
         protected bool collision_top;

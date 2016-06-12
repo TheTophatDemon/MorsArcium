@@ -9,12 +9,10 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //Implement other classes
         //Android Controls
         //Joystick Controls?
-        //Wizard Shield (Or maybe lightning instead?)
-        //Nerf the Wizard
-        //Become who you kill
+        //Nerf Wizard
+        //Add Eli
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
