@@ -20,10 +20,11 @@ namespace Mors_Arcium
 
         protected float jumpHeight = 5.0f;
         protected float acceleration = 0.25f;
-        protected float walkSpeed = 2.77f;
+        protected float walkSpeed = 2.5f;
         protected int attackSpeed = 70;
 
         protected bool tryingToJump = false;
+        protected bool tryingToWalk = false;
         protected bool attacking = false;
         protected int cooldown = 0;
         public int aimDirection = 0;
@@ -40,6 +41,7 @@ namespace Mors_Arcium
         protected float lastX = 0.0f;
         protected float runDistance;
         protected float runOrigin;
+        public float knockback = 0.0f;
 
         public static int[] PlayerCollisionMask = new int[] { Gameplay.TYPE_PROJECTILE, Gameplay.TYPE_PLAYER };
         public Player(Gameplay g) : base(g)
@@ -86,6 +88,7 @@ namespace Mors_Arcium
                 walk += -acceleration;
                 if (walk < -walkSpeed) walk = -walkSpeed;
             }
+            tryingToWalk = true;
         }
         public virtual void Attack()
         {
@@ -204,25 +207,25 @@ namespace Mors_Arcium
                             {
                                 Jump();
                             }
-                            else if (this is MrBPlayer)
-                            {
-                                aiState = "run";
-                                runOrigin = position.X;
-                                runDistance = 64.0f;
-                                if (p.position.X > position.X)
-                                {
-                                    spriteEffects = SpriteEffects.None;
-                                }
-                                else
-                                {
-                                    spriteEffects = SpriteEffects.FlipHorizontally;
-                                }
-                            }
                             p = null;
                             break;
                         }
                     }
                     p = null;
+                }
+                else if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
+                {
+                    if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
+                    {
+                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 64.0f - game.game.random.Next(0, 14))
+                        {
+                            if (game.entities[Gameplay.TYPE_PLAYER, i].position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
+                            {
+                                Jump();
+                            }
+                            break;
+                        }
+                    }
                 }
                 else if (game.entities[Gameplay.TYPE_ITEM, i] != null)
                 {
@@ -294,7 +297,7 @@ namespace Mors_Arcium
                 }
             }
             //Jump at jump nodes
-            if (aiState == "run" || aiState == "chase")
+            if (aiState == "run" || aiState == "chase" || (aiState == "attack" && walk != 0.0f))
             {
                 for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
                 {
@@ -341,9 +344,18 @@ namespace Mors_Arcium
             UpdateAnimationState();
             if (cooldown > 0) cooldown -= 1;
             if (cooldown < attackSpeed - 20 || cooldown == 0) attacking = false;
-            if (magic < maxMagic) magic += 1;
-            walk *= 0.9f;
-            if (Math.Abs(walk) < 0.1f) walk = 0.0f;
+            
+            if (!tryingToWalk)
+            {
+                walk *= 0.9f;
+                if (Math.Abs(walk) < 0.05f) walk = 0.0f;
+            }
+            if (knockback != 0.0f)
+            {
+                knockback *= 0.9f;
+                if (Math.Abs(knockback) < 0.05f) knockback = 0.0f;
+            }
+            tryingToWalk = false;
             gravity += 0.15f;
             if (gravity > 8.0f) gravity = 8.0f;
             if ((collision_bottom && onSlope == -1) || (onSlope != -1 && wasOnSlope == -1))
@@ -376,7 +388,7 @@ namespace Mors_Arcium
                 walk = 0.0f;
                 jump = 0.0f;
             }
-            speed = new Vector2(walk, gravity + jump);
+            speed = new Vector2(walk + knockback, gravity + jump);
             /*
             speed = Vector2.Zero;
             if (Keyboard.GetState().IsKeyDown(Keys.S)) speed.Y = 2.5f;
@@ -431,7 +443,7 @@ namespace Mors_Arcium
                 sp.Draw(texture, position, sourceRect, Color.White, rotation, origin, scale, spriteEffects, 0);
             }
         }
-        public void Damage(int amount, Entity perpetrator = null)
+        public virtual void Damage(int amount, Entity perpetrator = null)
         {
             if (hurtTimer == 0)
             {
@@ -459,6 +471,10 @@ namespace Mors_Arcium
                 }
                 p = null;
             }
+            if (perpetrator is EliPlayer)
+            {
+                target = perpetrator;
+            }
         }
         private void Animate()
         {
@@ -484,7 +500,7 @@ namespace Mors_Arcium
                 }
                 //if (frame != lastFrame)
                 //{
-                    sourceRect.X = (animation.frames[frame] % (texture.Width / 32)) * 32;
+                    sourceRect.X = (animation.frames[frame] % (texture.Width / sourceRect.Width)) * sourceRect.Width;
                     sourceRect.Y = sheetOffset;
                 //}
                 //lastFrame = frame;
@@ -521,6 +537,18 @@ namespace Mors_Arcium
                         if (game.player == this)
                         {
                             game.player = w;
+                        }
+                        killMe = true;
+                        break;
+                    case 48: //Eli
+                        EliPlayer e = new EliPlayer(game);
+                        e.position = position;
+                        e.health = health;
+                        e.magic = magic;
+                        game.AddEntity(e);
+                        if (game.player == this)
+                        {
+                            game.player = e;
                         }
                         killMe = true;
                         break;

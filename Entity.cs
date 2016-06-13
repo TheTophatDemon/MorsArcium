@@ -50,8 +50,8 @@ namespace Mors_Arcium
             wasOnSlope = onSlope;
             int tl = (int)Math.Floor((position.X - hitboxSize.X + hitboxOffset.X + spd.X) / 16) - 1;
             int tu = (int)Math.Floor((position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y) / 16) - 1;
-            int tr = tl + (int)(hitboxSize.X / 8) + 2;
-            int tb = tu + (int)(hitboxSize.Y / 8) + 2;
+            int tr = tl + (int)Math.Ceiling(hitboxSize.X / 8) + 2;
+            int tb = tu + (int)Math.Ceiling(hitboxSize.Y / 8) + 2;
             tl = Math.Min(game.tilemap.width, Math.Max(0, tl));
             tr = Math.Min(game.tilemap.width, Math.Max(0, tr));
             tu = Math.Min(game.tilemap.height, Math.Max(0, tu));
@@ -254,8 +254,8 @@ namespace Mors_Arcium
             {
                 tl = (int)Math.Floor((position.X - hitboxSize.X + hitboxOffset.X + spd.X) / 16) - 1;
                 tu = (int)Math.Floor((position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y) / 16) - 1;
-                tr = tl + (int)(hitboxSize.X / 8) + 2;
-                tb = tu + (int)(hitboxSize.Y / 8) + 2;
+                tr = tl + (int)Math.Ceiling(hitboxSize.X / 8) + 2;
+                tb = tu + (int)Math.Ceiling(hitboxSize.Y / 8) + 2;
                 tl = Math.Min(game.tilemap.width, Math.Max(0, tl));
                 tr = Math.Min(game.tilemap.width, Math.Max(0, tr));
                 tu = Math.Min(game.tilemap.height, Math.Max(0, tu));

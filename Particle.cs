@@ -10,10 +10,10 @@ namespace Mors_Arcium
         public Vector2 velocity;
         private float animSpeed = 5;
         private float anim = 0;
-        private int frame = 0;
+        public int frame = 0;
         private int size = 8;
         private int numFrames;
-        private Rectangle rect;
+        public Rectangle rect;
         private Gameplay game;
         public int baseX, baseY;
         public bool killMe = false; //Later...

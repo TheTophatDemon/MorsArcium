@@ -11,8 +11,9 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Joystick Controls?
-        //Nerf Wizard
-        //Add Eli
+        //Nerf Wizard (Make the machine gun charge up / Limited ammo / Just mmake 'em stop attacking every once in a while)
+        //Nerf Eli.
+        //Fix Eli jumping off cliffs
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

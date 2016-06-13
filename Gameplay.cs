@@ -53,7 +53,7 @@ namespace Mors_Arcium
             entities = new Entity[8, 128];
             particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
-            player = new WizardPlayer(this);
+            player = new EliPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             SpawnEnemies();
             AddEntity(player);
@@ -68,7 +68,7 @@ namespace Mors_Arcium
         {
             for (int i = 0; i < numCPUs; i++)
             {
-                int t = game.random.Next(0, 2);
+                int t = game.random.Next(0, 3);
                 switch (t)
                 {
                     case 0:
@@ -82,6 +82,12 @@ namespace Mors_Arcium
                         w.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
                         AddEntity(w);
                         w = null;
+                        break;
+                    case 2:
+                        EliPlayer e = new EliPlayer(this);
+                        e.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                        AddEntity(e);
+                        e = null;
                         break;
                 }
             }
@@ -169,6 +175,7 @@ namespace Mors_Arcium
                     healthPackTimer = game.random.Next(250, 1000);
                 }
             }
+            numPlayers = 0;
             for (int x = 0; x < entities.GetLength(0); x++)
             {
                 for (int y = 0; y < entities.GetLength(1); y++)
@@ -180,6 +187,10 @@ namespace Mors_Arcium
                             Player p = (Player)entities[x, y];
                             p.UpdateCPU();
                             p = null;
+                        }
+                        if (entities[x, y].type == TYPE_PLAYER)
+                        {
+                            numPlayers += 1;
                         }
                         entities[x, y].Update(gt);
                         if (entities[x, y].collisions)
