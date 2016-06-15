@@ -16,6 +16,7 @@ namespace Mors_Arcium
         //Target issues? (Target seems to be far away in unsurvivable places
         //Give Wizard FUS-RO-DA
         //Nerf Wizard/Eli/ Buff Mr. /B/
+        //Fix Railgun beam alignment. Add polish.
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

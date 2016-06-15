@@ -12,7 +12,7 @@ namespace Mors_Arcium
         public const int TYPE_PROJECTILE = 4;
         public const int TYPE_PROP = 1;
         public const int TYPE_ITEM = 2;
-        public const int TYPE_BEAM = 7;
+        public const int TYPE_BEAM = 5;
 
         public Vector2 cameraPosition;
         public float cameraRotation;
@@ -222,7 +222,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            
+
             for (int i = 0; i < particles.Length; i++)
             {
                 if (particles[i] != null)
@@ -234,7 +234,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            
+
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 int x = (int)Math.Floor(((float)(Mouse.GetState().Position.X / game.scaleFactor) + cameraPosition.X) / 16);
@@ -269,6 +269,18 @@ namespace Mors_Arcium
             if (player.deathTimer > 200)
             {
                 Initialize();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(player is MrBPlayer))
+            {
+                player.ChangeInto(0);
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.D2) && !(player is WizardPlayer))
+            {
+                player.ChangeInto(32);
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.D3) && !(player is EliPlayer))
+            {
+                player.ChangeInto(64);
             }
             if (time == DateTime.Now.Second)
             {

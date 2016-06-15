@@ -133,13 +133,26 @@ namespace Mors_Arcium
                         {
                             float tx = x * 16;
                             float ty = y * 16;
+                            float ty2 = ty + 16;
+                            float slopeOffs = 0.0f;
+                            if (game.tilemap.data[x, y] == 0)
+                            {
+                                ty += 16;
+                                slopeOffs = -16.0f;
+                            }
+                            else if (game.tilemap.data[x, y] == 2)
+                            {
+                                slopeOffs = 16.0f;
+                            }
                             float y0 = position.Y + ((tx - position.X) * slope);
                             float y1 = position.Y + ((tx + 16 - position.X) * slope);
-                            if ((ty < y0 || ty < y1) && (ty + 16 > y0 || ty + 16 > y1))
+                            if ((tx < position.X || tx + 16 < position.X) && spriteEffects == SpriteEffects.None) { y0 = 1000.0f; y1 = 1000.0f; }
+                            if ((tx + 16 > position.X || tx > position.X) && spriteEffects == SpriteEffects.FlipHorizontally) { y1 = 1000.0f; y0 = 1000.0f; }
+                            if ((ty <= y0 || ty + slopeOffs <= y1) && (ty2 >= y0 || ty2 >= y1))
                             {
-                                
                                 //We have hit!
-                                float dist = Vector2.Distance(new Vector2(tx + 8, ty + 8), position);
+                                //NOTE: Tiles behind are registering hits!
+                                float dist = Vector2.Distance(new Vector2((x * 16) + 8, (y * 16) + 8), position);
                                 if (dist < minDistance)
                                 {
                                     minDistance = dist;
@@ -155,13 +168,19 @@ namespace Mors_Arcium
                         Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
                         if (Vector2.Distance(p.position, position) <= minDistance && ((p.position.X < position.X && spriteEffects == SpriteEffects.FlipHorizontally) || (p.position.X > position.X && spriteEffects == SpriteEffects.None)))
                         {
-                            float y0 = position.Y + ((p.position.X + p.hitboxOffset.X - p.hitboxSize.X - position.X) * slope);
-                            float y1 = position.Y + ((p.position.X + p.hitboxOffset.X + p.hitboxSize.X - position.X) * slope);
+                            float left = p.position.X + p.hitboxOffset.X - p.hitboxSize.X;
+                            float right = p.position.X + p.hitboxOffset.X + p.hitboxSize.X;
+                            float y0 = position.Y + ((left - position.X) * slope);
+                            float y1 = position.Y + ((right - position.X) * slope);
                             float top = p.position.Y + p.hitboxOffset.Y - p.hitboxSize.Y;
                             float bottom = p.position.Y + p.hitboxOffset.Y + p.hitboxSize.Y;
+                            
+                            if ((left < position.X || right < position.X) && spriteEffects == SpriteEffects.None) { y0 = 1000.0f; y1 = 1000.0f; }
+                            if ((right > position.X || left > position.X) && spriteEffects == SpriteEffects.FlipHorizontally) { y1 = 1000.0f; y0 = 1000.0f; }
                             if ((top < y0 + 4 || top < y1 + 4) && (bottom > y0 - 4 || bottom > y1 - 4))
                             {
                                 p.Damage(13, this);
+                                p.target = this;
                             }
                         }
                         p = null;
