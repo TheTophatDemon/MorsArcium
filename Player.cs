@@ -540,7 +540,7 @@ namespace Mors_Arcium
                         }
                         killMe = true;
                         break;
-                    case 48: //Eli
+                    case 64: //Eli
                         EliPlayer e = new EliPlayer(game);
                         e.position = position;
                         e.health = health;

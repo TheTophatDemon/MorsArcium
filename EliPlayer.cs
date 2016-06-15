@@ -20,9 +20,9 @@ namespace Mors_Arcium
             maxMagic = 200;
             health = 60;
             magic = 200;
-            walkSpeed = 3.0f;
+            walkSpeed = 2.2f;
             jumpHeight = 5.0f;
-            acceleration = 0.15f;
+            acceleration = 1.0f;
             sheetOffset = 64;
             sourceRect = new Rectangle(0, 0, 40, 32);
             hitboxOffset = new Vector2(0, 0);
@@ -59,12 +59,12 @@ namespace Mors_Arcium
                             if (spriteEffects == SpriteEffects.None && p.position.X > position.X)
                             {
                                 p.knockback = 11.0f;
-                                p.Damage(12, this);
+                                p.Damage(8, this);
                             }
                             else if (spriteEffects == SpriteEffects.FlipHorizontally && p.position.X < position.X)
                             {
                                 p.knockback = -11.0f;
-                                p.Damage(12, this);
+                                p.Damage(8, this);
                             }
                         }
                     }
@@ -186,6 +186,23 @@ namespace Mors_Arcium
             if (dist > 160.0f)
             {
                 aiState = "chase";
+            }
+            if (position.X < 64.0f || position.X > (game.tilemap.width * 16) - 64.0f)
+            {
+                aiState = "run";
+                if (position.X < 64.0f)
+                {
+                    runOrigin = position.X;
+                    spriteEffects = SpriteEffects.None;
+                    runDistance = 64.0f;
+                }
+                else if (position.X > (game.tilemap.width * 16) - 64.0f)
+                {
+                    runOrigin = position.X;
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+                    runDistance = 64.0f;
+                }
+                target = null;
             }
         }
     }

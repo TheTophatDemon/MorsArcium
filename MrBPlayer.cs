@@ -53,6 +53,7 @@ namespace Mors_Arcium
             maxHealth = 70;
             maxMagic = 100;
             health = 70;
+            walkSpeed = 3.0f;
         }
         public override void Update(GameTime gt)
         {
@@ -303,6 +304,20 @@ namespace Mors_Arcium
                         }
                     }
                     p = null;
+                }
+                else if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
+                {
+                    if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
+                    {
+                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 64.0f - game.game.random.Next(0, 14))
+                        {
+                            if (game.entities[Gameplay.TYPE_PLAYER, i].position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
+                            {
+                                Jump();
+                            }
+                            break;
+                        }
+                    }
                 }
                 else if (game.entities[Gameplay.TYPE_ITEM, i] != null)
                 {

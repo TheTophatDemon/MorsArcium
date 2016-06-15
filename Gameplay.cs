@@ -8,10 +8,11 @@ namespace Mors_Arcium
 {
     public class Gameplay
     {
-        public const int TYPE_PLAYER = 7;
-        public const int TYPE_PROJECTILE = 5;
+        public const int TYPE_PLAYER = 6;
+        public const int TYPE_PROJECTILE = 4;
         public const int TYPE_PROP = 1;
-        public const int TYPE_ITEM = 3;
+        public const int TYPE_ITEM = 2;
+        public const int TYPE_BEAM = 7;
 
         public Vector2 cameraPosition;
         public float cameraRotation;
@@ -36,7 +37,7 @@ namespace Mors_Arcium
         public Player player;
         public float fadeIn;
         public float fadeOut;
-        public int numCPUs = 10;
+        public int numCPUs = 20;
         public int numPlayers = 11;
         public int wave = 0;
         public int waveTimer = 0;
@@ -53,7 +54,7 @@ namespace Mors_Arcium
             entities = new Entity[8, 128];
             particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
-            player = new EliPlayer(this);
+            player = new WizardPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             SpawnEnemies();
             AddEntity(player);

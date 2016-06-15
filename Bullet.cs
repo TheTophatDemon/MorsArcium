@@ -20,7 +20,7 @@ namespace Mors_Arcium
             speed = spd;
             position = pos;
             owner = own;
-            dodgeDistance = 64.0f;
+            dodgeDistance = 72.0f;
         }
         public override void Update(GameTime gt)
         {
