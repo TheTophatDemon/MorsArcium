@@ -58,13 +58,13 @@ namespace Mors_Arcium
                             Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
                             if (spriteEffects == SpriteEffects.None && p.position.X > position.X)
                             {
-                                p.knockback = 11.0f;
-                                p.Damage(8, this);
+                                p.knockback = new Vector2(8.0f, 0.0f);
+                                p.Damage(7, this);
                             }
                             else if (spriteEffects == SpriteEffects.FlipHorizontally && p.position.X < position.X)
                             {
-                                p.knockback = -11.0f;
-                                p.Damage(8, this);
+                                p.knockback = new Vector2(-8.0f, 0.0f);
+                                p.Damage(7, this);
                             }
                         }
                     }

@@ -19,10 +19,11 @@ namespace Mors_Arcium
         Animation jumpAttackUpAnimation;
         Animation jumpAttackDownAnimation;
         Animation jumpAttackAnimation;
+        Animation specialAnimation;
         Animation deathAnimation;
         public WizardPlayer(Gameplay g) : base(g)
         {
-            attackSpeed = 100;
+            attackSpeed = 75;
             maxHealth = 100;
             maxMagic = 150;
             health = 100;
@@ -53,11 +54,23 @@ namespace Mors_Arcium
             jumpAttackDownAnimation.frames = new int[] { 29, 30 };
             jumpAttackAnimation.speed = jumpAttackUpAnimation.speed = jumpAttackDownAnimation.speed = walkAttackAnimation.speed = walkAttackUpAnimation.speed = walkAttackDownAnimation.speed = attackAnimation.speed = attackUpAnimation.speed = attackDownAnimation.speed = 3;
             jumpAttackAnimation.looping = jumpAttackUpAnimation.looping = jumpAttackDownAnimation.looping = walkAttackAnimation.looping = walkAttackUpAnimation.looping = walkAttackDownAnimation.looping = attackAnimation.looping = attackUpAnimation.looping = attackDownAnimation.looping = true;
+            specialAnimation.frames = new int[] { 19, 20, 21, 20, 19 };
+            specialAnimation.speed = 5;
+            specialAnimation.looping = false;
             sheetOffset = 32;
             animation = idleAnimation;
         }
         public override void Update(GameTime gt)
         {
+            if (magic < maxMagic) magic += 1;
+            if (animationState == "special")
+            {
+                walk = 0.0f;
+                if (frame == specialAnimation.frames.Length - 1)
+                {
+                    ChangeAnimationState("idle");
+                }
+            }
             base.Update(gt);
         }
         public override void Attack()
@@ -151,7 +164,6 @@ namespace Mors_Arcium
                             if ((ty <= y0 || ty + slopeOffs <= y1) && (ty2 >= y0 || ty2 >= y1))
                             {
                                 //We have hit!
-                                //NOTE: Tiles behind are registering hits!
                                 float dist = Vector2.Distance(new Vector2((x * 16) + 8, (y * 16) + 8), position);
                                 if (dist < minDistance)
                                 {
@@ -166,7 +178,8 @@ namespace Mors_Arcium
                     if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
                     {
                         Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
-                        if (Vector2.Distance(p.position, position) <= minDistance && ((p.position.X < position.X && spriteEffects == SpriteEffects.FlipHorizontally) || (p.position.X > position.X && spriteEffects == SpriteEffects.None)))
+                        float dist = Vector2.Distance(p.position, position);
+                        if (dist <= minDistance && ((p.position.X < position.X && spriteEffects == SpriteEffects.FlipHorizontally) || (p.position.X > position.X && spriteEffects == SpriteEffects.None)))
                         {
                             float left = p.position.X + p.hitboxOffset.X - p.hitboxSize.X;
                             float right = p.position.X + p.hitboxOffset.X + p.hitboxSize.X;
@@ -179,7 +192,18 @@ namespace Mors_Arcium
                             if ((right > position.X || left > position.X) && spriteEffects == SpriteEffects.FlipHorizontally) { y1 = 1000.0f; y0 = 1000.0f; }
                             if ((top < y0 + 4 || top < y1 + 4) && (bottom > y0 - 4 || bottom > y1 - 4))
                             {
-                                p.Damage(13, this);
+                                if (dist > 176)
+                                {
+                                    p.Damage(8, this);
+                                }
+                                else if (dist > 130)
+                                {
+                                    p.Damage(10, this);
+                                }
+                                else
+                                {
+                                    p.Damage(13, this);
+                                }
                                 p.target = this;
                             }
                         }
@@ -188,8 +212,63 @@ namespace Mors_Arcium
                 }
                 Beam beam = new Beam(game, minDistance, MathHelper.ToRadians(rot));
                 beam.position = position;
+                if (aimDirection == 0)
+                {
+                    beam.position.Y += 4;
+                }
+                else if (aimDirection == -1)
+                {
+                    beam.position.Y += 12;
+                }
                 game.AddEntity(beam);
                 beam = null;
+            }
+        }
+        public override void Special()
+        {
+            if (magic == maxMagic && collision_bottom && deathTimer == 0)
+            {
+                magic = 0;
+                ChangeAnimationState("special");
+                walk = 0.0f;
+                Particle p = new Particle(game, position, Vector2.Zero, 25, 64, 5);
+                game.AddParticle(p);
+                p = null;
+                for (int i = 0; i < game.entities.GetLength(1); i++)
+                {
+                    if (game.entities[Gameplay.TYPE_PLAYER, i] != null && game.entities[Gameplay.TYPE_PLAYER, i] != this)
+                    {
+                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 72.0f)
+                        {
+                            Player pl = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
+                            if (pl.position.X > position.X)
+                            {
+                                pl.knockback = new Vector2(11.0f, -5.0f);
+                            }
+                            else
+                            {
+                                pl.knockback = new Vector2(-11.0f, -5.0f);
+                            }
+                            pl = null;
+                        }
+                    }
+                    if (game.entities[Gameplay.TYPE_PROJECTILE, i] != null)
+                    {
+                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PROJECTILE, i].position, position) < 72.0f)
+                        {
+                            Projectile pr = (Projectile)game.entities[Gameplay.TYPE_PROJECTILE, i];
+                            if (pr.position.X > position.X)
+                            {
+                                pr.knockback = new Vector2(11.0f, -5.0f);
+                            }
+                            else
+                            {
+                                pr.knockback = new Vector2(-11.0f, -5.0f);
+                            }
+                            pr = null;
+                        }
+                    }
+                }
             }
         }
         protected override void ChangeAnimationState(string st)
@@ -265,6 +344,9 @@ namespace Mors_Arcium
                 case "dead":
                     animation = deathAnimation;
                     break;
+                case "special":
+                    animation = specialAnimation;
+                    break;
             }
             
         }
@@ -272,7 +354,7 @@ namespace Mors_Arcium
         {
             base.UpdateAnimationState();
             //Actually determine what action triggers which state
-            if (animationState != "dead")
+            if (animationState != "dead" && animationState != "special")
             {
                 if (jump != 0.0f)
                 {
@@ -326,6 +408,68 @@ namespace Mors_Arcium
                 }
             }
             base.CPUAttack();
+        }
+        public override void CPUDodge()
+        {
+            for (int i = 0; i < game.entities.GetLength(1); i++)
+            {
+                if (game.entities[Gameplay.TYPE_PROJECTILE, i] != null)
+                {
+                    Projectile p = (Projectile)game.entities[Gameplay.TYPE_PROJECTILE, i];
+                    if (p.owner != this)
+                    {
+                        if (Vector2.Distance(p.position, position) < p.dodgeDistance - game.game.random.Next(0, 14))
+                        {
+                            if (p.position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
+                            {
+                                Jump();
+                            }
+                            p = null;
+                            break;
+                        }
+                    }
+                    p = null;
+                }
+                else if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
+                {
+                    //if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
+                    //{
+                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 64.0f && game.game.random.Next(0, 14) == 1)
+                        {
+                            if (game.entities[Gameplay.TYPE_PLAYER, i].position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
+                            {
+                                if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
+                                {
+                                    aiState = "run";
+                                    runOrigin = position.X;
+                                    runDistance = 128.0f;
+                                    if (game.entities[Gameplay.TYPE_PLAYER, i].position.X > position.X)
+                                    {
+                                        spriteEffects = SpriteEffects.FlipHorizontally;
+                                    }
+                                    else
+                                    {
+                                        spriteEffects = SpriteEffects.None;
+                                    }
+                                }
+                                Special();
+                            }
+                            break;
+                        }
+                    //}
+                }
+                else if (game.entities[Gameplay.TYPE_ITEM, i] != null)
+                {
+                    if (game.entities[Gameplay.TYPE_ITEM, i] is HealthPack)
+                    {
+                        if (Math.Abs(game.entities[Gameplay.TYPE_ITEM, i].position.X - position.X) < 160 && health < maxHealth / 2)
+                        {
+                            target = game.entities[Gameplay.TYPE_ITEM, i];
+                            aiState = "chase";
+                        }
+                    }
+                }
+            }
         }
     }
 }

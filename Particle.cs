@@ -19,6 +19,8 @@ namespace Mors_Arcium
         public bool killMe = false; //Later...
         public int particleType;
         private float alpha = 1.0f;
+        private float scale = 1.0f;
+        Vector2 origin = Vector2.Zero;
         public Particle(Gameplay g, Vector2 pos, Vector2 vel, float anmSpd, int sz, int type)
         {
             game = g;
@@ -52,17 +54,19 @@ namespace Mors_Arcium
                     baseX = (14 + g.game.random.Next(0, 2)) * 8;
                     baseY = 0;
                     break;
-                case 5: //Bullet Casing
-                    numFrames = 2;
+                case 5: //FUS RO DA!!!!!
+                    numFrames = 1;
                     baseX = 0;
                     baseY = 40;
+                    scale = 0.1f;
+                    origin = new Vector2(32, 32);
                     break;
             }
             rect = new Rectangle(baseX, baseY, size, size);
         }
         public void Update(GameTime gt)
         {
-            if (particleType == 3 || particleType == 5)
+            if (particleType == 3)
             {
                 velocity.Y += 0.178f;
             }
@@ -70,9 +74,14 @@ namespace Mors_Arcium
             {
                 rect.X = baseX + (frame * size);
             }
-            if ((particleType == 4 || particleType == 5) && anim > 15)
+            if ((particleType == 4 && anim > 15) || (particleType == 5 && anim > 15))
             {
                 alpha -= 0.1f;
+            }
+            if (particleType == 5)
+            {
+                scale += 0.1f;
+                //if (scale > 1.0f) scale = 1.0f;
             }
             position += velocity;
             anim += 1;
@@ -90,7 +99,7 @@ namespace Mors_Arcium
         }
         public void Draw(SpriteBatch sp)
         {
-            sp.Draw(game.game.textures[7], position, rect, Color.White * alpha);
+            sp.Draw(game.game.textures[7], position, rect, Color.White * alpha, 0.0f, origin, scale, SpriteEffects.None, 0);
         }
     }
 }

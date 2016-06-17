@@ -28,6 +28,7 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
+            base.Update(gt);
             if (position.X == lastPos.X)
             {
                 if (speed.X > 0.0f)
@@ -50,7 +51,7 @@ namespace Mors_Arcium
                 speed.Y = 0.5f;
             }
             lastPos = position;
-            TryMove(speed);
+            TryMove(speed + knockback);
             anim += 1;
             if (anim > 5)
             {
@@ -68,7 +69,7 @@ namespace Mors_Arcium
             if (timer == 0)
             {
                 timer -= 1;
-                game.Explode(position.X, position.Y + 8.0f, 24f, 7, false, this.owner);
+                game.Explode(position.X, position.Y + 8.0f, 16f, 8, false, this.owner);
                 killMe = true;
             }
         }

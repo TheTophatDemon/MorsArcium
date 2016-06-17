@@ -11,12 +11,9 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Joystick Controls?
-        //Nerf Eli. (Give him a boost ability?)
         //Class select menu
         //Target issues? (Target seems to be far away in unsurvivable places
-        //Give Wizard FUS-RO-DA
         //Nerf Wizard/Eli/ Buff Mr. /B/
-        //Fix Railgun beam alignment. Add polish.
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

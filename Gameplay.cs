@@ -12,7 +12,7 @@ namespace Mors_Arcium
         public const int TYPE_PROJECTILE = 4;
         public const int TYPE_PROP = 1;
         public const int TYPE_ITEM = 2;
-        public const int TYPE_BEAM = 5;
+        public const int TYPE_BEAM = 7;
 
         public Vector2 cameraPosition;
         public float cameraRotation;
@@ -33,7 +33,7 @@ namespace Mors_Arcium
         Rectangle mbRect = new Rectangle(0, 98, 1, 1);
         Rectangle mbhbRect = new Rectangle(0, 0, 117, 32);
         Rectangle pauseThingyRect = new Rectangle(0, 99, 124, 25);
-
+        public int healthPackFrequency = 500;
         public Player player;
         public float fadeIn;
         public float fadeOut;
@@ -43,6 +43,7 @@ namespace Mors_Arcium
         public int waveTimer = 0;
         private float waveAlpha = 0.0f;
         private int healthPackTimer = 500;
+        string cheatString = "";
 
         public Gameplay(MorsArcium g)
         {
@@ -67,7 +68,7 @@ namespace Mors_Arcium
         }
         private void SpawnEnemies()
         {
-            for (int i = 0; i < numCPUs; i++)
+            /*for (int i = 0; i < numCPUs; i++)
             {
                 int t = game.random.Next(0, 3);
                 switch (t)
@@ -91,8 +92,29 @@ namespace Mors_Arcium
                         e = null;
                         break;
                 }
+            }*
+            numPlayers = numCPUs + 1;*/
+            for (int i = 0; i < 4; i++)
+            {
+                MrBPlayer p = new MrBPlayer(this);
+                p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                AddEntity(p);
+                p = null;
             }
-            numPlayers = numCPUs + 1;
+            for (int i = 0; i < 4; i++)
+            {
+                WizardPlayer w = new WizardPlayer(this);
+                w.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                AddEntity(w);
+                w = null;
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                EliPlayer e = new EliPlayer(this);
+                e.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                AddEntity(e);
+                e = null;
+            }
         }
         public void Update(GameTime gt)
         {
@@ -126,6 +148,23 @@ namespace Mors_Arcium
                     }
                 }
 #endif
+                Keys[] pressedKeys = Keyboard.GetState().GetPressedKeys();
+                if (pressedKeys.Length > 0)
+                {
+                    if (cheatString.Length > 0)
+                    {
+                        if (pressedKeys[0].ToString() != cheatString.Substring(cheatString.Length - 1))
+                        {
+                            cheatString += pressedKeys[0].ToString();
+                        }
+                    }
+                    else
+                    {
+                        cheatString += pressedKeys[0].ToString();
+                    }
+                }
+
+                
                 if (Keyboard.GetState().IsKeyDown(game.JUMP))
                 {
                     player.Jump();
@@ -173,7 +212,7 @@ namespace Mors_Arcium
                 if (healthPackTimer == 0)
                 {
                     AddEntity(new HealthPack(this, new Vector2(game.random.Next(0, tilemap.width * 16), -64.0f)));
-                    healthPackTimer = game.random.Next(250, 1000);
+                    healthPackTimer = healthPackFrequency;
                 }
             }
             numPlayers = 0;
@@ -219,6 +258,20 @@ namespace Mors_Arcium
                         {
                             RemoveEntity(entities[x, y]);
                         }
+                    }
+                }
+            }
+            if (cheatString.Contains("TDGMH"))
+            {
+                cheatString = "";
+                Console.WriteLine("Give me hell!!!");
+                for (int i = 0; i < entities.GetLength(1); i++)
+                {
+                    if (entities[TYPE_PLAYER, i] != null && entities[TYPE_PLAYER, i] != player)
+                    {
+                        Player p = (Player)entities[TYPE_PLAYER, i];
+                        p.ChangeInto(64);
+                        p = null;
                     }
                 }
             }
@@ -311,11 +364,14 @@ namespace Mors_Arcium
                     }
                 }
             }
+           
+            
+            sp.End();
+            sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition, 0f)));
             for (int i = 0; i < particles.Length; i++)
             {
                 if (particles[i] != null) particles[i].Draw(sp);
             }
-            
             sp.End();
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);

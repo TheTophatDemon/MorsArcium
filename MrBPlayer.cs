@@ -50,15 +50,15 @@ namespace Mors_Arcium
             deathAnimation.looping = false;
             deathAnimation.speed = 5;
             animation = idleAnimation;
-            maxHealth = 70;
+            maxHealth = 80;
             maxMagic = 100;
-            health = 70;
+            health = 80;
             walkSpeed = 3.0f;
         }
         public override void Update(GameTime gt)
         {
             if (magic < maxMagic) magic += 1;
-            if (health < 20 && aiState == "attack" && target != null && !desperate)
+            /*if (health < 20 && aiState == "attack" && target != null && !desperate)
             {
                 
                 if (Math.Abs(target.position.X - position.X) > 176.0f)
@@ -89,7 +89,7 @@ namespace Mors_Arcium
                         }
                     }
                 }
-            }
+            }*/
             if (position.X < 0.0f)
             {
                 spriteEffects = SpriteEffects.None;
@@ -278,7 +278,7 @@ namespace Mors_Arcium
                     Projectile p = (Projectile)game.entities[Gameplay.TYPE_PROJECTILE, i];
                     if (p.owner != this)
                     {
-                        if (Vector2.Distance(p.position, position) < p.dodgeDistance - game.game.random.Next(0, 14))
+                        if (Vector2.Distance(p.position, position) < p.dodgeDistance && game.game.random.Next(0, 14) == 1)
                         {
                             if (p.position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
                             {
@@ -311,6 +311,18 @@ namespace Mors_Arcium
                     {
                         if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 64.0f - game.game.random.Next(0, 14))
                         {
+                            aiState = "run";
+                            runOrigin = position.X;
+                            runDistance = 128.0f;
+                            if (game.entities[Gameplay.TYPE_PLAYER, i].position.X > position.X)
+                            {
+                                spriteEffects = SpriteEffects.FlipHorizontally;
+                            }
+                            else
+                            {
+                                spriteEffects = SpriteEffects.None;
+                            }
+                            Special();
                             if (game.entities[Gameplay.TYPE_PLAYER, i].position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
                             {
                                 Jump();

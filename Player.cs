@@ -41,7 +41,7 @@ namespace Mors_Arcium
         protected float lastX = 0.0f;
         protected float runDistance;
         protected float runOrigin;
-        public float knockback = 0.0f;
+        public Vector2 knockback = Vector2.Zero;
 
         public static int[] PlayerCollisionMask = new int[] { Gameplay.TYPE_PROJECTILE, Gameplay.TYPE_PLAYER };
         public Player(Gameplay g) : base(g)
@@ -201,7 +201,7 @@ namespace Mors_Arcium
                     Projectile p = (Projectile)game.entities[Gameplay.TYPE_PROJECTILE, i];
                     if (p.owner != this)
                     {
-                        if (Vector2.Distance(p.position, position) < p.dodgeDistance - game.game.random.Next(0, 14))
+                        if (Vector2.Distance(p.position, position) < p.dodgeDistance && game.game.random.Next(0, 14) == 1)
                         {
                             if (p.position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
                             {
@@ -217,7 +217,7 @@ namespace Mors_Arcium
                 {
                     if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
                     {
-                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 64.0f - game.game.random.Next(0, 14))
+                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 64.0f && game.game.random.Next(0, 14) == 1)
                         {
                             if (game.entities[Gameplay.TYPE_PLAYER, i].position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
                             {
@@ -350,10 +350,15 @@ namespace Mors_Arcium
                 walk *= 0.9f;
                 if (Math.Abs(walk) < 0.05f) walk = 0.0f;
             }
-            if (knockback != 0.0f)
+            if (knockback.X != 0.0f)
             {
-                knockback *= 0.9f;
-                if (Math.Abs(knockback) < 0.05f) knockback = 0.0f;
+                knockback.X *= 0.93f;
+                if (Math.Abs(knockback.X) < 0.1f) knockback.X = 0.0f;
+            }
+            if (knockback.Y != 0.0f)
+            {
+                knockback.Y *= 0.93f;
+                if (Math.Abs(knockback.Y) < 0.1f) knockback.Y = 0.0f;
             }
             tryingToWalk = false;
             gravity += 0.15f;
@@ -388,7 +393,7 @@ namespace Mors_Arcium
                 walk = 0.0f;
                 jump = 0.0f;
             }
-            speed = new Vector2(walk + knockback, gravity + jump);
+            speed = new Vector2(walk, gravity + jump) + knockback;
             /*
             speed = Vector2.Zero;
             if (Keyboard.GetState().IsKeyDown(Keys.S)) speed.Y = 2.5f;
