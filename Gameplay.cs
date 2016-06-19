@@ -41,9 +41,10 @@ namespace Mors_Arcium
         public int numPlayers = 11;
         public int wave = 0;
         public int waveTimer = 0;
-        private float waveAlpha = 0.0f;
+        private float waveAlpha = 1.0f;
         private int healthPackTimer = 500;
         string cheatString = "";
+        int nearestEnemy = 0;
 
         public Gameplay(MorsArcium g)
         {
@@ -57,14 +58,14 @@ namespace Mors_Arcium
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
             player = new WizardPlayer(this);
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
-            SpawnEnemies();
+            //SpawnEnemies();
             AddEntity(player);
             fadeOut = 0f;
             fadeIn = 1.0f;
             wave = 0;
             waveTimer = 0;
-            waveAlpha = 0.0f;
-            numPlayers = numCPUs + 1;
+            waveAlpha = 1.0f;
+            numPlayers = 1;
         }
         private void SpawnEnemies()
         {
@@ -98,6 +99,7 @@ namespace Mors_Arcium
             {
                 MrBPlayer p = new MrBPlayer(this);
                 p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                p.position.Y = -64.0f;
                 AddEntity(p);
                 p = null;
             }
@@ -105,6 +107,7 @@ namespace Mors_Arcium
             {
                 WizardPlayer w = new WizardPlayer(this);
                 w.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                w.position.Y = -64.0f;
                 AddEntity(w);
                 w = null;
             }
@@ -112,6 +115,7 @@ namespace Mors_Arcium
             {
                 EliPlayer e = new EliPlayer(this);
                 e.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
+                e.position.Y = -64.0f;
                 AddEntity(e);
                 e = null;
             }
@@ -216,6 +220,8 @@ namespace Mors_Arcium
                 }
             }
             numPlayers = 0;
+            float minDist = 10000;
+            nearestEnemy = 0;
             for (int x = 0; x < entities.GetLength(0); x++)
             {
                 for (int y = 0; y < entities.GetLength(1); y++)
@@ -226,6 +232,18 @@ namespace Mors_Arcium
                         {
                             Player p = (Player)entities[x, y];
                             p.UpdateCPU();
+                            if (Vector2.Distance(p.position, player.position) < minDist)
+                            {
+                                minDist = Vector2.Distance(p.position, player.position);
+                                if (p.position.X > player.position.X)
+                                {
+                                    nearestEnemy = 1;
+                                }
+                                else
+                                {
+                                    nearestEnemy = -1;
+                                }
+                            }
                             p = null;
                         }
                         if (entities[x, y].type == TYPE_PLAYER)
@@ -309,6 +327,7 @@ namespace Mors_Arcium
             {
                 wave += 1;
                 waveTimer = 200;
+                waveAlpha = 0.0f;
             }
 
             if (waveTimer > 0)
@@ -379,17 +398,36 @@ namespace Mors_Arcium
             sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), hbRect, Color.White);
             sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), mbRect, Color.White);
             sp.DrawString(game.font1, "WAVE " + wave, new Vector2(240, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
+            sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
+            if (nearestEnemy != 0)
+            {
+                if (nearestEnemy == 1)
+                {
+                    sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
+                }
+                else
+                {
+                    sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
+                }
+            }
             if (waveTimer > 0)
             {
-                if (waveTimer >= 190)
+                if (waveTimer >= 100 && waveAlpha < 1.0f)
                 {
                     waveAlpha += 0.1f;
                 }
-                else if (waveTimer <= 10)
+                else if (waveTimer <= 10 && waveAlpha > 0.0f)
                 {
                     waveAlpha -= 0.1f;
                 }
-                sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+                if (wave == 1)
+                {
+                    sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
+                }
+                else
+                {
+                    sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+                }
             }
             if (player.dead)
             {

@@ -141,6 +141,12 @@ namespace Mors_Arcium
             {
                 spriteEffects = SpriteEffects.None;
             }
+            if (position.X < 0.0f || position.X > game.tilemap.width * 16)
+            {
+                aiState = "run";
+                runOrigin = position.X;
+                runDistance = 8;
+            }
             Walk();
             if (position.X == lastX)
             {
@@ -288,16 +294,18 @@ namespace Mors_Arcium
                 {
                     if (game.entities[Gameplay.TYPE_PLAYER, i] != null && game.entities[Gameplay.TYPE_PLAYER, i] != this)
                     {
-                        if (Math.Abs(game.entities[Gameplay.TYPE_PLAYER, i].position.X - position.X) < 160)
+                        Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
+                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 160.0f && p.deathTimer == 0)
                         {
                             target = game.entities[Gameplay.TYPE_PLAYER, i];
                             break;
                         }
+                        p = null;
                     }
                 }
             }
             //Jump at jump nodes
-            if (aiState == "run" || aiState == "chase" || (aiState == "attack" && walk != 0.0f))
+            if (aiState == "run" || aiState == "chase" || aiState == "attack")
             {
                 for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
                 {
@@ -420,7 +428,7 @@ namespace Mors_Arcium
             {
                 health = 0;
                 deathTimer = 99;
-                Console.WriteLine("THIS IS MADNESS!");
+                Console.WriteLine("THIS IS MADNESS! " + sourceRect.Y);
             }
             if (deathTimer >= 1)
             {
@@ -454,6 +462,10 @@ namespace Mors_Arcium
             {
                 health -= amount;
                 hurtTimer = 30;
+                if (perpetrator is EliPlayer)
+                {
+                    target = perpetrator;
+                }
             }
             if (perpetrator != null && health <= 0)
             {

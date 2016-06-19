@@ -182,9 +182,9 @@ namespace Mors_Arcium
         }
         public override void Special()
         {
-            if (magic >= 50 && animationState != "teleport" && deathTimer == 0)
+            if (magic >= 75 && animationState != "teleport" && deathTimer == 0)
             {
-                magic -= 50;
+                magic -= 75;
                 ChangeAnimationState("teleport");
             }
         }

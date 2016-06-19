@@ -425,7 +425,6 @@ namespace Mors_Arcium
                                 Jump();
                             }
                             p = null;
-                            break;
                         }
                     }
                     p = null;
@@ -434,28 +433,31 @@ namespace Mors_Arcium
                 {
                     //if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
                     //{
-                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 64.0f && game.game.random.Next(0, 14) == 1)
+                    float dist = Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position);
+                    if (dist < 64.0f && game.game.random.Next(0, 14) == 1)
+                    {
+                        if (game.entities[Gameplay.TYPE_PLAYER, i].position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
                         {
-                            if (game.entities[Gameplay.TYPE_PLAYER, i].position.Y > position.Y + hitboxOffset.Y - hitboxSize.Y)
+                            if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
                             {
-                                if (game.entities[Gameplay.TYPE_PLAYER, i] is EliPlayer)
+                                aiState = "run";
+                                runOrigin = position.X;
+                                runDistance = 128.0f;
+                                if (game.entities[Gameplay.TYPE_PLAYER, i].position.X > position.X)
                                 {
-                                    aiState = "run";
-                                    runOrigin = position.X;
-                                    runDistance = 128.0f;
-                                    if (game.entities[Gameplay.TYPE_PLAYER, i].position.X > position.X)
-                                    {
-                                        spriteEffects = SpriteEffects.FlipHorizontally;
-                                    }
-                                    else
-                                    {
-                                        spriteEffects = SpriteEffects.None;
-                                    }
+                                    spriteEffects = SpriteEffects.FlipHorizontally;
                                 }
-                                Special();
+                                else
+                                {
+                                    spriteEffects = SpriteEffects.None;
+                                }
                             }
-                            break;
+                                
+                                
                         }
+                        if (dist < 32.0f) Special();
+                        break;
+                    }
                     //}
                 }
                 else if (game.entities[Gameplay.TYPE_ITEM, i] != null)

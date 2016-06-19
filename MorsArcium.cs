@@ -12,8 +12,7 @@ namespace Mors_Arcium
         //Android Controls
         //Joystick Controls?
         //Class select menu
-        //Target issues? (Target seems to be far away in unsurvivable places
-        //Nerf Wizard/Eli/ Buff Mr. /B/
+        //Add Bug
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

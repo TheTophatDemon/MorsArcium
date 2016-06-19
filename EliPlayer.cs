@@ -187,23 +187,23 @@ namespace Mors_Arcium
             {
                 aiState = "chase";
             }
-            if (position.X < 64.0f || position.X > (game.tilemap.width * 16) - 64.0f)
+            /*if (position.X < 32.0f || position.X > (game.tilemap.width * 16) - 32.0f)
             {
                 aiState = "run";
-                if (position.X < 64.0f)
+                if (position.X < 32.0f)
                 {
                     runOrigin = position.X;
                     spriteEffects = SpriteEffects.None;
                     runDistance = 64.0f;
                 }
-                else if (position.X > (game.tilemap.width * 16) - 64.0f)
+                else if (position.X > (game.tilemap.width * 16) - 32.0f)
                 {
                     runOrigin = position.X;
                     spriteEffects = SpriteEffects.FlipHorizontally;
                     runDistance = 64.0f;
                 }
                 target = null;
-            }
+            }*/
         }
     }
 }
