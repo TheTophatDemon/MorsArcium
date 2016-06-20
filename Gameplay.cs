@@ -17,6 +17,7 @@ namespace Mors_Arcium
         public Vector2 cameraPosition;
         public float cameraRotation;
         public MorsArcium game;
+        public bool started = false;
 
         public Entity[,] entities;
         public Tilemap tilemap;
@@ -66,6 +67,7 @@ namespace Mors_Arcium
             waveTimer = 0;
             waveAlpha = 1.0f;
             numPlayers = 1;
+            started = true;
         }
         private void SpawnEnemies()
         {
@@ -122,7 +124,10 @@ namespace Mors_Arcium
         }
         public void Update(GameTime gt)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) && game.currentMenu == null)
+            {
+                game.currentMenu = new MainMenu(game);
+            }
             if (!player.dead)
             {
 #if DEBUG
@@ -398,8 +403,8 @@ namespace Mors_Arcium
             sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), hbRect, Color.White);
             sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), mbRect, Color.White);
             sp.DrawString(game.font1, "WAVE " + wave, new Vector2(240, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
-            sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
-            if (nearestEnemy != 0)
+            if (player.deathTimer == 0 && player.dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
+            if (nearestEnemy != 0 && player.deathTimer == 0 && player.dead == false)
             {
                 if (nearestEnemy == 1)
                 {

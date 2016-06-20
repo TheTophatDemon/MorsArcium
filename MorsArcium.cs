@@ -13,6 +13,7 @@ namespace Mors_Arcium
         //Joystick Controls?
         //Class select menu
         //Add Bug
+        //Elis are getting stuck, maybe not target issues????
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -25,7 +26,8 @@ namespace Mors_Arcium
         SpriteBatch spriteBatch;
         RenderTarget2D renderTarget;
 
-        Gameplay game;
+        public Gameplay game;
+        public Menu currentMenu = null;
 
         public Texture2D[] textures;
         public SoundEffect[] sounds;
@@ -48,12 +50,14 @@ namespace Mors_Arcium
         protected override void Initialize()
         {
             base.Initialize();
+#if WINDOWS
             Window.Title = "MORS ARCIUM";
             Window.Position = new Point(64, 64);
             graphics.PreferredBackBufferWidth = 960;
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
             IsMouseVisible = true;
+#endif
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
             thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
             renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
@@ -71,8 +75,7 @@ namespace Mors_Arcium
 
             LoadTexture("Content/textures/characters.png", 0);
             LoadTexture("Content/textures/hud.png", 2);        
-            LoadTexture("Content/textures/projectiles.png", 3);
-            LoadTexture("Content/textures/buttons.png", 4);    
+            LoadTexture("Content/textures/projectiles.png", 3);   
             LoadTexture("Content/textures/tileset.png", 5);    
             LoadTexture("Content/textures/hitbox.png", 6);    
             LoadTexture("Content/textures/particles.png", 7);  
@@ -80,7 +83,8 @@ namespace Mors_Arcium
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);
-            game.Initialize();
+            currentMenu = new MainMenu(this);
+            //game.Initialize();
         }
         protected override void UnloadContent()
         {
@@ -102,7 +106,14 @@ namespace Mors_Arcium
             
             if (!pause || skip)
             {
-                game.Update(gameTime);
+                if (currentMenu != null)
+                {
+                    currentMenu.Update(gameTime);
+                }
+                else
+                {
+                    game.Update(gameTime);
+                }
                 skip = false;
             }
         }
@@ -110,7 +121,14 @@ namespace Mors_Arcium
         {
             GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.DarkBlue);
-            game.Draw(spriteBatch);
+            if (currentMenu != null)
+            {
+                currentMenu.Draw(spriteBatch);
+            }
+            else
+            {
+                game.Draw(spriteBatch);
+            }
             GraphicsDevice.SetRenderTarget(null);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, null, null, null);
             spriteBatch.Draw(renderTarget, thing, Color.White);
