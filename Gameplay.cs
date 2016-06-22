@@ -51,13 +51,27 @@ namespace Mors_Arcium
         {
             game = g;
         }
-        public void Initialize()
+        public void Initialize(int playerClass = 0)
         {
             deathThingy = new Vector2(100, 240);
             entities = new Entity[8, 128];
             particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
-            player = new WizardPlayer(this);
+            switch (playerClass)
+            {
+                case 0:
+                    player = new MrBPlayer(this);
+                    break;
+                case 1:
+                    player = new WizardPlayer(this);
+                    break;
+                case 2:
+                    player = new EliPlayer(this);
+                    break;
+                case 3:
+                    player = new MrBPlayer(this);
+                    break;
+            }
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
             //SpawnEnemies();
             AddEntity(player);
@@ -126,7 +140,7 @@ namespace Mors_Arcium
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && game.currentMenu == null)
             {
-                game.currentMenu = new MainMenu(game);
+                game.ChangeMenuState(new MainMenu(game));
             }
             if (!player.dead)
             {

@@ -186,6 +186,7 @@ namespace Mors_Arcium
             {
                 magic -= 75;
                 ChangeAnimationState("teleport");
+                knockback = Vector2.Zero;
             }
         }
         protected override void ChangeAnimationState(string st)

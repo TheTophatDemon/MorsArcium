@@ -52,12 +52,11 @@ namespace Mors_Arcium
         }
         private void StartGame()
         {
-            game.currentMenu = null;
-            game.game.Initialize();
+            game.ChangeMenuState(new ClassMenu(game));
         }
         private void ResumeGame()
         {
-            game.currentMenu = null;
+            game.ChangeMenuState(null);
         }
         private void GotoTutorial()
         {

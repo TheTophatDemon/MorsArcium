@@ -11,9 +11,10 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Joystick Controls?
-        //Class select menu
         //Add Bug
         //Elis are getting stuck, maybe not target issues????
+        //Add warning for Wizard attacks?
+        //Menu backgrounds and Titles
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -28,6 +29,10 @@ namespace Mors_Arcium
 
         public Gameplay game;
         public Menu currentMenu = null;
+        private Menu nextMenu = null;
+        private bool transition = false;
+        private float fade = 1.0f;
+        private bool fadeIn = false;
 
         public Texture2D[] textures;
         public SoundEffect[] sounds;
@@ -106,6 +111,30 @@ namespace Mors_Arcium
             
             if (!pause || skip)
             {
+                if (transition)
+                {
+                    if (!fadeIn)
+                    {
+                        fade -= 0.1f;
+                        if (fade <= 0.0f)
+                        {
+                            fade = 0.0f;
+                            currentMenu = nextMenu;
+                            nextMenu = null;
+                            fadeIn = true;
+                        }
+                    }
+                    else
+                    {
+                        fade += 0.1f;
+                        if (fade > 1.0f)
+                        {
+                            fade = 1.0f;
+                            transition = false;
+                            fadeIn = false;
+                        }
+                    }
+                }
                 if (currentMenu != null)
                 {
                     currentMenu.Update(gameTime);
@@ -131,13 +160,18 @@ namespace Mors_Arcium
             }
             GraphicsDevice.SetRenderTarget(null);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, null, null, null);
-            spriteBatch.Draw(renderTarget, thing, Color.White);
+            spriteBatch.Draw(renderTarget, thing, Color.White * fade);
             spriteBatch.End();
             base.Draw(gameTime);
         }
         public static float WeightedAverage(float x2, float x, float x1, float Q11, float Q21)
         {
             return ((x2 - x) / (x2 - x1)) * Q11 + ((x - x1) / (x2 - x1)) * Q21;
+        }
+        public void ChangeMenuState(Menu men)
+        {
+            nextMenu = men;
+            transition = true;
         }
     }
 }
