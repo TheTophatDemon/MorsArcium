@@ -69,7 +69,7 @@ namespace Mors_Arcium
                     player = new EliPlayer(this);
                     break;
                 case 3:
-                    player = new MrBPlayer(this);
+                    player = new BugPlayer(this);
                     break;
             }
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
