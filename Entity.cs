@@ -35,6 +35,7 @@ namespace Mors_Arcium
         protected bool collision_top;
         protected bool collision_left;
         protected bool collision_right;
+        protected bool granddad; //GRAND DAD!?!?!?!? FLEENSTONES!?!?!?!?!
         protected int onSlope = -1;
         protected int wasOnSlope = -1;
         public int[] collisionMask;
@@ -60,6 +61,7 @@ namespace Mors_Arcium
             collision_left = false;
             collision_top = false;
             collision_right = false;
+            granddad = false;
             int numSlopes = 0;
             Vector2[] potentialSlopes = new Vector2[8];
             
@@ -135,9 +137,15 @@ namespace Mors_Arcium
                             if (position.X - hitboxSize.X + hitboxOffset.X < tx + 16 && position.X + hitboxSize.X + hitboxOffset.X > tx && position.Y - hitboxSize.Y + hitboxOffset.Y > ty && position.Y - hitboxSize.Y - 1.0f + hitboxOffset.Y < ty + 16)
                             {
                                 collision_top = true;
-                                
                             }
                         }
+                        //if (!collision_bottom)
+                        //{
+                            if (position.X - hitboxSize.X + hitboxOffset.X < tx + 16 && position.X + hitboxSize.X + hitboxOffset.X > tx && position.Y + hitboxSize.Y + 1.0f + hitboxOffset.Y > ty && position.Y + hitboxSize.Y + hitboxOffset.Y < ty + 16)
+                            {
+                                granddad = true;
+                            }
+                        //}
                     }
                 }
             }

@@ -11,7 +11,6 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Joystick Controls?
-        //Elis are getting stuck, maybe not target issues????
         //Menu backgrounds and Titles
         //Bug flying, attacks and stuff
         public Keys UP = Keys.W;

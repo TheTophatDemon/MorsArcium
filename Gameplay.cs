@@ -373,6 +373,10 @@ namespace Mors_Arcium
             {
                 player.ChangeInto(64);
             }
+            else if (Keyboard.GetState().IsKeyDown(Keys.D4) && !(player is BugPlayer))
+            {
+                player.ChangeInto(96);
+            }
             if (time == DateTime.Now.Second)
             {
                 ticks += 1;
@@ -489,6 +493,11 @@ namespace Mors_Arcium
                 index = 0;
                 Console.WriteLine("ENTITY LIMIT REACHED ON TYPE " + e.type);
             }
+            e.index = index;
+            entities[e.type, index] = e;
+        }
+        public void ReplaceEntity(Entity e, int index)
+        {
             e.index = index;
             entities[e.type, index] = e;
         }

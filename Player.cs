@@ -29,6 +29,8 @@ namespace Mors_Arcium
         protected int cooldown = 0;
         public int aimDirection = 0;
 
+        protected float maxGravity = 8.0f;
+
         protected string animationState = "idle";
         public bool dead = false;
         public int deathTimer = 0;
@@ -248,6 +250,10 @@ namespace Mors_Arcium
         }
         public virtual void UpdateCPU()
         {
+            if (target != null)
+            {
+                if (target.killMe) target = null;
+            }
             if (target != null && target != this)
             {
                 if (aiState == "chase")
@@ -370,7 +376,7 @@ namespace Mors_Arcium
             }
             tryingToWalk = false;
             gravity += 0.15f;
-            if (gravity > 8.0f) gravity = 8.0f;
+            if (gravity > maxGravity) gravity = maxGravity;
             if ((collision_bottom && onSlope == -1) || (onSlope != -1 && wasOnSlope == -1))
             {
                 if (gravity >= 7.0f)
@@ -409,10 +415,6 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.D)) speed.X = 2.5f;
             if (Keyboard.GetState().IsKeyDown(Keys.W)) speed.Y = -2.5f;*/
             lastX = position.X;
-            if (target != null)
-            {
-                //Console.WriteLine("POOTIS");
-            }
             TryMove(speed);
             Animate();
             tryingToJump = false;
@@ -538,7 +540,8 @@ namespace Mors_Arcium
                         b.position = position;
                         b.health = health;
                         b.magic = magic;
-                        game.AddEntity(b);
+                        // game.AddEntity(b);
+                        game.ReplaceEntity(b, index);
                         if (game.player == this)
                         {
                             game.player = b;
@@ -550,7 +553,8 @@ namespace Mors_Arcium
                         w.position = position;
                         w.health = health;
                         w.magic = magic;
-                        game.AddEntity(w);
+                        //game.AddEntity(w);
+                        game.ReplaceEntity(w, index);
                         if (game.player == this)
                         {
                             game.player = w;
@@ -562,10 +566,24 @@ namespace Mors_Arcium
                         e.position = position;
                         e.health = health;
                         e.magic = magic;
-                        game.AddEntity(e);
+                        //game.AddEntity(e);
+                        game.ReplaceEntity(e, index);
                         if (game.player == this)
                         {
                             game.player = e;
+                        }
+                        killMe = true;
+                        break;
+                    case 96: //Bug
+                        BugPlayer g = new BugPlayer(game);
+                        g.position = position;
+                        g.health = health;
+                        g.magic = magic;
+                        //game.AddEntity(g);
+                        game.ReplaceEntity(g, index);
+                        if (game.player == this)
+                        {
+                            game.player = g;
                         }
                         killMe = true;
                         break;
