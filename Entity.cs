@@ -91,12 +91,12 @@ namespace Mors_Arcium
                                 if (position.X + hitboxSize.X + hitboxOffset.X + spd.X > tx && position.X + hitboxSize.X + hitboxOffset.X + spd.X < tx + 16)
                                 {
                                     position.X = tx - hitboxSize.X - hitboxOffset.X;
-                                    collision_right = true;
+                                    if (y * 16 < position.Y + hitboxOffset.Y + hitboxSize.Y - 4) collision_right = true;
                                 }
                                 else
                                 {
                                     position.X = tx + 16 + hitboxSize.X - hitboxOffset.X;
-                                    collision_left = true;
+                                    if (y * 16 < position.Y + hitboxOffset.Y + hitboxSize.Y - 4) collision_left = true;
                                 }
                                 spd.X = 0.0f;
                             }

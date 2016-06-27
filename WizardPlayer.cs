@@ -21,6 +21,9 @@ namespace Mors_Arcium
         Animation jumpAttackAnimation;
         Animation specialAnimation;
         Animation deathAnimation;
+        int inaccuracy = 0;
+        bool missed = false;
+        int framesSinceLastAttack = 0;
         public WizardPlayer(Gameplay g) : base(g)
         {
             attackSpeed = 75;
@@ -59,9 +62,11 @@ namespace Mors_Arcium
             specialAnimation.looping = false;
             sheetOffset = 32;
             animation = idleAnimation;
+            inaccuracy = game.game.random.Next(-15, 15);
         }
         public override void Update(GameTime gt)
         {
+            framesSinceLastAttack += 1;
             if (magic < maxMagic) magic += 1;
             if (animationState == "special")
             {
@@ -91,6 +96,7 @@ namespace Mors_Arcium
                 //Check a square of tiles around the ray being cast
                 //Collect the tiles that hit the ray into a list
                 //Find the closest tile and get its collision x,y
+                framesSinceLastAttack = 0;
                 Vector2 rayEnd = new Vector2(position.X, position.Y);
                 float rot = 0.0f;
                 if (spriteEffects == SpriteEffects.None)
@@ -125,7 +131,7 @@ namespace Mors_Arcium
                         rot = 180.0f;
                     }
                 }
-                
+                int numHits = 0;
                 float slope = (rayEnd.Y - position.Y) / (rayEnd.X - position.X);
                 int l = (int)Math.Floor(Math.Min(rayEnd.X, position.X) / 16.0f) - 1;
                 int r = (int)Math.Ceiling(Math.Max(rayEnd.X, position.X) / 16.0f) + 1;
@@ -205,6 +211,7 @@ namespace Mors_Arcium
                                     p.Damage(13, this);
                                 }
                                 p.target = this;
+                                numHits += 1;
                             }
                         }
                         p = null;
@@ -220,6 +227,8 @@ namespace Mors_Arcium
                 {
                     beam.position.Y += 12;
                 }
+                missed = false;
+                if (numHits == 0) missed = true;
                 game.AddEntity(beam);
                 beam = null;
             }
@@ -396,18 +405,49 @@ namespace Mors_Arcium
         }
         public override void CPUAttack()
         {
-            float ang2targ = MathHelper.ToDegrees((float)Math.Atan2(target.position.Y - position.Y, target.position.X - position.X));
+            float ang2targ = MathHelper.ToDegrees((float)Math.Atan2(target.position.Y - position.Y, target.position.X - position.X)) + inaccuracy;
             if (ang2targ >= 360) ang2targ -= 360;
             if (ang2targ < 0) ang2targ += 360;
             if (cooldown < 25)
             {
                 if ((ang2targ < 315 && aimDirection == -1 && spriteEffects == SpriteEffects.None) ||
-                    (ang2targ > 225 && aimDirection == -1 && spriteEffects == SpriteEffects.FlipHorizontally))
+                    (ang2targ > 225 && aimDirection == -1 && spriteEffects == SpriteEffects.FlipHorizontally) || (missed == true && framesSinceLastAttack < 100))
                 {
                     Jump();
                 }
             }
+            if (spriteEffects == SpriteEffects.None)
+            {
+                if (ang2targ > 40 && ang2targ < 90)
+                {
+                    aimDirection = 1;
+                }
+                else if (ang2targ < 330 && ang2targ > 270)
+                {
+                    aimDirection = -1;
+                }
+                else
+                {
+                    aimDirection = 0;
+                }
+            }
+            else
+            {
+                if (ang2targ < 135 && ang2targ > 90)
+                {
+                    aimDirection = 1;
+                }
+                else if (ang2targ > 225 && ang2targ < 270)
+                {
+                    aimDirection = -1;
+                }
+                else
+                {
+                    aimDirection = 0;
+                }
+            }
             base.CPUAttack();
+            
         }
         public override void CPUDodge()
         {

@@ -80,17 +80,20 @@ namespace Mors_Arcium
         }
         public void Walk()
         {
-            if (spriteEffects == SpriteEffects.None)
+            if (deathTimer == 0)
             {
-                walk += acceleration;
-                if (walk > walkSpeed) walk = walkSpeed;
+                if (spriteEffects == SpriteEffects.None)
+                {
+                    walk += acceleration;
+                    if (walk > walkSpeed) walk = walkSpeed;
+                }
+                else
+                {
+                    walk += -acceleration;
+                    if (walk < -walkSpeed) walk = -walkSpeed;
+                }
+                tryingToWalk = true;
             }
-            else
-            {
-                walk += -acceleration;
-                if (walk < -walkSpeed) walk = -walkSpeed;
-            }
-            tryingToWalk = true;
         }
         public virtual void Attack()
         {
@@ -124,9 +127,16 @@ namespace Mors_Arcium
             {
                 aimDirection = 0;
             }
-            if (Math.Abs(target.position.X - position.X) > 160.0f)
+            float disp = Math.Abs(target.position.X - position.X);
+            if (disp > 160.0f)
             {
                 aiState = "chase";
+            }
+            if (disp < 32.0f)
+            {
+                aiState = "run";
+                runOrigin = position.X;
+                runDistance = 64.0f;
             }
         }
         public virtual void CPUChase()
@@ -250,90 +260,102 @@ namespace Mors_Arcium
         }
         public virtual void UpdateCPU()
         {
-            if (target != null)
+            if (deathTimer == 0)
             {
-                if (target.killMe) target = null;
-            }
-            if (target != null && target != this)
-            {
-                if (aiState == "chase")
+                if (target != null)
                 {
-                    CPUChase();
-                }
-                else if (aiState == "run")
-                {
-                    CPURun();
-                }
-                else if (aiState == "attack")
-                {
-                    CPUAttack();
-                }
-                
-                //DODGE!!!!
-                CPUDodge();
-                if (target is Player)
-                {
-                    Player p = (Player)target;
-                    if (p.deathTimer != 0)
+                    bool imTheTrashManIEatGarbage = false;
+                    if (target.killMe) imTheTrashManIEatGarbage = true;
+                    if (target.position.X < 0 || target.position.X > game.tilemap.width * 16)
+                    {
+                        imTheTrashManIEatGarbage = true;
+                    }
+                    if (imTheTrashManIEatGarbage)
                     {
                         target = null;
                     }
-                    p = null;
                 }
-                if (target is HealthPack)
+                if (target != null && target != this)
                 {
-                    target = null;
-                }
-            }
-            else
-            {
-                Walk();
-                if (position.X < 64.0f)
-                {
-                    spriteEffects = SpriteEffects.None;
-                }
-                else if (position.X > (game.tilemap.width - 4) * 16)
-                {
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-                }
-                for (int i = 0; i < game.entities.GetLength(1); i++)
-                {
-                    if (game.entities[Gameplay.TYPE_PLAYER, i] != null && game.entities[Gameplay.TYPE_PLAYER, i] != this)
+                    if (aiState == "chase")
                     {
-                        Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
-                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 160.0f && p.deathTimer == 0)
+                        CPUChase();
+                    }
+                    else if (aiState == "run")
+                    {
+                        CPURun();
+                    }
+                    else if (aiState == "attack")
+                    {
+                        CPUAttack();
+                    }
+
+                    //DODGE!!!!
+                    CPUDodge();
+                    if (target is Player)
+                    {
+                        Player p = (Player)target;
+                        if (p.deathTimer != 0)
                         {
-                            target = game.entities[Gameplay.TYPE_PLAYER, i];
-                            break;
+                            target = null;
                         }
                         p = null;
                     }
-                }
-            }
-            //Jump at jump nodes
-            if (aiState == "run" || aiState == "chase" || aiState == "attack")
-            {
-                for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
-                {
-                    if (position.X + hitboxOffset.X + hitboxSize.X > game.tilemap.jumpNodes[i].X - 24.0f && position.X + hitboxOffset.X - hitboxSize.X < game.tilemap.jumpNodes[i].X + 24.0f)
+                    if (target is HealthPack)
                     {
-                        bool fnickel = false;
-                        if (target != null)
+                        target = null;
+                    }
+                }
+                else
+                {
+                    Walk();
+                    if (position.X < 64.0f)
+                    {
+                        spriteEffects = SpriteEffects.None;
+                    }
+                    else if (position.X > (game.tilemap.width - 4) * 16)
+                    {
+                        spriteEffects = SpriteEffects.FlipHorizontally;
+                    }
+                    for (int i = 0; i < game.entities.GetLength(1); i++)
+                    {
+                        if (game.entities[Gameplay.TYPE_PLAYER, i] != null && game.entities[Gameplay.TYPE_PLAYER, i] != this)
                         {
-                            if (position.Y + hitboxOffset.Y - hitboxSize.Y <= game.tilemap.jumpNodes[i].Y + 16)
+                            Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
+                            if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 160.0f && p.deathTimer == 0)
+                            {
+                                target = game.entities[Gameplay.TYPE_PLAYER, i];
+                                break;
+                            }
+                            p = null;
+                        }
+                    }
+                }
+                //Jump at jump nodes
+                if (aiState == "run" || aiState == "chase" || aiState == "attack")
+                {
+                    for (int i = 0; i < game.tilemap.jumpNodeCount; i++)
+                    {
+                        if (position.X + hitboxOffset.X + hitboxSize.X > game.tilemap.jumpNodes[i].X - 24.0f && position.X + hitboxOffset.X - hitboxSize.X < game.tilemap.jumpNodes[i].X + 24.0f)
+                        {
+                            bool fnickel = false;
+                            if (target != null)
+                            {
+                                if (position.Y + hitboxOffset.Y - hitboxSize.Y <= game.tilemap.jumpNodes[i].Y + 16)
+                                {
+                                    fnickel = true;
+                                }
+                                else if (target.position.Y < position.Y)
+                                {
+                                    fnickel = true;
+                                }
+                            }
+                            else
                             {
                                 fnickel = true;
                             }
-                            else if (target.position.Y < position.Y)
-                            {
-                                fnickel = true;
-                            }
+                            if (fnickel) Jump();
                         }
-                        else
-                        {
-                            fnickel = true;
-                        }
-                        if (fnickel) Jump();
                     }
                 }
             }
@@ -364,6 +386,8 @@ namespace Mors_Arcium
                 walk *= 0.9f;
                 if (Math.Abs(walk) < 0.05f) walk = 0.0f;
             }
+            if (collision_left && walk < 0.0f) walk = 0.0f;
+            if (collision_right && walk > 0.0f) walk = 0.0f;
             if (knockback.X != 0.0f)
             {
                 knockback.X *= 0.93f;
@@ -404,7 +428,7 @@ namespace Mors_Arcium
             }
             if (deathTimer > 0)
             {
-                walk = 0.0f;
+                //walk = 0.0f;
                 jump = 0.0f;
             }
             speed = new Vector2(walk, gravity + jump) + knockback;
@@ -416,7 +440,7 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.W)) speed.Y = -2.5f;*/
             lastX = position.X;
             TryMove(speed);
-            Animate();
+            
             tryingToJump = false;
             if (health > maxHealth) health = maxHealth;
             if (magic > maxMagic) magic = maxMagic;
@@ -432,6 +456,7 @@ namespace Mors_Arcium
                 deathTimer = 99;
                 Console.WriteLine("THIS IS MADNESS! " + sourceRect.Y);
             }
+            Animate();
             if (deathTimer >= 1)
             {
                 deathTimer += 1;
@@ -469,7 +494,7 @@ namespace Mors_Arcium
                     target = perpetrator;
                 }
             }
-            if (perpetrator != null && health <= 0)
+            if (perpetrator != null && health <= 0 && deathTimer == 0)
             {
                 if (perpetrator is Player)
                 {

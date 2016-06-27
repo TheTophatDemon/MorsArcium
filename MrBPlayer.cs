@@ -58,6 +58,7 @@ namespace Mors_Arcium
         public override void Update(GameTime gt)
         {
             if (magic < maxMagic) magic += 1;
+            
             /*if (health < 20 && aiState == "attack" && target != null && !desperate)
             {
                 

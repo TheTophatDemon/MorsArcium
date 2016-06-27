@@ -22,7 +22,7 @@ namespace Mors_Arcium
             magic = 200;
             walkSpeed = 2.2f;
             jumpHeight = 5.0f;
-            acceleration = 1.0f;
+            acceleration = 0.20f;
             sheetOffset = 64;
             sourceRect = new Rectangle(0, 0, 40, 32);
             hitboxOffset = new Vector2(0, 0);
@@ -113,16 +113,23 @@ namespace Mors_Arcium
         }
         public override void Draw(SpriteBatch sp)
         {
-            if (hurtTimer == 0 || hurtTimer % 4 == 0)
+            if (deathTimer == 0)
             {
-                if (spriteEffects == SpriteEffects.None)
+                if (hurtTimer == 0 || hurtTimer % 4 == 0)
                 {
-                    sp.Draw(texture, position - origin, sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                    if (spriteEffects == SpriteEffects.None)
+                    {
+                        sp.Draw(texture, position - origin, sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                    }
+                    else
+                    {
+                        sp.Draw(texture, position - origin - new Vector2(8, 0), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                    }
                 }
-                else
-                {
-                    sp.Draw(texture, position - origin - new Vector2(8, 0), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
-                }
+            }
+            else
+            {
+                sp.Draw(texture, position, sourceRect, Color.White, rotation, origin, scale, spriteEffects, 0);
             }
         }
         protected override void UpdateAnimationState()
@@ -187,23 +194,6 @@ namespace Mors_Arcium
             {
                 aiState = "chase";
             }
-            /*if (position.X < 32.0f || position.X > (game.tilemap.width * 16) - 32.0f)
-            {
-                aiState = "run";
-                if (position.X < 32.0f)
-                {
-                    runOrigin = position.X;
-                    spriteEffects = SpriteEffects.None;
-                    runDistance = 64.0f;
-                }
-                else if (position.X > (game.tilemap.width * 16) - 32.0f)
-                {
-                    runOrigin = position.X;
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-                    runDistance = 64.0f;
-                }
-                target = null;
-            }*/
         }
     }
 }

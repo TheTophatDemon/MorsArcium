@@ -17,7 +17,7 @@ namespace Mors_Arcium
             collisions = false;
             type = Gameplay.TYPE_BEAM;
             origin = new Vector2(0, 4);
-            sourceRect = new Rectangle(0, 16, (int)Math.Floor(l - 16.0f), 8);
+            sourceRect = new Rectangle(0, 16, (int)Math.Floor(l - 8.0f), 8);
             cos = (float)Math.Cos(r) * 16.0f;
             sin = (float)Math.Sin(r) * 16.0f;
         }

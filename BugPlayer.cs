@@ -228,10 +228,13 @@ namespace Mors_Arcium
             base.Collide(perpetrator);
             if (animationState == "special" && perpetrator is Player)
             {
-                Player p = (Player)perpetrator;
-                p.Damage(5, this);
-                p = null;
-                gravity = -2.0f;
+                if (perpetrator.position.Y >= position.Y + hitboxOffset.Y + hitboxSize.Y)
+                {
+                    Player p = (Player)perpetrator;
+                    p.Damage(5, this);
+                    p = null;
+                    knockback.Y = -gravity - 5.0f;
+                }
             }
         }
     }

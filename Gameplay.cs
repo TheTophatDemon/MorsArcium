@@ -111,30 +111,30 @@ namespace Mors_Arcium
                 }
             }*
             numPlayers = numCPUs + 1;*/
-            for (int i = 0; i < 4; i++)
+            /*for (int i = 0; i < 4; i++)
             {
                 MrBPlayer p = new MrBPlayer(this);
                 p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                p.position.Y = -64.0f;
+                p.position.Y = -96.0f;
                 AddEntity(p);
                 p = null;
-            }
+            }*/
             for (int i = 0; i < 4; i++)
             {
                 WizardPlayer w = new WizardPlayer(this);
                 w.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                w.position.Y = -64.0f;
+                w.position.Y = -96.0f;
                 AddEntity(w);
                 w = null;
-            }
+            }/*
             for (int i = 0; i < 4; i++)
             {
                 EliPlayer e = new EliPlayer(this);
                 e.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                e.position.Y = -64.0f;
+                e.position.Y = -96.0f;
                 AddEntity(e);
                 e = null;
-            }
+            }*/
         }
         public void Update(GameTime gt)
         {
@@ -160,15 +160,7 @@ namespace Mors_Arcium
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Y))
                 {
-                    for (int i = 0; i < entities.GetLength(1); i++)
-                    {
-                        if (entities[TYPE_PLAYER, i] != null && entities[TYPE_PLAYER, i] != player)
-                        {
-                            Player p = (Player)entities[TYPE_PLAYER, i];
-                            p.health = 0;
-                            p = null;
-                        }
-                    }
+                    player.health -= 1;
                 }
 #endif
                 Keys[] pressedKeys = Keyboard.GetState().GetPressedKeys();
@@ -187,40 +179,42 @@ namespace Mors_Arcium
                     }
                 }
 
-                
-                if (Keyboard.GetState().IsKeyDown(game.JUMP))
+                if (player.deathTimer == 0)
                 {
-                    player.Jump();
-                }
-                if (Keyboard.GetState().IsKeyDown(game.RIGHT))
-                {
-                    player.spriteEffects = SpriteEffects.None;
-                    player.Walk();
-                }
-                else if (Keyboard.GetState().IsKeyDown(game.LEFT))
-                {
-                    player.spriteEffects = SpriteEffects.FlipHorizontally;
-                    player.Walk();
-                }
-                if (Keyboard.GetState().IsKeyDown(game.UP))
-                {
-                    player.aimDirection = -1;
-                }
-                else if (Keyboard.GetState().IsKeyDown(game.DOWN))
-                {
-                    player.aimDirection = 1;
-                }
-                else
-                {
-                    player.aimDirection = 0;
-                }
-                if (Keyboard.GetState().IsKeyDown(game.ATTACK))
-                {
-                    player.Attack();
-                }
-                if (Keyboard.GetState().IsKeyDown(game.SPECIAL))
-                {
-                    player.Special();
+                    if (Keyboard.GetState().IsKeyDown(game.JUMP))
+                    {
+                        player.Jump();
+                    }
+                    if (Keyboard.GetState().IsKeyDown(game.RIGHT))
+                    {
+                        player.spriteEffects = SpriteEffects.None;
+                        player.Walk();
+                    }
+                    else if (Keyboard.GetState().IsKeyDown(game.LEFT))
+                    {
+                        player.spriteEffects = SpriteEffects.FlipHorizontally;
+                        player.Walk();
+                    }
+                    if (Keyboard.GetState().IsKeyDown(game.UP))
+                    {
+                        player.aimDirection = -1;
+                    }
+                    else if (Keyboard.GetState().IsKeyDown(game.DOWN))
+                    {
+                        player.aimDirection = 1;
+                    }
+                    else
+                    {
+                        player.aimDirection = 0;
+                    }
+                    if (Keyboard.GetState().IsKeyDown(game.ATTACK))
+                    {
+                        player.Attack();
+                    }
+                    if (Keyboard.GetState().IsKeyDown(game.SPECIAL))
+                    {
+                        player.Special();
+                    }
                 }
             }
             else
@@ -234,7 +228,7 @@ namespace Mors_Arcium
                 healthPackTimer -= 1;
                 if (healthPackTimer == 0)
                 {
-                    AddEntity(new HealthPack(this, new Vector2(game.random.Next(0, tilemap.width * 16), -64.0f)));
+                    AddEntity(new HealthPack(this, new Vector2(game.random.Next(0, tilemap.width * 16), -96.0f)));
                     healthPackTimer = healthPackFrequency;
                 }
             }
@@ -347,6 +341,8 @@ namespace Mors_Arcium
                 wave += 1;
                 waveTimer = 200;
                 waveAlpha = 0.0f;
+                player.health += 25;
+                if (player.health > player.maxHealth) player.health = player.maxHealth;
             }
 
             if (waveTimer > 0)
@@ -359,7 +355,7 @@ namespace Mors_Arcium
             }
             if (player.deathTimer > 200)
             {
-                Initialize();
+                Initialize(game.random.Next(0, 3));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(player is MrBPlayer))
             {
@@ -391,18 +387,28 @@ namespace Mors_Arcium
         public void Draw(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition, 0f)));
+            for (int y = 0; y < entities.GetLength(1); y++)
+            {
+                if (entities[TYPE_BEAM, y] != null)
+                {
+                    entities[TYPE_BEAM, y].Draw(sp);
+                }
+            }
             tilemap.Draw(sp);
             for (int x = 0; x < entities.GetLength(0); x++)
             {
-                for (int y = 0; y < entities.GetLength(1); y++)
+                if (x != TYPE_BEAM)
                 {
-                    if (entities[x, y] != null)
+                    for (int y = 0; y < entities.GetLength(1); y++)
                     {
-                        entities[x, y].Draw(sp);
+                        if (entities[x, y] != null)
+                        {
+                            entities[x, y].Draw(sp);
 #if DEBUG
-                        //sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
+                            //sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
 #endif
-                        
+
+                        }
                     }
                 }
             }

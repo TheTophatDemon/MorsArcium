@@ -8,6 +8,10 @@ namespace Mors_Arcium
 {
     public class MainMenu : Menu
     {
+        Rectangle titleRect = new Rectangle(272, 0, 192, 120);
+        float floaty = 0.0f;
+        Vector2 backgroundPosition;
+        Color backgroundColor = Color.Gray;
         public MainMenu(MorsArcium g) : base(g)
         {
             if (g.game.started)
@@ -39,14 +43,30 @@ namespace Mors_Arcium
                 buttons[2].source = new Rectangle(0, 176, 128, 24);
                 buttons[2].function = GotoOptions;
             }
+            backgroundPosition = Vector2.Zero;
+            backgroundColor = new Color(32, 32, 32);
         }
         public override void Update(GameTime g)
         {
             base.Update(g);
+            floaty += 0.05f;
+            byte b = (byte)Math.Round(Math.Sin(floaty * 0.5f));
+            backgroundColor.R += b;
+            backgroundColor.G += b;
+            backgroundColor.B += b;
+            backgroundPosition.X -= 1.0f;
+            backgroundPosition.Y -= 1.0f;
+            if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
+            if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
         }
         public override void Draw(SpriteBatch sp)
         {
-            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
+            sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
+            sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
+            sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 0), backgroundColor);
+            sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
+            sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
+            sp.Draw(game.textures[2], new Vector2(64, 4 + (float)Math.Sin(floaty) * 4.0f), titleRect, Color.White);
             base.Draw(sp);
             sp.End();
         }

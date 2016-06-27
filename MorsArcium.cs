@@ -11,8 +11,10 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Joystick Controls?
-        //Menu backgrounds and Titles
         //Bug flying, attacks and stuff
+        //Water, more background stuff, rain?
+        //Difficulty Modes
+        //Wave Events
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -77,6 +79,7 @@ namespace Mors_Arcium
             textures = new Texture2D[512];
 
             LoadTexture("Content/textures/characters.png", 0);
+            LoadTexture("Content/textures/sky.png", 1);
             LoadTexture("Content/textures/hud.png", 2);        
             LoadTexture("Content/textures/projectiles.png", 3);   
             LoadTexture("Content/textures/tileset.png", 5);    
