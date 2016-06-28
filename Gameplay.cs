@@ -57,6 +57,7 @@ namespace Mors_Arcium
             entities = new Entity[8, 128];
             particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
+            tilemap.Generate();
             switch (playerClass)
             {
                 case 0:
@@ -111,14 +112,14 @@ namespace Mors_Arcium
                 }
             }*
             numPlayers = numCPUs + 1;*/
-            /*for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 MrBPlayer p = new MrBPlayer(this);
                 p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
                 p.position.Y = -96.0f;
                 AddEntity(p);
                 p = null;
-            }*/
+            }
             for (int i = 0; i < 4; i++)
             {
                 WizardPlayer w = new WizardPlayer(this);
@@ -126,7 +127,7 @@ namespace Mors_Arcium
                 w.position.Y = -96.0f;
                 AddEntity(w);
                 w = null;
-            }/*
+            }
             for (int i = 0; i < 4; i++)
             {
                 EliPlayer e = new EliPlayer(this);
@@ -134,7 +135,7 @@ namespace Mors_Arcium
                 e.position.Y = -96.0f;
                 AddEntity(e);
                 e = null;
-            }*/
+            }
         }
         public void Update(GameTime gt)
         {
@@ -185,6 +186,7 @@ namespace Mors_Arcium
                     {
                         player.Jump();
                     }
+
                     if (Keyboard.GetState().IsKeyDown(game.RIGHT))
                     {
                         player.spriteEffects = SpriteEffects.None;
@@ -306,7 +308,6 @@ namespace Mors_Arcium
                     }
                 }
             }
-
             for (int i = 0; i < particles.Length; i++)
             {
                 if (particles[i] != null)
@@ -389,6 +390,13 @@ namespace Mors_Arcium
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition, 0f)));
             for (int y = 0; y < entities.GetLength(1); y++)
             {
+                if (entities[TYPE_PROP, y] != null)
+                {
+                    entities[TYPE_PROP, y].Draw(sp);
+                }
+            }
+            for (int y = 0; y < entities.GetLength(1); y++)
+            {
                 if (entities[TYPE_BEAM, y] != null)
                 {
                     entities[TYPE_BEAM, y].Draw(sp);
@@ -397,7 +405,7 @@ namespace Mors_Arcium
             tilemap.Draw(sp);
             for (int x = 0; x < entities.GetLength(0); x++)
             {
-                if (x != TYPE_BEAM)
+                if (x != TYPE_BEAM && x != TYPE_PROP)
                 {
                     for (int y = 0; y < entities.GetLength(1); y++)
                     {

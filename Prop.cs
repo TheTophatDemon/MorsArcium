@@ -6,36 +6,56 @@ namespace Mors_Arcium
     public class Prop : Entity
     {
         public static Rectangle cyberCactus = new Rectangle(0, 48, 16, 32);
+        public static Rectangle pillar = new Rectangle(48, 16, 48, 64);
+        public static Rectangle pyramid = new Rectangle(16, 48, 32, 32);
         int ty, tx, th, tw;
-        public Prop(Gameplay g, Rectangle src, Vector2 pos) : base(g)
+        bool airborne = false;
+        bool czech = false;
+        public Prop(Gameplay g, Rectangle src, Vector2 pos, bool a = false) : base(g)
         {
             type = Gameplay.TYPE_PROP;
-            collisions = false;
             origin = Vector2.Zero;
             texture = g.game.textures[5];
             sourceRect = src;
             position = pos;
+            collisions = false;
             tx = (int)Math.Floor(pos.X / 16.0f);
             ty = (int)Math.Floor(pos.Y / 16.0f);
             th = (int)Math.Floor(src.Height / 16.0f);
             tw = (int)Math.Floor(src.Width / 16.0f);
+            if (tx + tw >= game.tilemap.width) tw -= 1;
+            if (ty + th >= game.tilemap.height) th -= 1;
+            if (tx < 0) tx += 1;
+            if (ty < 0) ty += 1;
+            airborne = a;
         }
         public override void Update(GameTime gt)
         {
             //Make_Money();
-            for (int x = tx; x < tx + tw; x++)
+            if (!airborne && !czech)
             {
-                if (game.tilemap.data[x, ty + th] == 0 || game.tilemap.data[x, ty + th] == 2)
+                for (int x = tx; x < tx + tw; x++)
                 {
-                    killMe = true;
-                    //Console.WriteLine(game.tilemap.data[x, ty + th]);
-                    break;
+                    if (game.tilemap.data[x, ty + th] == 0 || game.tilemap.data[x, ty + th] == 2)
+                    {
+                        killMe = true;
+                        break;
+                    }
+                    for (int y = ty; y < ty + th; y++)
+                    {
+                        if (game.tilemap.data[x, y] != -1)
+                        {
+                            killMe = true;
+                            break;
+                        }
+                    }
                 }
+                czech = true;
             }
         }
         public override void Draw(SpriteBatch sp)
         {
-            sp.Draw(texture, position, sourceRect, Color.White);
+            sp.Draw(texture, position, sourceRect, Color.LightGray);
         }
         public override void Collide(Entity perpetrator)
         {

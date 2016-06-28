@@ -28,6 +28,7 @@ namespace Mors_Arcium
             buttons[3].source = new Rectangle(160, 320, 96, 96);
             buttons[3].position = new Vector2(168, 136);
             buttons[3].function = StartGame;
+            game.game.started = false;
         }
         public override void Update(GameTime g)
         {
@@ -64,7 +65,7 @@ namespace Mors_Arcium
             {
                 if (buttons[i].hover)
                 {
-                    game.game.Initialize(i);
+                    if (game.game.started == false) game.game.Initialize(i);
                 }
             }
         }

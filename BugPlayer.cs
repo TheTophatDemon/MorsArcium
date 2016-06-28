@@ -16,13 +16,16 @@ namespace Mors_Arcium
         Animation walkAttackAnimation;
         Animation walkAttackUpAnimation;
         Animation walkAttackDownAnimation;
-        Animation specialAnimation;
+        Animation jumpAttackUpAnimation;
+        Animation jumpAttackDownAnimation;
+        Animation flyAttackUpAnimation;
+        Animation flyAttackDownAnimation;
         Animation deathAnimation;
         Animation jumpAnimation;
         bool tryingToFly = false;
         public BugPlayer(Gameplay g) : base(g)
         {
-            attackSpeed = 20;
+            attackSpeed = 35;
             maxHealth = 70;
             maxMagic = 100;
             health = 70;
@@ -59,9 +62,13 @@ namespace Mors_Arcium
             attackDownAnimation.speed = 3; attackDownAnimation.looping = false;
             walkAttackDownAnimation.frames = new int[] { 21, 22, 23, 24, 25 };
             walkAttackDownAnimation.speed = 2; walkAttackDownAnimation.looping = true;
-            specialAnimation.frames = new int[] { 26, 27 };
-            specialAnimation.speed = 3; specialAnimation.looping = false;
-            deathAnimation.frames = new int[] { 28, 29, 30 };
+            jumpAttackUpAnimation.frames = new int[] { 29 }; flyAttackUpAnimation.frames = new int[] { 29, 30, 31, 30 };
+            jumpAttackUpAnimation.speed = flyAttackUpAnimation.speed = 3;
+            jumpAttackUpAnimation.looping = flyAttackUpAnimation.looping = true;
+            jumpAttackDownAnimation.frames = new int[] { 32 }; flyAttackDownAnimation.frames = new int[] { 32, 33, 34, 33 };
+            jumpAttackDownAnimation.speed = flyAttackDownAnimation.speed = 3;
+            jumpAttackDownAnimation.looping = flyAttackDownAnimation.looping = true;
+            deathAnimation.frames = new int[] { 26, 27, 28 };
             deathAnimation.looping = false;
             deathAnimation.speed = 5;
             animation = idleAnimation;
@@ -75,11 +82,6 @@ namespace Mors_Arcium
             {
                 ChangeAnimationState("idle");
             }
-            if (granddad && animationState == "special")
-            {
-                ChangeAnimationState("idle");
-                maxGravity = 8.0f;
-            }
             tryingToFly = false;
         }
         public override void Attack()
@@ -89,22 +91,20 @@ namespace Mors_Arcium
             {
                 attacking = true;
                 cooldown = attackSpeed;
-                if (!granddad)
+                float spdx = 8.0f;
+                if (spriteEffects == SpriteEffects.FlipHorizontally) spdx = -4.0f;
+                Trident b = new Trident(game, position + new Vector2(spdx, (aimDirection * 6.0f) + 4), new Vector2(spdx, aimDirection * 4), this);
+                
+                if (spriteEffects == SpriteEffects.FlipHorizontally)
                 {
-                    ChangeAnimationState("special");
-                    jump = 0.0f;
-                    gravity = 12.0f;
-                    maxGravity = 12.0f;
+                    b.rotation = MathHelper.ToRadians(180 - (aimDirection * 35.0f));
                 }
-                /*
                 else
                 {
-                    float spdx = 8.0f;
-                    if (spriteEffects == SpriteEffects.FlipHorizontally) spdx = -8.0f;
-                    Bullet b = new Bullet(game, position + new Vector2(spdx * 1.0f, (aimDirection * 6.0f) + 4), new Vector2(spdx, aimDirection * 8), this);
-                    game.AddEntity(b);
-                    b = null;
-                }*/
+                    b.rotation = MathHelper.ToRadians(aimDirection * 35.0f);
+                }
+                game.AddEntity(b);
+                b = null;
             }
         }
         public override void Special()
@@ -144,10 +144,32 @@ namespace Mors_Arcium
                     animation = walkAnimation;
                     break;
                 case "fly":
-                    animation = flyAnimation;
+                    if (aimDirection == -1)
+                    {
+                        animation = flyAttackUpAnimation;
+                    }
+                    else if (aimDirection == 1)
+                    {
+                        animation = flyAttackDownAnimation;
+                    }
+                    else
+                    {
+                        animation = flyAnimation;
+                    }
                     break;
                 case "jump":
-                    animation = jumpAnimation;
+                    if (aimDirection == -1)
+                    {
+                        animation = jumpAttackUpAnimation;
+                    }
+                    else if (aimDirection == 1)
+                    {
+                        animation = jumpAttackDownAnimation;
+                    }
+                    else
+                    {
+                        animation = jumpAnimation;
+                    }
                     break;
                 case "attack":
                     if (aimDirection == -1)
@@ -179,9 +201,6 @@ namespace Mors_Arcium
                     break;
                 case "dead":
                     animation = deathAnimation;
-                    break;
-                case "special":
-                    animation = specialAnimation;
                     break;
             }
 
@@ -226,16 +245,6 @@ namespace Mors_Arcium
         public override void Collide(Entity perpetrator)
         {
             base.Collide(perpetrator);
-            if (animationState == "special" && perpetrator is Player)
-            {
-                if (perpetrator.position.Y >= position.Y + hitboxOffset.Y + hitboxSize.Y)
-                {
-                    Player p = (Player)perpetrator;
-                    p.Damage(5, this);
-                    p = null;
-                    knockback.Y = -gravity - 5.0f;
-                }
-            }
         }
     }
 }

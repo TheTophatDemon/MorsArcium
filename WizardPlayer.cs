@@ -24,6 +24,7 @@ namespace Mors_Arcium
         int inaccuracy = 0;
         bool missed = false;
         int framesSinceLastAttack = 0;
+        int chargeUp = 0;
         public WizardPlayer(Gameplay g) : base(g)
         {
             attackSpeed = 75;
@@ -66,6 +67,24 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
+            /*if (chargeUp > 0)
+            {
+                chargeUp += 1;
+                if (chargeUp == 5)
+                {
+                    chargeUp = 0;
+                    FireBeam();
+                    color = Color.White;
+                }
+            }*/
+            if (cooldown > 20)
+            {
+                color = Color.PaleVioletRed;
+            }
+            else
+            {
+                color = Color.White;
+            }
             framesSinceLastAttack += 1;
             if (magic < maxMagic) magic += 1;
             if (animationState == "special")
@@ -96,142 +115,148 @@ namespace Mors_Arcium
                 //Check a square of tiles around the ray being cast
                 //Collect the tiles that hit the ray into a list
                 //Find the closest tile and get its collision x,y
-                framesSinceLastAttack = 0;
-                Vector2 rayEnd = new Vector2(position.X, position.Y);
-                float rot = 0.0f;
-                if (spriteEffects == SpriteEffects.None)
+                //chargeUp = 1;
+                //color = Color.Red;
+                FireBeam();
+            }
+        }
+        private void FireBeam()
+        {
+            framesSinceLastAttack = 0;
+            Vector2 rayEnd = new Vector2(position.X, position.Y);
+            float rot = 0.0f;
+            if (spriteEffects == SpriteEffects.None)
+            {
+                rayEnd.X += 160.0f;
+                if (aimDirection == -1)
                 {
-                    rayEnd.X += 160.0f;
-                    if (aimDirection == -1)
-                    {
-                        rayEnd.Y -= 160.0f;
-                        rot = 315.0f;
-                    }
-                    else if (aimDirection == 1)
-                    {
-                        rayEnd.Y += 160.0f;
-                        rot = 45.0f;
-                    }
+                    rayEnd.Y -= 160.0f;
+                    rot = 315.0f;
+                }
+                else if (aimDirection == 1)
+                {
+                    rayEnd.Y += 160.0f;
+                    rot = 45.0f;
+                }
+            }
+            else
+            {
+                rayEnd.X -= 160.0f;
+                if (aimDirection == -1)
+                {
+                    rayEnd.Y -= 160.0f;
+                    rot = 225.0f;
+                }
+                else if (aimDirection == 1)
+                {
+                    rayEnd.Y += 160.0f;
+                    rot = 135.0f;
                 }
                 else
                 {
-                    rayEnd.X -= 160.0f;
-                    if (aimDirection == -1)
-                    {
-                        rayEnd.Y -= 160.0f;
-                        rot = 225.0f;
-                    }
-                    else if (aimDirection == 1)
-                    {
-                        rayEnd.Y += 160.0f;
-                        rot = 135.0f;
-                    }
-                    else
-                    {
-                        rot = 180.0f;
-                    }
+                    rot = 180.0f;
                 }
-                int numHits = 0;
-                float slope = (rayEnd.Y - position.Y) / (rayEnd.X - position.X);
-                int l = (int)Math.Floor(Math.Min(rayEnd.X, position.X) / 16.0f) - 1;
-                int r = (int)Math.Ceiling(Math.Max(rayEnd.X, position.X) / 16.0f) + 1;
-                int t = (int)Math.Floor(Math.Min(rayEnd.Y, position.Y) / 16.0f) - 1;
-                int b = (int)Math.Ceiling(Math.Max(rayEnd.Y, position.Y) / 16.0f) + 1;
-                if (l < 0) l = 0; if (r < 0) r = 0;
-                if (t < 0) t = 0; if (b < 0) b = 0;
-                if (r >= game.tilemap.width) r = game.tilemap.width - 1;
-                if (b >= game.tilemap.height) b = game.tilemap.height - 1;
-                if (l >= game.tilemap.width) l = game.tilemap.width - 1;
-                if (t >= game.tilemap.height) t = game.tilemap.height - 1;
-                float minDistance = 215.0f;
-                for (int y = t; y < b; y++)
-                {
-                    for (int x = l; x < r; x++)
-                    {
-                        if (game.tilemap.data[x, y] != -1)
-                        {
-                            float tx = x * 16;
-                            float ty = y * 16;
-                            float ty2 = ty + 16;
-                            float slopeOffs = 0.0f;
-                            if (game.tilemap.data[x, y] == 0)
-                            {
-                                ty += 16;
-                                slopeOffs = -16.0f;
-                            }
-                            else if (game.tilemap.data[x, y] == 2)
-                            {
-                                slopeOffs = 16.0f;
-                            }
-                            float y0 = position.Y + ((tx - position.X) * slope);
-                            float y1 = position.Y + ((tx + 16 - position.X) * slope);
-                            if ((tx < position.X || tx + 16 < position.X) && spriteEffects == SpriteEffects.None) { y0 = 1000.0f; y1 = 1000.0f; }
-                            if ((tx + 16 > position.X || tx > position.X) && spriteEffects == SpriteEffects.FlipHorizontally) { y1 = 1000.0f; y0 = 1000.0f; }
-                            if ((ty <= y0 || ty + slopeOffs <= y1) && (ty2 >= y0 || ty2 >= y1))
-                            {
-                                //We have hit!
-                                float dist = Vector2.Distance(new Vector2((x * 16) + 8, (y * 16) + 8), position);
-                                if (dist < minDistance)
-                                {
-                                    minDistance = dist;
-                                }
-                            }
-                        }
-                    }
-                }
-                for (int i = 0; i < game.entities.GetLength(1); i++)
-                {
-                    if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
-                    {
-                        Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
-                        float dist = Vector2.Distance(p.position, position);
-                        if (dist <= minDistance && ((p.position.X < position.X && spriteEffects == SpriteEffects.FlipHorizontally) || (p.position.X > position.X && spriteEffects == SpriteEffects.None)))
-                        {
-                            float left = p.position.X + p.hitboxOffset.X - p.hitboxSize.X;
-                            float right = p.position.X + p.hitboxOffset.X + p.hitboxSize.X;
-                            float y0 = position.Y + ((left - position.X) * slope);
-                            float y1 = position.Y + ((right - position.X) * slope);
-                            float top = p.position.Y + p.hitboxOffset.Y - p.hitboxSize.Y;
-                            float bottom = p.position.Y + p.hitboxOffset.Y + p.hitboxSize.Y;
-                            
-                            if ((left < position.X || right < position.X) && spriteEffects == SpriteEffects.None) { y0 = 1000.0f; y1 = 1000.0f; }
-                            if ((right > position.X || left > position.X) && spriteEffects == SpriteEffects.FlipHorizontally) { y1 = 1000.0f; y0 = 1000.0f; }
-                            if ((top < y0 + 4 || top < y1 + 4) && (bottom > y0 - 4 || bottom > y1 - 4))
-                            {
-                                if (dist > 176)
-                                {
-                                    p.Damage(8, this);
-                                }
-                                else if (dist > 130)
-                                {
-                                    p.Damage(10, this);
-                                }
-                                else
-                                {
-                                    p.Damage(13, this);
-                                }
-                                p.target = this;
-                                numHits += 1;
-                            }
-                        }
-                        p = null;
-                    }
-                }
-                Beam beam = new Beam(game, minDistance, MathHelper.ToRadians(rot));
-                beam.position = position;
-                if (aimDirection == 0)
-                {
-                    beam.position.Y += 4;
-                }
-                else if (aimDirection == -1)
-                {
-                    beam.position.Y += 12;
-                }
-                missed = false;
-                if (numHits == 0) missed = true;
-                game.AddEntity(beam);
-                beam = null;
             }
+            int numHits = 0;
+            float slope = (rayEnd.Y - position.Y) / (rayEnd.X - position.X);
+            int l = (int)Math.Floor(Math.Min(rayEnd.X, position.X) / 16.0f) - 1;
+            int r = (int)Math.Ceiling(Math.Max(rayEnd.X, position.X) / 16.0f) + 1;
+            int t = (int)Math.Floor(Math.Min(rayEnd.Y, position.Y) / 16.0f) - 1;
+            int b = (int)Math.Ceiling(Math.Max(rayEnd.Y, position.Y) / 16.0f) + 1;
+            if (l < 0) l = 0; if (r < 0) r = 0;
+            if (t < 0) t = 0; if (b < 0) b = 0;
+            if (r >= game.tilemap.width) r = game.tilemap.width - 1;
+            if (b >= game.tilemap.height) b = game.tilemap.height - 1;
+            if (l >= game.tilemap.width) l = game.tilemap.width - 1;
+            if (t >= game.tilemap.height) t = game.tilemap.height - 1;
+            float minDistance = 215.0f;
+            for (int y = t; y < b; y++)
+            {
+                for (int x = l; x < r; x++)
+                {
+                    if (game.tilemap.data[x, y] != -1)
+                    {
+                        float tx = x * 16;
+                        float ty = y * 16;
+                        float ty2 = ty + 16;
+                        float slopeOffs = 0.0f;
+                        if (game.tilemap.data[x, y] == 0)
+                        {
+                            ty += 16;
+                            slopeOffs = -16.0f;
+                        }
+                        else if (game.tilemap.data[x, y] == 2)
+                        {
+                            slopeOffs = 16.0f;
+                        }
+                        float y0 = position.Y + ((tx - position.X) * slope);
+                        float y1 = position.Y + ((tx + 16 - position.X) * slope);
+                        if ((tx < position.X || tx + 16 < position.X) && spriteEffects == SpriteEffects.None) { y0 = 1000.0f; y1 = 1000.0f; }
+                        if ((tx + 16 > position.X || tx > position.X) && spriteEffects == SpriteEffects.FlipHorizontally) { y1 = 1000.0f; y0 = 1000.0f; }
+                        if ((ty <= y0 || ty + slopeOffs <= y1) && (ty2 >= y0 || ty2 >= y1))
+                        {
+                            //We have hit!
+                            float dist = Vector2.Distance(new Vector2((x * 16) + 8, (y * 16) + 8), position);
+                            if (dist < minDistance)
+                            {
+                                minDistance = dist;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < game.entities.GetLength(1); i++)
+            {
+                if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
+                {
+                    Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
+                    float dist = Vector2.Distance(p.position, position);
+                    if (dist <= minDistance && ((p.position.X < position.X && spriteEffects == SpriteEffects.FlipHorizontally) || (p.position.X > position.X && spriteEffects == SpriteEffects.None)))
+                    {
+                        float left = p.position.X + p.hitboxOffset.X - p.hitboxSize.X;
+                        float right = p.position.X + p.hitboxOffset.X + p.hitboxSize.X;
+                        float y0 = position.Y + ((left - position.X) * slope);
+                        float y1 = position.Y + ((right - position.X) * slope);
+                        float top = p.position.Y + p.hitboxOffset.Y - p.hitboxSize.Y;
+                        float bottom = p.position.Y + p.hitboxOffset.Y + p.hitboxSize.Y;
+
+                        if ((left < position.X || right < position.X) && spriteEffects == SpriteEffects.None) { y0 = 1000.0f; y1 = 1000.0f; }
+                        if ((right > position.X || left > position.X) && spriteEffects == SpriteEffects.FlipHorizontally) { y1 = 1000.0f; y0 = 1000.0f; }
+                        if ((top < y0 + 4 || top < y1 + 4) && (bottom > y0 - 4 || bottom > y1 - 4))
+                        {
+                            if (dist > 176)
+                            {
+                                p.Damage(8, this);
+                            }
+                            else if (dist > 130)
+                            {
+                                p.Damage(10, this);
+                            }
+                            else
+                            {
+                                p.Damage(13, this);
+                            }
+                            p.target = this;
+                            numHits += 1;
+                        }
+                    }
+                    p = null;
+                }
+            }
+            Beam beam = new Beam(game, minDistance, MathHelper.ToRadians(rot));
+            beam.position = position;
+            if (aimDirection == 0)
+            {
+                beam.position.Y += 4;
+            }
+            else if (aimDirection == -1)
+            {
+                beam.position.Y += 12;
+            }
+            missed = false;
+            if (numHits == 0) missed = true;
+            game.AddEntity(beam);
+            beam = null;
         }
         public override void Special()
         {

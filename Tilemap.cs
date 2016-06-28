@@ -27,10 +27,16 @@ namespace Mors_Arcium
                     data[x, y] = -1;
                 }
             }
+            
+        }
+        public void Generate()
+        {
             float offset = (float)game.game.random.NextDouble() * 100.0f;
             int hh = 0;
+            int w = width;
+            int h = height;
             //int phh = 0;
-            for (int x = 0; x < w; x++)
+            for (int x = 4; x < w - 4; x++)
             {
                 //phh = hh;
                 hh = (int)Math.Floor(Noise.Generate((x * 0.0625f) + offset) * 10f);
@@ -38,10 +44,23 @@ namespace Mors_Arcium
                 {
                     data[x, y] = 5;
                 }
-                if (g.game.random.Next(0, 10) == 1)
+                int r = game.game.random.Next(0, 30);
+                if (r > 0 && r < 10)
                 {
                     Prop p = new Prop(game, Prop.cyberCactus, new Vector2(x * 16, ((height / 2) + hh - 2) * 16));
-                    g.AddEntity(p);
+                    game.AddEntity(p);
+                    p = null;
+                }
+                if (r > 10 && r < 15)
+                {
+                    Prop p = new Prop(game, Prop.pillar, new Vector2(x * 16, ((height / 2) + hh - 4) * 16));
+                    game.AddEntity(p);
+                    p = null;
+                }
+                if (r == 15)
+                {
+                    Prop p = new Prop(game, Prop.pyramid, new Vector2(x * 16, ((height / 2) + hh - 2) * 16));
+                    game.AddEntity(p);
                     p = null;
                 }
             }

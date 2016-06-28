@@ -10,11 +10,11 @@ namespace Mors_Arcium
     public class MorsArcium : Game
     {
         //Android Controls
-        //Joystick Controls?
-        //Bug flying, attacks and stuff
         //Water, more background stuff, rain?
         //Difficulty Modes
         //Wave Events
+        //Bug AI and Polish
+        //Health transition
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -63,6 +63,7 @@ namespace Mors_Arcium
             graphics.ApplyChanges();
             IsMouseVisible = true;
 #endif
+            
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
             thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
             renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);

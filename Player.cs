@@ -13,6 +13,7 @@ namespace Mors_Arcium
         public int magic = 100;
         public SpriteEffects spriteEffects;
         protected int sheetOffset;
+        protected Color color = Color.White;
 
         protected float gravity = 0.0f;
         protected float jump = 0.0f;
@@ -480,7 +481,7 @@ namespace Mors_Arcium
         {
             if (hurtTimer == 0 || hurtTimer % 4 == 0)
             {
-                sp.Draw(texture, position, sourceRect, Color.White, rotation, origin, scale, spriteEffects, 0);
+                sp.Draw(texture, position, sourceRect, color, rotation, origin, scale, spriteEffects, 0);
             }
         }
         public virtual void Damage(int amount, Entity perpetrator = null)
@@ -541,6 +542,10 @@ namespace Mors_Arcium
                             SyncAnimationWithState();
                         }
                     }
+                }
+                if (frame >= animation.frames.Length)
+                {
+                    frame = 0;
                 }
                 //if (frame != lastFrame)
                 //{

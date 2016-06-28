@@ -46,7 +46,7 @@ namespace Mors_Arcium
         public abstract void Update(GameTime gt);
         public abstract void Draw(SpriteBatch sp);
         public abstract void Collide(Entity perpetrator);
-        protected void TryMove(Vector2 spd)
+        protected void TryMove(Vector2 spd, bool slide = true)
         {
             wasOnSlope = onSlope;
             int tl = (int)Math.Floor((position.X - hitboxSize.X + hitboxOffset.X + spd.X) / 16) - 1;
@@ -78,7 +78,7 @@ namespace Mors_Arcium
                         bool mettaton = false;
                         if (position.X + spd.X + hitboxSize.X + hitboxOffset.X > tx && position.X + spd.X - hitboxSize.X + hitboxOffset.X < tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y > ty && position.Y - hitboxSize.Y + hitboxOffset.Y < ty + fhaack)
                         {
-                            if (game.tilemap.data[x, y] == 0 || game.tilemap.data[x, y] == 2)
+                            if ((game.tilemap.data[x, y] == 0 || game.tilemap.data[x, y] == 2))
                             {
                                 //Add potential slope collisions to the queue
                                 potentialSlopes[numSlopes] = new Vector2(x, y);
@@ -99,6 +99,7 @@ namespace Mors_Arcium
                                     if (y * 16 < position.Y + hitboxOffset.Y + hitboxSize.Y - 4) collision_left = true;
                                 }
                                 spd.X = 0.0f;
+                                if (!slide) spd.Y = 0.0f;
                             }
                         }
                         //Vertical Test
@@ -122,6 +123,7 @@ namespace Mors_Arcium
                                         position.Y = ty - hitboxSize.Y - hitboxOffset.Y;
                                         collision_bottom = true;
                                         spd.Y = 0.0f;
+                                        if (!slide) spd.X = 0.0f;
                                     }
                                 }
                                 else
@@ -129,6 +131,7 @@ namespace Mors_Arcium
                                     position.Y = ty + 16 + hitboxSize.Y - hitboxOffset.Y;
                                     collision_top = true;
                                     spd.Y = 0.0f;
+                                    if (!slide) spd.X = 0.0f;
                                 }
                             }
                         }
@@ -198,60 +201,62 @@ namespace Mors_Arcium
                 float tx = potentialSlopes[i].X * 16;
                 float ty = potentialSlopes[i].Y * 16;
                 //if (!collision_top)
-               // {
-                    if (game.tilemap.data[(int)potentialSlopes[i].X, (int)potentialSlopes[i].Y] == 0) // "/"
-                    {
-                        //This test is being failed (Spd.y > 0)
-                        if (position.X + spd.X + hitboxSize.X + hitboxOffset.X >= tx && position.X + spd.X  <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16 )
-                        {
-                            float dx = position.X + spd.X + hitboxSize.X + hitboxOffset.X - tx;
-                            if (dx > 16) dx = 16;
-                            if (dx < 0) dx = 0;
-                            if (position.Y + hitboxSize.Y + spd.Y + hitboxOffset.Y >= (ty + 16) - dx)
-                            {
-                                spd.Y = ((ty + 16) - dx - hitboxSize.Y - hitboxOffset.Y) - position.Y;
-                                /*if ((dx + hitboxSize.Y + hitboxSize.Y - hitboxOffset.Y) > maxDisplacement)
-                                {
-                                    spd = Vector2.Zero;
-                                }*/
-                                collision_bottom = true;
-                                onSlope = 0;
-                            }
-                        }
-                    }
-                    else // "\"
-                    {
-                        if (position.X + spd.X >= tx && position.X + spd.X - hitboxSize.X + hitboxOffset.X <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16)
-                        {
-                            float dx = position.X + spd.X - hitboxSize.X + hitboxOffset.X - tx;
-                            if (dx > 16) dx = 16;
-                            if (dx < 0) dx = 0;
-                            if (position.Y + spd.Y + hitboxSize.Y >= ty + dx)
-                            {
-                                spd.Y = (ty + dx - hitboxSize.Y - hitboxOffset.Y) - position.Y;
-                                collision_bottom = true;
-                                onSlope = 1;
-                            }
-                        }
-                    }
-               // }
-               /* else
+                // {
+                if (game.tilemap.data[(int)potentialSlopes[i].X, (int)potentialSlopes[i].Y] == 0) // "/"
                 {
-                    if (position.Y + hitboxSize.Y + hitboxOffset.Y + spd.Y > ty && position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y < ty + 16)
+                    //This test is being failed (Spd.y > 0)
+                    if (position.X + spd.X + hitboxSize.X + hitboxOffset.X >= tx && position.X + spd.X <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16)
                     {
-                        if (position.X + hitboxSize.X + hitboxOffset.X + spd.X > tx && position.X + hitboxSize.X + hitboxOffset.X + spd.X < tx + 16)
+                        float dx = position.X + spd.X + hitboxSize.X + hitboxOffset.X - tx;
+                        if (dx > 16) dx = 16;
+                        if (dx < 0) dx = 0;
+                        if (position.Y + hitboxSize.Y + spd.Y + hitboxOffset.Y >= (ty + 16) - dx)
                         {
-                            position.X = tx - hitboxSize.X - hitboxOffset.X;
-                            collision_right = true;
+                            spd.Y = ((ty + 16) - dx - hitboxSize.Y - hitboxOffset.Y) - position.Y;
+                            if (!slide) spd.X = 0.0f;
+                            /*if ((dx + hitboxSize.Y + hitboxSize.Y - hitboxOffset.Y) > maxDisplacement)
+                            {
+                                spd = Vector2.Zero;
+                            }*/
+                            collision_bottom = true;
+                            onSlope = 0;
                         }
-                        else
-                        {
-                            position.X = tx + 16 + hitboxSize.X - hitboxOffset.X;
-                            collision_left = true;
-                        }
-                        spd.X = 0.0f;
                     }
-                }*/
+                }
+                else // "\"
+                {
+                    if (position.X + spd.X >= tx && position.X + spd.X - hitboxSize.X + hitboxOffset.X <= tx + 16 && position.Y + hitboxSize.Y + hitboxOffset.Y <= ty + 16)
+                    {
+                        float dx = position.X + spd.X - hitboxSize.X + hitboxOffset.X - tx;
+                        if (dx > 16) dx = 16;
+                        if (dx < 0) dx = 0;
+                        if (position.Y + spd.Y + hitboxSize.Y >= ty + dx)
+                        {
+                            spd.Y = (ty + dx - hitboxSize.Y - hitboxOffset.Y) - position.Y;
+                            if (!slide) spd.X = 0.0f;
+                            collision_bottom = true;
+                            onSlope = 1;
+                        }
+                    }
+                }
+                // }
+                /* else
+                    {
+                        if (position.Y + hitboxSize.Y + hitboxOffset.Y + spd.Y > ty && position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y < ty + 16)
+                        {
+                            if (position.X + hitboxSize.X + hitboxOffset.X + spd.X > tx && position.X + hitboxSize.X + hitboxOffset.X + spd.X < tx + 16)
+                            {
+                                position.X = tx - hitboxSize.X - hitboxOffset.X;
+                                collision_right = true;
+                            }
+                            else
+                            {
+                                position.X = tx + 16 + hitboxSize.X - hitboxOffset.X;
+                                collision_left = true;
+                            }
+                            spd.X = 0.0f;
+                        }
+                    }*/
             }
             if (onSlope == -1 && wasOnSlope != -1)
             {
@@ -282,6 +287,7 @@ namespace Mors_Arcium
                     }
                 }
             }
+            
             position += spd;
         }
     }
