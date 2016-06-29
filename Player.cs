@@ -11,6 +11,7 @@ namespace Mors_Arcium
         public int maxMagic = 100;
         public int health = 100;
         public int magic = 100;
+        
         public SpriteEffects spriteEffects;
         protected int sheetOffset;
         protected Color color = Color.White;
@@ -75,7 +76,7 @@ namespace Mors_Arcium
             {
                 jump = -jumpHeight;
                 gravity = 0.0f;
-                //onSlope = -1;
+                onSlope = -1;
             }
             
         }
@@ -443,8 +444,7 @@ namespace Mors_Arcium
             TryMove(speed);
             
             tryingToJump = false;
-            if (health > maxHealth) health = maxHealth;
-            if (magic > maxMagic) magic = maxMagic;
+            
             if (health <= 0 && deathTimer == 0)
             {
                 health = 0;
@@ -476,6 +476,9 @@ namespace Mors_Arcium
                     game.numPlayers -= 1;
                 }
             }
+            if (health > maxHealth) health = maxHealth;
+            if (magic > maxMagic) magic = maxMagic;
+            if (magic < 0) magic = 0;
         }
         public override void Draw(SpriteBatch sp)
         {

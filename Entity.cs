@@ -35,7 +35,7 @@ namespace Mors_Arcium
         protected bool collision_top;
         protected bool collision_left;
         protected bool collision_right;
-        protected bool granddad; //GRAND DAD!?!?!?!? FLEENSTONES!?!?!?!?!
+        public bool granddad; //GRAND DAD!?!?!?!? FLEENSTONES!?!?!?!?!
         protected int onSlope = -1;
         protected int wasOnSlope = -1;
         public int[] collisionMask;
@@ -49,10 +49,10 @@ namespace Mors_Arcium
         protected void TryMove(Vector2 spd, bool slide = true)
         {
             wasOnSlope = onSlope;
-            int tl = (int)Math.Floor((position.X - hitboxSize.X + hitboxOffset.X + spd.X) / 16) - 1;
-            int tu = (int)Math.Floor((position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y) / 16) - 1;
-            int tr = tl + (int)Math.Ceiling(hitboxSize.X / 8) + 2;
-            int tb = tu + (int)Math.Ceiling(hitboxSize.Y / 8) + 2;
+            int tl = (int)Math.Floor((position.X - hitboxSize.X + hitboxOffset.X + spd.X) / 16) - 2;
+            int tu = (int)Math.Floor((position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y) / 16) - 2;
+            int tr = tl + (int)Math.Ceiling(hitboxSize.X / 8) + 3;
+            int tb = tu + (int)Math.Ceiling(hitboxSize.Y / 8) + 3;
             tl = Math.Min(game.tilemap.width, Math.Max(0, tl));
             tr = Math.Min(game.tilemap.width, Math.Max(0, tr));
             tu = Math.Min(game.tilemap.height, Math.Max(0, tu));
@@ -265,10 +265,10 @@ namespace Mors_Arcium
             //Stop the slopes from pushing you into the cieling;
             if (numSlopes > 0)
             {
-                tl = (int)Math.Floor((position.X - hitboxSize.X + hitboxOffset.X + spd.X) / 16) - 1;
-                tu = (int)Math.Floor((position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y) / 16) - 1;
-                tr = tl + (int)Math.Ceiling(hitboxSize.X / 8) + 2;
-                tb = tu + (int)Math.Ceiling(hitboxSize.Y / 8) + 2;
+                tl = (int)Math.Floor((position.X - hitboxSize.X + hitboxOffset.X + spd.X) / 16) - 2;
+                tu = (int)Math.Floor((position.Y - hitboxSize.Y + hitboxOffset.Y + spd.Y) / 16) - 2;
+                tr = tl + (int)Math.Ceiling(hitboxSize.X / 8) + 3;
+                tb = tu + (int)Math.Ceiling(hitboxSize.Y / 8) + 3;
                 tl = Math.Min(game.tilemap.width, Math.Max(0, tl));
                 tr = Math.Min(game.tilemap.width, Math.Max(0, tr));
                 tu = Math.Min(game.tilemap.height, Math.Max(0, tu));

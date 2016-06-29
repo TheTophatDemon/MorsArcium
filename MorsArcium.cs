@@ -13,8 +13,6 @@ namespace Mors_Arcium
         //Water, more background stuff, rain?
         //Difficulty Modes
         //Wave Events
-        //Bug AI and Polish
-        //Health transition
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -37,6 +35,8 @@ namespace Mors_Arcium
         public Texture2D[] textures;
         public SoundEffect[] sounds;
         public SpriteFont font1;
+
+        public KeyboardState prevState;
 
         public Random random;
 
@@ -147,6 +147,7 @@ namespace Mors_Arcium
                 }
                 skip = false;
             }
+            prevState = Keyboard.GetState();
         }
         protected override void Draw(GameTime gameTime)
         {

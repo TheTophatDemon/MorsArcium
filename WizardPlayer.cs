@@ -24,7 +24,6 @@ namespace Mors_Arcium
         int inaccuracy = 0;
         bool missed = false;
         int framesSinceLastAttack = 0;
-        int chargeUp = 0;
         public WizardPlayer(Gameplay g) : base(g)
         {
             attackSpeed = 75;
@@ -79,7 +78,7 @@ namespace Mors_Arcium
             }*/
             if (cooldown > 20)
             {
-                color = Color.PaleVioletRed;
+                color = Color.CornflowerBlue;
             }
             else
             {

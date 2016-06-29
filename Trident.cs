@@ -27,13 +27,13 @@ namespace Mors_Arcium
         public override void Update(GameTime gt)
         {
             base.Update(gt);
-            TryMove(speed, false);
+            TryMove(speed + knockback, false);
             timer += 1;
             if (timer > 90)
             {
                 alpha -= 0.1f;
             }
-            if (timer > 100 || position.X < game.cameraPosition.X || position.X > game.cameraPosition.X + 320 || position.Y < game.cameraPosition.Y || position.Y > game.cameraPosition.Y + 240)
+            if (timer > 100 || position.X + 32 < game.cameraPosition.X || position.X - 32 > game.cameraPosition.X + 320 || position.Y + 32 < game.cameraPosition.Y || position.Y - 32 > game.cameraPosition.Y + 240)
             {
                 killMe = true;
             }

@@ -23,15 +23,17 @@ namespace Mors_Arcium
         Animation deathAnimation;
         Animation jumpAnimation;
         bool tryingToFly = false;
+        bool flymode = false;
+
         public BugPlayer(Gameplay g) : base(g)
         {
             attackSpeed = 35;
-            maxHealth = 70;
+            maxHealth = 60;
             maxMagic = 100;
-            health = 70;
+            health = 60;
             magic = 100;
             walkSpeed = 2.4f;
-            jumpHeight = 7.0f;
+            jumpHeight = 6.0f;
             hitboxSize = new Vector2(6, 16); //Half of the actual hitbox's size
             sheetOffset = 96;
 
@@ -75,10 +77,30 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
+            if (game.player == this)
+            {
+                if (Keyboard.GetState().IsKeyDown(game.game.JUMP) && !game.game.prevState.IsKeyDown(game.game.JUMP) && !granddad)
+                {
+                    flymode = true;
+                }
+                if (!Keyboard.GetState().IsKeyDown(game.game.JUMP) && game.game.prevState.IsKeyDown(game.game.JUMP))
+                {
+                    flymode = false;
+                }
+                if (flymode)
+                {
+                    Special();
+                }
+            }
+            if (animationState == "fly")
+            {
+                jump = 0.0f;
+                tryingToJump = false;
+            }
             if (animationState != "fly" && !tryingToFly) magic += 1;
             if (magic > maxMagic) magic = maxMagic;
             base.Update(gt);
-            if ((collision_bottom || collision_left || collision_right) && animationState == "fly")
+            if (collision_bottom && animationState == "fly" && (!tryingToFly || magic < 2))
             {
                 ChangeAnimationState("idle");
             }
@@ -240,6 +262,44 @@ namespace Mors_Arcium
                         }
                     }
                 }
+            }
+        }
+        public override void CPUAttack()
+        {
+            walk = 0.0f;
+            if (target.position.X < position.X)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            else
+            {
+                spriteEffects = SpriteEffects.None;
+            }
+            Attack();
+            if (target.position.Y + target.hitboxOffset.Y + target.hitboxSize.Y < position.Y)
+            {
+                aimDirection = -1;
+            }
+            else if (target.position.Y + target.hitboxOffset.Y - target.hitboxSize.Y > position.Y && !granddad)// + hitboxOffset.Y + hitboxSize.Y
+            {
+                aimDirection = 1;
+            }
+            else
+            {
+                aimDirection = 0;
+            }
+            float disp = Math.Abs(target.position.X - position.X);
+            if (disp > 160.0f)
+            {
+                aiState = "chase";
+            }
+            if (!granddad && Math.Abs(gravity + jump) < 1.0f)
+            {
+                Special();
+            }
+            if (disp < 32.0f || magic == maxMagic)
+            {
+                Jump();
             }
         }
         public override void Collide(Entity perpetrator)

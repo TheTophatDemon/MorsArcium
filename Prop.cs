@@ -23,10 +23,10 @@ namespace Mors_Arcium
             ty = (int)Math.Floor(pos.Y / 16.0f);
             th = (int)Math.Floor(src.Height / 16.0f);
             tw = (int)Math.Floor(src.Width / 16.0f);
-            if (tx + tw >= game.tilemap.width) tw -= 1;
-            if (ty + th >= game.tilemap.height) th -= 1;
-            if (tx < 0) tx += 1;
-            if (ty < 0) ty += 1;
+            if (tx + tw >= game.tilemap.width) tw = game.tilemap.width - tx;
+            if (ty + th >= game.tilemap.height) th = game.tilemap.height - ty;
+            if (tx < 0) tx = 0;
+            if (ty < 0) ty = 0;
             airborne = a;
         }
         public override void Update(GameTime gt)
@@ -36,7 +36,7 @@ namespace Mors_Arcium
             {
                 for (int x = tx; x < tx + tw; x++)
                 {
-                    if (game.tilemap.data[x, ty + th] == 0 || game.tilemap.data[x, ty + th] == 2)
+                    if (game.tilemap.data[x, ty + th] == 0 || game.tilemap.data[x, ty + th] == 2 || game.tilemap.data[x, ty + th] == -1)
                     {
                         killMe = true;
                         break;
