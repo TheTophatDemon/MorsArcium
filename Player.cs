@@ -440,6 +440,10 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.A)) speed.X = -2.5f;
             if (Keyboard.GetState().IsKeyDown(Keys.D)) speed.X = 2.5f;
             if (Keyboard.GetState().IsKeyDown(Keys.W)) speed.Y = -2.5f;*/
+            if (position.Y + hitboxOffset.Y + hitboxSize.Y > game.lavaHeight + 64)
+            {
+                speed.Y = 0.0f;
+            }
             lastX = position.X;
             TryMove(speed);
             
@@ -451,12 +455,13 @@ namespace Mors_Arcium
                 deathTimer = 1;
                 ChangeAnimationState("dead");
             }
-            if (position.Y + hitboxOffset.Y - hitboxSize.Y - 128 > game.tilemap.height * 16 && deathTimer == 0)
+            if (position.Y + hitboxOffset.Y + hitboxSize.Y > game.lavaHeight && deathTimer == 0)
             {
                 health = 0;
-                deathTimer = 99;
+                //deathTimer = 99;
                 Console.WriteLine("THIS IS MADNESS! " + sourceRect.Y);
             }
+            
             Animate();
             if (deathTimer >= 1)
             {

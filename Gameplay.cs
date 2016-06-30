@@ -54,6 +54,13 @@ namespace Mors_Arcium
         int eventSelectorTimer = 0;
         Rectangle eventSelectorText;
 
+        public float lavaHeight = 0.0f;
+        public int lavaAnim = 0;
+        public Rectangle lavaTop;
+        public Rectangle lavaBase;
+        float defaultLavaHeight = 0.0f;
+        int lavaTimer = 0;
+
         public Gameplay(MorsArcium g)
         {
             game = g;
@@ -67,6 +74,10 @@ namespace Mors_Arcium
             particles = new Particle[128];
             tilemap = new Tilemap(this, game.textures[5], 197, 24);
             tilemap.Generate();
+            lavaHeight = (tilemap.height * 16) - 32;
+            defaultLavaHeight = lavaHeight;
+            lavaTop = new Rectangle(0, 80, 16, 16);
+            lavaBase = new Rectangle(48, 80, 16, 16);
             switch (playerClass)
             {
                 case 0:
@@ -163,6 +174,14 @@ namespace Mors_Arcium
             if (!player.dead)
             {
 #if DEBUG
+                if (Keyboard.GetState().IsKeyDown(Keys.D6))
+                {
+                    eventSelectorIndex = 1;
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D5))
+                {
+                    eventSelectorIndex = 0;
+                }
                 if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(player is MrBPlayer))
                 {
                     player.ChangeInto(0);
@@ -377,6 +396,10 @@ namespace Mors_Arcium
                 tilemap.RefreshTiles();
             }
             cameraPosition = player.position - cameraOffset;
+            if (cameraPosition.Y + 240 > tilemap.height * 16)
+            {
+                cameraPosition.Y = (tilemap.height * 16) - 240;
+            }
             if (terrainModified)
             {
                 terrainModified = false;
@@ -396,10 +419,10 @@ namespace Mors_Arcium
             if (waveTimer > 0)
             {
                 waveTimer -= 1;
-                if (eventsEnabled)//96, 120
+                if (eventsEnabled && wave != 1)//96, 120
                 {
                     eventThingy -= (eventThingy - 192) / 4.0f;
-                    eventSelectorTimer += 1;
+                    if (waveTimer > 20) eventSelectorTimer += 1;
                     if (eventSelectorTimer > eventSelectorSpeed)
                     {
                         eventSelectorTimer = 0;
@@ -427,7 +450,35 @@ namespace Mors_Arcium
             {
                 Initialize(game.random.Next(0, 3));
             }
+            lavaAnim += 1;
             
+            if ((eventSelectorIndex != 1 || lavaTimer > 200) && lavaHeight < defaultLavaHeight)
+            {
+                lavaHeight += 4;
+            }
+            if (lavaAnim > 5)
+            {
+                if (eventSelectorIndex == 1 && eventThingy == 240.0f && lavaHeight > tilemap.height * 8)
+                {
+                    lavaHeight -= 1;
+                }
+                else if (lavaHeight <= tilemap.height * 8)
+                {
+                    lavaTimer += 1;
+                }
+                
+                if (lavaHeight > defaultLavaHeight)
+                {
+                    lavaHeight = defaultLavaHeight;
+                }
+                lavaAnim = 0;
+                lavaTop.X += 16;
+                if (lavaTop.X > 32)
+                {
+                    lavaTop.X = 0;
+                }
+                lavaBase.X = lavaTop.X + 48;
+            }
             if (time == DateTime.Now.Second)
             {
                 ticks += 1;
@@ -474,7 +525,19 @@ namespace Mors_Arcium
                     }
                 }
             }
-           
+            if (lavaHeight < cameraPosition.Y + 240)
+            {
+                int cx = (int)Math.Floor(cameraPosition.X / 16.0f);
+                int ch = (int)Math.Ceiling((cameraPosition.Y + 240 - lavaHeight) / 16.0f);
+                for (int i = 0; i < 22; i++)
+                {
+                    sp.Draw(game.textures[5], new Vector2((cx + i) * 16, lavaHeight), lavaTop, Color.White);
+                    for (int j = 1; j < ch; j++)
+                    {
+                        sp.Draw(game.textures[5], new Vector2((cx + i) * 16, lavaHeight + (j * 16)), lavaBase, Color.White);
+                    }
+                }
+            }
             
             sp.End();
             sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition, 0f)));

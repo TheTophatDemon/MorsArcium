@@ -10,9 +10,11 @@ namespace Mors_Arcium
     public class MorsArcium : Game
     {
         //Android Controls
-        //Water, more background stuff, rain?
         //Difficulty Modes
-        //Wave Events
+        //Fix AI for flood event
+        //Satan event
+        //Low Gravity event
+        //Bombs event
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
