@@ -53,12 +53,13 @@ namespace Mors_Arcium
         int eventSelectorSpeed = 1;
         int eventSelectorTimer = 0;
         Rectangle eventSelectorText;
+        public float gravityAcceleration = 0.15f;
 
         public float lavaHeight = 0.0f;
         public int lavaAnim = 0;
-        public Rectangle lavaTop;
-        public Rectangle lavaBase;
-        float defaultLavaHeight = 0.0f;
+        Rectangle lavaTop;
+        Rectangle lavaBase;
+        public float defaultLavaHeight = 0.0f;
         int lavaTimer = 0;
 
         public Gameplay(MorsArcium g)
@@ -181,6 +182,10 @@ namespace Mors_Arcium
                 else if (Keyboard.GetState().IsKeyDown(Keys.D5))
                 {
                     eventSelectorIndex = 0;
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D7))
+                {
+                    eventSelectorIndex = 4;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(player is MrBPlayer))
                 {
@@ -419,7 +424,7 @@ namespace Mors_Arcium
             if (waveTimer > 0)
             {
                 waveTimer -= 1;
-                if (eventsEnabled && wave != 1)//96, 120
+                if (eventsEnabled && wave > 1)//96, 120
                 {
                     eventThingy -= (eventThingy - 192) / 4.0f;
                     if (waveTimer > 20) eventSelectorTimer += 1;
@@ -434,16 +439,13 @@ namespace Mors_Arcium
                     {
                         eventSelectorSpeed += 2;
                     }
-                    if (eventSelectorSpeed > 20)
-                    {
-                        //eventSelectorTimer = 100;
-                        eventSelectorSpeed = 100;
-                    }
+                    lavaTimer = 0;
                 }
                 if (waveTimer == 0)
                 {
                     SpawnEnemies();
                     eventThingy = 240.0f;
+                    
                 }
             }
             if (player.deathTimer > 200)
@@ -451,7 +453,16 @@ namespace Mors_Arcium
                 Initialize(game.random.Next(0, 3));
             }
             lavaAnim += 1;
-            
+
+            if (eventSelectorIndex == 4)
+            {
+                gravityAcceleration = 0.05f;
+            }
+            else
+            {
+                gravityAcceleration = 0.15f;
+            }
+
             if ((eventSelectorIndex != 1 || lavaTimer > 200) && lavaHeight < defaultLavaHeight)
             {
                 lavaHeight += 4;

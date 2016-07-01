@@ -11,10 +11,9 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Difficulty Modes
-        //Fix AI for flood event
         //Satan event
-        //Low Gravity event
         //Bombs event
+        //Bug is OP
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

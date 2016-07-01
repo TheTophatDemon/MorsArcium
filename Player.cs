@@ -279,6 +279,12 @@ namespace Mors_Arcium
                 }
                 if (target != null && target != this)
                 {
+                    if (game.lavaHeight != game.defaultLavaHeight && position.Y > game.tilemap.height * 8)
+                    {
+                        aiState = "run";
+                        runOrigin = position.X;
+                        runDistance = 64.0f;
+                    }
                     if (aiState == "chase")
                     {
                         CPUChase();
@@ -401,7 +407,7 @@ namespace Mors_Arcium
                 if (Math.Abs(knockback.Y) < 0.1f) knockback.Y = 0.0f;
             }
             tryingToWalk = false;
-            gravity += 0.15f;
+            gravity += game.gravityAcceleration;
             if (gravity > maxGravity) gravity = maxGravity;
             if ((collision_bottom && onSlope == -1) || (onSlope != -1 && wasOnSlope == -1))
             {
