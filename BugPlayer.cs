@@ -112,7 +112,7 @@ namespace Mors_Arcium
             if (cooldown == 0 && deathTimer == 0)
             {
                 attacking = true;
-                cooldown = attackSpeed;
+                cooldown = attackSpeed + game.reloadOffset;
                 float spdx = 8.0f;
                 if (spriteEffects == SpriteEffects.FlipHorizontally) spdx = -4.0f;
                 Trident b = new Trident(game, position + new Vector2(spdx, (aimDirection * 6.0f) + 4), new Vector2(spdx, aimDirection * 4), this);

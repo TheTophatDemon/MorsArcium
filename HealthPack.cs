@@ -30,7 +30,7 @@ namespace Mors_Arcium
                     sourceRect.X = 0;
                 }
             }
-            speed.Y += 0.15f;
+            speed.Y += game.gravityAcceleration;
             if (speed.Y > 8.0f) speed.Y = 8.0f;
             if (collision_bottom)
             {

@@ -16,9 +16,9 @@ namespace Mors_Arcium
         public EliPlayer(Gameplay g) : base(g)
         {
             attackSpeed = 5;
-            maxHealth = 60;
+            maxHealth = 70;
             maxMagic = 200;
-            health = 60;
+            health = 70;
             magic = 200;
             walkSpeed = 2.2f;
             jumpHeight = 5.0f;
@@ -48,7 +48,7 @@ namespace Mors_Arcium
             if (cooldown == 0 && deathTimer == 0)
             {
                 attacking = true;
-                cooldown = attackSpeed;
+                cooldown = Math.Max(0, attackSpeed + game.reloadOffset);
                 for (int i = 0; i < game.entities.GetLength(1); i++)
                 {
                     if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
@@ -59,12 +59,27 @@ namespace Mors_Arcium
                             if (spriteEffects == SpriteEffects.None && p.position.X > position.X)
                             {
                                 p.knockback = new Vector2(8.0f, 0.0f);
-                                p.Damage(7, this);
+                                if (game.reloadOffset >= 0)
+                                {
+                                    p.Damage(7, this);
+                                }
+                                else
+                                {
+                                    p.Damage(14, this);
+                                }
+                                
                             }
                             else if (spriteEffects == SpriteEffects.FlipHorizontally && p.position.X < position.X)
                             {
                                 p.knockback = new Vector2(-8.0f, 0.0f);
-                                p.Damage(7, this);
+                                if (game.reloadOffset >= 0)
+                                {
+                                    p.Damage(7, this);
+                                }
+                                else
+                                {
+                                    p.Damage(14, this);
+                                }
                             }
                         }
                     }

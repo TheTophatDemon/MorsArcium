@@ -168,7 +168,7 @@ namespace Mors_Arcium
                 eyeFlash = new Particle(game, position + flashOffset, Vector2.Zero, 5, 8, 0);
                 game.AddParticle(eyeFlash);
                 attacking = true;
-                cooldown = attackSpeed;
+                cooldown = attackSpeed + game.reloadOffset;
                 if (animation.frames == walkAnimation.frames)
                 {
                     animation = walkAttackAnimation;

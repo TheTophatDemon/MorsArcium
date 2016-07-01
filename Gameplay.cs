@@ -61,6 +61,7 @@ namespace Mors_Arcium
         Rectangle lavaBase;
         public float defaultLavaHeight = 0.0f;
         int lavaTimer = 0;
+        public int reloadOffset = 0;
 
         public Gameplay(MorsArcium g)
         {
@@ -186,6 +187,10 @@ namespace Mors_Arcium
                 else if (Keyboard.GetState().IsKeyDown(Keys.D7))
                 {
                     eventSelectorIndex = 4;
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D8))
+                {
+                    eventSelectorIndex = 6;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(player is MrBPlayer))
                 {
@@ -420,7 +425,7 @@ namespace Mors_Arcium
                 eventSelectorIndex = game.random.Next(0, 7); eventSelectorSpeed = 1; eventSelectorTimer = 0;
                 eventSelectorText.Y = 152 + (eventSelectorIndex * 11);
             }
-
+            if (wave <= 1) eventSelectorIndex = 0;
             if (waveTimer > 0)
             {
                 waveTimer -= 1;
@@ -463,13 +468,23 @@ namespace Mors_Arcium
                 gravityAcceleration = 0.15f;
             }
 
+            if (eventSelectorIndex == 6 && waveTimer == 0)
+            {
+                //Rapid Fire! Oh yeah!
+                reloadOffset = -15;
+            }
+            else
+            {
+                reloadOffset = 0;
+            }
+
             if ((eventSelectorIndex != 1 || lavaTimer > 200) && lavaHeight < defaultLavaHeight)
             {
                 lavaHeight += 4;
             }
             if (lavaAnim > 5)
             {
-                if (eventSelectorIndex == 1 && eventThingy == 240.0f && lavaHeight > tilemap.height * 8)
+                if (eventSelectorIndex == 1 && eventThingy == 240.0f && lavaHeight > tilemap.height * 8 && wave > 1)
                 {
                     lavaHeight -= 1;
                 }

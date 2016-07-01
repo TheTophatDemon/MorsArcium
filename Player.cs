@@ -279,11 +279,11 @@ namespace Mors_Arcium
                 }
                 if (target != null && target != this)
                 {
-                    if (game.lavaHeight != game.defaultLavaHeight && position.Y > game.tilemap.height * 8)
+                    if (game.lavaHeight != game.defaultLavaHeight && position.Y > (game.tilemap.height * 8) - 32.0f)
                     {
                         aiState = "run";
                         runOrigin = position.X;
-                        runDistance = 64.0f;
+                        runDistance = 128.0f;
                     }
                     if (aiState == "chase")
                     {
@@ -502,7 +502,14 @@ namespace Mors_Arcium
         {
             if (hurtTimer == 0)
             {
-                health -= amount;
+                if (game.reloadOffset >= 0)
+                {
+                    health -= amount;
+                }
+                else
+                {
+                    health -= (amount / 2);
+                }
                 hurtTimer = 30;
                 if (perpetrator is EliPlayer)
                 {

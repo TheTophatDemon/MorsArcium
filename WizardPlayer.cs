@@ -102,7 +102,7 @@ namespace Mors_Arcium
             if (cooldown == 0 && deathTimer == 0)
             {
                 attacking = true;
-                cooldown = attackSpeed;
+                cooldown = attackSpeed + game.reloadOffset;
                 /*float spdx = 8.0f;
                 if (spriteEffects == SpriteEffects.FlipHorizontally) spdx = -8.0f;
                 Bullet b = new Bullet(game, position + new Vector2(spdx * 1.25f, (aimDirection * 8.0f) + 4), new Vector2(spdx, aimDirection * 8), this);

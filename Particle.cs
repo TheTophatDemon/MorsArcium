@@ -61,12 +61,17 @@ namespace Mors_Arcium
                     scale = 0.1f;
                     origin = new Vector2(32, 32);
                     break;
+                case 6: //Spark
+                    numFrames = 3;
+                    baseX = 64;
+                    baseY = 40;
+                    break;
             }
             rect = new Rectangle(baseX, baseY, size, size);
         }
         public void Update(GameTime gt)
         {
-            if (particleType == 3)
+            if (particleType == 3 || particleType == 6)
             {
                 velocity.Y += 0.178f;
             }
@@ -74,7 +79,7 @@ namespace Mors_Arcium
             {
                 rect.X = baseX + (frame * size);
             }
-            if ((particleType == 4 && anim > 15) || (particleType == 5 && anim > 15))
+            if (((particleType == 4 || particleType == 5) && anim > 15) || (particleType == 6 && frame == 2))
             {
                 alpha -= 0.1f;
             }
