@@ -62,6 +62,7 @@ namespace Mors_Arcium
         public float defaultLavaHeight = 0.0f;
         int lavaTimer = 0;
         public int reloadOffset = 0;
+        public Satan satan;
 
         public Gameplay(MorsArcium g)
         {
@@ -105,6 +106,8 @@ namespace Mors_Arcium
             waveAlpha = 1.0f;
             numPlayers = 1;
             started = true;
+            //Satan satan = new Satan(this, new Vector2(256, 0));
+            //AddEntity(satan);
         }
         private void SpawnEnemies()
         {
@@ -191,6 +194,10 @@ namespace Mors_Arcium
                 else if (Keyboard.GetState().IsKeyDown(Keys.D8))
                 {
                     eventSelectorIndex = 6;
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D9))
+                {
+                    eventSelectorIndex = 2;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(player is MrBPlayer))
                 {
@@ -476,6 +483,16 @@ namespace Mors_Arcium
             else
             {
                 reloadOffset = 0;
+            }
+
+            if (eventSelectorIndex == 2 && satan == null && waveTimer == 0 && wave > 1)
+            {
+                satan = new Satan(this, new Vector2(game.random.Next(32, (tilemap.width - 2) * 16), 0.0f));
+                AddEntity(satan);
+            }
+            if (eventSelectorIndex != 2 && satan != null)
+            {
+                satan = null;
             }
 
             if ((eventSelectorIndex != 1 || lavaTimer > 200) && lavaHeight < defaultLavaHeight)

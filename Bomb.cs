@@ -31,6 +31,10 @@ namespace Mors_Arcium
                 speed.Y = 0.0f;
             }
             TryMove(speed);
+            if (granddad)
+            {
+                timer = 0;
+            }
             timer -= 1;
             if (timer <= 0)
             {
