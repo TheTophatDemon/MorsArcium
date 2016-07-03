@@ -7,23 +7,22 @@ namespace Mors_Arcium
     public class Satan : Entity
     {
         Animation idleAnimation;
-        Animation smileAnimation;
         Animation attackAnimation;
         float grenp = 0.0f;
+        float targetX = 0.0f;
+        int bombTimer = 0;
+        int timer = 0;
         public Satan(Gameplay g, Vector2 pos) : base(g)
         {
             collisions = false;
             position = pos;
             type = Gameplay.TYPE_BEAM; //So he's behind the terrain
-            origin = new Vector2(8, 8);
+            origin = new Vector2(32, 36);
             sourceRect = new Rectangle(0, 128, 64, 72);
             idleAnimation.frames = new int[] { 0 };
             idleAnimation.looping = true;
             idleAnimation.speed = 1;
-            smileAnimation.frames = new int[] { 1, 2 };
-            smileAnimation.speed = 5;
-            smileAnimation.looping = false;
-            attackAnimation.frames = new int[] { 3, 4, 5 };
+            attackAnimation.frames = new int[] { 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 5 };
             attackAnimation.speed = 3;
             attackAnimation.looping = false;
             animation = idleAnimation;
@@ -31,13 +30,61 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
+            if (animation.frames == idleAnimation.frames)
+            {
+                if (speed.X > 3.0f) speed.X = 3.0f;
+                if (speed.X < -3.0f) speed.X = -3.0f;
+                if (targetX > position.X)
+                {
+                    speed.X += 0.1f;
+                }
+                else
+                {
+                    speed.X -= 0.1f;
+                }
+                if (Math.Abs(targetX - position.X) < 4)
+                {
+                    targetX = game.game.random.Next(32, (game.tilemap.width - 2) * 16);
+                }
+                if (Math.Abs(game.player.position.X - position.X) < 96.0f)
+                {
+                    animation = attackAnimation;
+                    frame = 0;
+                    anim = 0;
+                }
+            }
+            else if (animation.frames == attackAnimation.frames)
+            {
+                timer += 1;
+                speed.X *= 0.9f;
+                if (Math.Abs(speed.X) < 0.1f) speed.X = 0.0f;
+                if (frame == animation.frames.Length - 1)
+                {
+                    bombTimer += 1;
+                    if (bombTimer > 25)
+                    {
+                        bombTimer = 0;
+                        Bomb b = new Bomb(game, position);
+                        b.speed.X = ((float)game.game.random.NextDouble() - 0.5f) * 4.0f;
+                        b.speed.Y = -2.0f;
+                        game.AddEntity(b);
+                    }
+                }
+                if (timer > 200)
+                {
+                    timer = 0;
+                    animation = idleAnimation;
+                    anim = 0;
+                    frame = 0;
+                }
+            }
             if (game.satan == null)
             {
                 speed.Y -= 1.0f;
             }
             Animate();
             position += speed;
-            grenp += 0.1f;
+            grenp += 0.05f;
             position.Y += (float)Math.Sin(grenp) * 2.0f;
             if (position.Y < -128.0f)
             {

@@ -6,7 +6,7 @@ namespace Mors_Arcium
 {
     public class Trident : Projectile
     {
-        public int damage = 7;
+        public int damage = 6;
         private int timer = 0;
         float alpha = 1.0f;
         public Trident(Gameplay g, Vector2 pos, Vector2 spd, Entity own) : base(g, own)

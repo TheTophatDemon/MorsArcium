@@ -11,7 +11,9 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Difficulty Modes
-        //Satan event
+        //Music
+        //Tutorial
+        //Options
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
