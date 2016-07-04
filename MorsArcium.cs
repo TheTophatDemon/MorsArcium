@@ -40,6 +40,10 @@ namespace Mors_Arcium
         public KeyboardState prevState;
 
         public Random random;
+        public bool musicEnabled = true;
+        public bool soundEnabled = true;
+        public bool fullscreen = false;
+        public bool bugJumpFly = true;
 
         public float scaleFactor = 1.0f;
 
@@ -47,7 +51,7 @@ namespace Mors_Arcium
         private bool skip = false;
         private bool henry = false;
         private bool grecc = false;
-        Rectangle thing;
+        public Rectangle thing;
         public MorsArcium()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -58,7 +62,7 @@ namespace Mors_Arcium
             base.Initialize();
 #if WINDOWS
             Window.Title = "MORS ARCIUM";
-            Window.Position = new Point(64, 64);
+            Window.Position = new Point(0, 0);
             graphics.PreferredBackBufferWidth = 960;
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
@@ -96,6 +100,24 @@ namespace Mors_Arcium
         }
         protected override void UnloadContent()
         {
+        }
+        public void ToggleFullscreen()
+        {
+            Window.Position = new Point(0, 0);
+            if (fullscreen)
+            {
+                graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            }
+            else
+            {
+                graphics.PreferredBackBufferWidth = 960;
+                graphics.PreferredBackBufferHeight = 720;
+            }
+            graphics.ApplyChanges();
+            graphics.ToggleFullScreen();
+            scaleFactor = GraphicsDevice.Viewport.Height / 240f;
+            thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
         }
         protected override void Update(GameTime gameTime)
         {

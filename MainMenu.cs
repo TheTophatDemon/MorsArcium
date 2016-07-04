@@ -58,6 +58,7 @@ namespace Mors_Arcium
             backgroundPosition.Y -= 1.0f;
             if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
         }
         public override void Draw(SpriteBatch sp)
         {
@@ -84,7 +85,7 @@ namespace Mors_Arcium
         }
         private void GotoOptions()
         {
-            Console.WriteLine("THE ONLY OPTION IS DEATH!!!!");
+            game.ChangeMenuState(new OptionsMenu(game));
         }
     }
 }

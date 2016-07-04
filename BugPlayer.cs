@@ -77,7 +77,7 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
-            if (game.player == this)
+            if (game.player == this && game.game.bugJumpFly)
             {
                 if (Keyboard.GetState().IsKeyDown(game.game.JUMP) && !game.game.prevState.IsKeyDown(game.game.JUMP) && !granddad)
                 {
