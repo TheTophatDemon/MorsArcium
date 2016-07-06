@@ -66,6 +66,9 @@ namespace Mors_Arcium
         {
             if (source.position == buttons[0].position)
             {
+#if !DEBUG
+                game.SaveSettings();
+#endif
                 game.ChangeMenuState(new MainMenu(game));
             }
             else if (source.position == buttons[1].position)

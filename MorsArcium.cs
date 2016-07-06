@@ -14,7 +14,7 @@ namespace Mors_Arcium
         //Music & Sound
         //Tutorial
         //Nerf Bug and Eli
-        //Save settings
+        //Mr. B disappears when teleporting???? (Something is removing Mr. /B/ from the entities list)
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -57,6 +57,7 @@ namespace Mors_Arcium
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            LoadSettings();
         }
         protected override void Initialize()
         {
@@ -199,6 +200,52 @@ namespace Mors_Arcium
         {
             nextMenu = men;
             transition = true;
+        }
+        public void SaveSettings()
+        {
+#if WINDOWS
+            StreamWriter chrick = new StreamWriter("settings.txt");
+            chrick.WriteLine(fullscreen.ToString());
+            chrick.WriteLine(soundEnabled.ToString());
+            chrick.WriteLine(musicEnabled.ToString());
+            chrick.WriteLine(bugJumpFly.ToString());
+            chrick.WriteLine((int)UP);
+            chrick.WriteLine((int)DOWN);
+            chrick.WriteLine((int)LEFT);
+            chrick.WriteLine((int)RIGHT);
+            chrick.WriteLine((int)JUMP);
+            chrick.WriteLine((int)ATTACK);
+            chrick.WriteLine((int)SPECIAL);
+            chrick.Close();
+            chrick.Dispose();
+#endif
+        }
+        public void LoadSettings()
+        {
+#if WINDOWS
+            try
+            {
+                StreamReader asgore = new StreamReader("settings.txt");
+                fullscreen = bool.Parse(asgore.ReadLine());
+                soundEnabled = bool.Parse(asgore.ReadLine());
+                musicEnabled = bool.Parse(asgore.ReadLine());
+                bugJumpFly = bool.Parse(asgore.ReadLine());
+                UP = (Keys)int.Parse(asgore.ReadLine());
+                DOWN = (Keys)int.Parse(asgore.ReadLine());
+                LEFT = (Keys)int.Parse(asgore.ReadLine());
+                RIGHT = (Keys)int.Parse(asgore.ReadLine());
+                JUMP = (Keys)int.Parse(asgore.ReadLine());
+                ATTACK = (Keys)int.Parse(asgore.ReadLine());
+                SPECIAL = (Keys)int.Parse(asgore.ReadLine());
+                
+                asgore.Close();
+                asgore.Dispose();
+            }
+            catch
+            {
+                Console.WriteLine("Well darn! It's not there!");
+            }
+#endif
         }
     }
 }

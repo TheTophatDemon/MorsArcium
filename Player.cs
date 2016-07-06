@@ -582,7 +582,7 @@ namespace Mors_Arcium
         }
         public void ChangeInto(int srcRctY)
         {
-            if (srcRctY != sourceRect.Y)
+            if (srcRctY != sourceRect.Y && health > 0)
             {
                 switch (srcRctY)
                 {
@@ -591,12 +591,11 @@ namespace Mors_Arcium
                         b.position = position;
                         b.health = health;
                         b.magic = magic;
-                        // game.AddEntity(b);
-                        game.ReplaceEntity(b, index);
                         if (game.player == this)
                         {
                             game.player = b;
                         }
+                        game.ReplaceEntity(b, index);
                         killMe = true;
                         break;
                     case 32: //Wizard
@@ -604,12 +603,11 @@ namespace Mors_Arcium
                         w.position = position;
                         w.health = health;
                         w.magic = magic;
-                        //game.AddEntity(w);
-                        game.ReplaceEntity(w, index);
                         if (game.player == this)
                         {
                             game.player = w;
                         }
+                        game.ReplaceEntity(w, index);
                         killMe = true;
                         break;
                     case 64: //Eli
@@ -617,12 +615,11 @@ namespace Mors_Arcium
                         e.position = position;
                         e.health = health;
                         e.magic = magic;
-                        //game.AddEntity(e);
-                        game.ReplaceEntity(e, index);
                         if (game.player == this)
                         {
                             game.player = e;
                         }
+                        game.ReplaceEntity(e, index);
                         killMe = true;
                         break;
                     case 96: //Bug
@@ -630,12 +627,11 @@ namespace Mors_Arcium
                         g.position = position;
                         g.health = health;
                         g.magic = magic;
-                        //game.AddEntity(g);
-                        game.ReplaceEntity(g, index);
                         if (game.player == this)
                         {
                             game.player = g;
                         }
+                        game.ReplaceEntity(g, index);
                         killMe = true;
                         break;
                 }

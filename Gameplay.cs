@@ -675,6 +675,7 @@ namespace Mors_Arcium
         }
         public void ReplaceEntity(Entity e, int index)
         {
+            entities[e.type, index] = null;
             e.index = index;
             entities[e.type, index] = e;
         }

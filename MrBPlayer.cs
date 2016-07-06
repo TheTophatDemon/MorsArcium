@@ -171,13 +171,11 @@ namespace Mors_Arcium
                 cooldown = attackSpeed + game.reloadOffset;
                 if (animation.frames == walkAnimation.frames)
                 {
-                    animation = walkAttackAnimation;
-                    frame = 0;
+                    ChangeAnimationState("walk_attack");
                 }
                 else if (animation.frames == idleAnimation.frames)
                 {
-                    animation = attackAnimation;
-                    frame = 0;
+                    ChangeAnimationState("attack");
                 }
             }
         }
