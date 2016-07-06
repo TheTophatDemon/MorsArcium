@@ -11,9 +11,10 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Difficulty Modes
-        //Music
+        //Music & Sound
         //Tutorial
-        //Options
+        //Nerf Bug and Eli
+        //Save settings
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

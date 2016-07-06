@@ -75,7 +75,7 @@ namespace Mors_Arcium
             deathThingy = new Vector2(100, 240);
             entities = new Entity[8, 128];
             particles = new Particle[128];
-            tilemap = new Tilemap(this, game.textures[5], 197, 24);
+            tilemap = new Tilemap(this, game.textures[5], 129, 24);
             tilemap.Generate();
             lavaHeight = (tilemap.height * 16) - 32;
             defaultLavaHeight = lavaHeight;

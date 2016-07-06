@@ -11,8 +11,9 @@ namespace Mors_Arcium
         Rectangle goldFrame = new Rectangle(64, 320, 96, 80);
         Rectangle selectClass = new Rectangle(0, 416, 180, 16);
         Rectangle ech = new Rectangle(0, 65, 1, 1);
-        Color backgroundColor;
-        float f;
+        float f = 0.0f;
+        Vector2 backgroundPosition;
+        Color backgroundColor = Color.Gray;
         public ClassMenu(MorsArcium g) : base(g)
         {
             buttons = new Button[4];
@@ -38,11 +39,18 @@ namespace Mors_Arcium
             backgroundColor.R += b;
             backgroundColor.G += b;
             backgroundColor.B += b;
+            backgroundPosition.X -= 1.0f;
+            backgroundPosition.Y -= 1.0f;
+            if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
+            if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
         }
         public override void Draw(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
-            sp.Draw(game.textures[2], game.GraphicsDevice.Viewport.Bounds, ech, backgroundColor);
+            sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
+            sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 0), backgroundColor);
+            sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
+            sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
             for (int i = 0; i < buttons.Length; i++)
             {
                 if (buttons[i].hover)

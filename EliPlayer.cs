@@ -16,9 +16,9 @@ namespace Mors_Arcium
         public EliPlayer(Gameplay g) : base(g)
         {
             attackSpeed = 5;
-            maxHealth = 70;
+            maxHealth = 80;
             maxMagic = 200;
-            health = 70;
+            health = 80;
             magic = 200;
             walkSpeed = 2.2f;
             jumpHeight = 5.0f;
