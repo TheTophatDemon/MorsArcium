@@ -39,6 +39,7 @@ namespace Mors_Arcium
         public Texture2D[] textures;
         public Song[] music;
         public SoundEffect[] sounds;
+        public SoundEffectInstance[] soundInstances;
         public SpriteFont font1;
 
         public Song currentMusic;
@@ -138,6 +139,15 @@ namespace Mors_Arcium
             sounds[10] = Content.Load<SoundEffect>("sounds/slotmachine");
             sounds[11] = Content.Load<SoundEffect>("sounds/hurt");
 
+            soundInstances = new SoundEffectInstance[sounds.Length];
+            for (int i = 0; i < sounds.Length; i++)
+            {
+                if (sounds[i] != null)
+                {
+                    soundInstances[i] = sounds[i].CreateInstance();
+                }
+            }
+
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);
             currentMenu = new MainMenu(this);
@@ -147,6 +157,7 @@ namespace Mors_Arcium
         {
             for (int i = 0; i < sounds.Length; i++)
             {
+                if (soundInstances[i] != null) soundInstances[i].Dispose();
                 if (sounds[i] != null) sounds[i].Dispose();
             }
             for (int i = 0; i < textures.Length; i++)
@@ -191,7 +202,7 @@ namespace Mors_Arcium
                 eeeeearnis -= 0.01f;
                 if (eeeeearnis <= 0.0f)
                 {
-                    eeeeearnis = 1.0f;
+                    eeeeearnis = 0.5f;
                     musictransition = false;
                     if (currentMusic != null)
                     {
@@ -206,11 +217,6 @@ namespace Mors_Arcium
                     }
                     nextMusic = null;
                 }
-            }
-            else if (eeeeearnis < 1.0f)
-            {
-                //eeeeearnis += 0.1f;
-                //if (eeeeearnis > 1.0f) eeeeearnis = 1.0f;
             }
             if (currentMusic != null)
             {

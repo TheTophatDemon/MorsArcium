@@ -178,11 +178,8 @@ namespace Mors_Arcium
                 float dist = Math.Abs(position.X - player.position.X);
                 if (dist < 240.0f)
                 {
-                    SoundEffectInstance e = game.sounds[index].CreateInstance();
-                    e.Volume = 1.0f;
-                    e.Pitch = pitch;
-                    e.Play();
-                    e = null;
+                    game.soundInstances[index].Stop();
+                    game.soundInstances[index].Play();
                 }
             }
         }

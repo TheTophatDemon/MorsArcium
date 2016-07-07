@@ -505,7 +505,7 @@ namespace Mors_Arcium
         {
             if (hurtTimer == 0)
             {
-                //if (perpetrator is EliPlayer) game.PlaySound(3, position, -1.0f);
+                if (perpetrator is EliPlayer) game.PlaySound(3, position, -1.0f);
                 if (game.reloadOffset >= 0)
                 {
                     health -= amount;
