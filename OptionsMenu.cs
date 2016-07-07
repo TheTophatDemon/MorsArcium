@@ -56,7 +56,9 @@ namespace Mors_Arcium
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
             base.Draw(sp);
+#if WINDOWS
             sp.DrawString(game.font1, "FULLSCREEN", new Vector2(52, 68), Color.White);
+#endif
             sp.DrawString(game.font1, "SOUND", new Vector2(52, 100), Color.White);
             sp.DrawString(game.font1, "MUSIC", new Vector2(52, 132), Color.White);
             sp.DrawString(game.font1, "FLY BY JUMPING IN MIDAIR", new Vector2(52, 164), Color.White);

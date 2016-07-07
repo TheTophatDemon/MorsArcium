@@ -36,6 +36,7 @@ namespace Mors_Arcium
             jumpHeight = 5.2f;
             hitboxSize = new Vector2(6, 16); //Half of the actual hitbox's size
             sheetOffset = 96;
+            sourceRect = new Rectangle(0, 96, 32, 32);
 
             idleAnimation.frames = new int[] { 0, 1, 2, 1 };
             idleAnimation.looping = true;
@@ -111,6 +112,7 @@ namespace Mors_Arcium
             base.Attack();
             if (cooldown == 0 && deathTimer == 0)
             {
+                game.PlaySound(6, position);
                 attacking = true;
                 cooldown = attackSpeed + game.reloadOffset;
                 float spdx = 8.0f;

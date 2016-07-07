@@ -61,6 +61,7 @@ namespace Mors_Arcium
             specialAnimation.speed = 5;
             specialAnimation.looping = false;
             sheetOffset = 32;
+            sourceRect = new Rectangle(0, 32, 32, 32);
             animation = idleAnimation;
             inaccuracy = game.game.random.Next(-15, 15);
         }

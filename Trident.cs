@@ -9,6 +9,7 @@ namespace Mors_Arcium
         public int damage = 6;
         private int timer = 0;
         float alpha = 1.0f;
+        bool landed = false;
         public Trident(Gameplay g, Vector2 pos, Vector2 spd, Entity own) : base(g, own)
         {
             owner = own;
@@ -28,6 +29,11 @@ namespace Mors_Arcium
         {
             base.Update(gt);
             TryMove(speed + knockback, false);
+            if ((collision_left || collision_right || collision_bottom || collision_top) && !landed)
+            {
+                game.PlaySound(4, position);
+                landed = true;
+            }
             timer += 1;
             if (timer > 90)
             {

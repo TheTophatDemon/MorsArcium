@@ -53,7 +53,7 @@ namespace Mors_Arcium
             collisionMask = PlayerCollisionMask;
             texture = g.game.textures[0];
             type = Gameplay.TYPE_PLAYER;
-            sourceRect = new Rectangle(0, 0, 32, 32);
+            
             hitboxSize = new Vector2(8, 16); //Half of the actual hitbox's size
             hitboxOffset = new Vector2(0, 0);
             origin = new Vector2(16, 16);
@@ -505,6 +505,7 @@ namespace Mors_Arcium
         {
             if (hurtTimer == 0)
             {
+                //if (perpetrator is EliPlayer) game.PlaySound(3, position, -1.0f);
                 if (game.reloadOffset >= 0)
                 {
                     health -= amount;
@@ -524,7 +525,7 @@ namespace Mors_Arcium
                 if (perpetrator is Player)
                 {
                     Player p = (Player)perpetrator;
-                    p.ChangeInto(sourceRect.Y);
+                    game.ChangePlayerType(p, sourceRect.Y);
                     p = null;
                 }
             }
@@ -582,63 +583,6 @@ namespace Mors_Arcium
         protected virtual void SyncAnimationWithState()
         {
             
-        }
-        public void ChangeInto(int srcRctY)
-        {
-            if (srcRctY != sourceRect.Y && health > 0)
-            {
-                switch (srcRctY)
-                {
-                    case 0: //Mr. /b/
-                        MrBPlayer b = new MrBPlayer(game);
-                        b.position = position;
-                        b.health = health;
-                        b.magic = magic;
-                        if (game.player == this)
-                        {
-                            game.player = b;
-                        }
-                        game.ReplaceEntity(b, index);
-                        killMe = true;
-                        break;
-                    case 32: //Wizard
-                        WizardPlayer w = new WizardPlayer(game);
-                        w.position = position;
-                        w.health = health;
-                        w.magic = magic;
-                        if (game.player == this)
-                        {
-                            game.player = w;
-                        }
-                        game.ReplaceEntity(w, index);
-                        killMe = true;
-                        break;
-                    case 64: //Eli
-                        EliPlayer e = new EliPlayer(game);
-                        e.position = position;
-                        e.health = health;
-                        e.magic = magic;
-                        if (game.player == this)
-                        {
-                            game.player = e;
-                        }
-                        game.ReplaceEntity(e, index);
-                        killMe = true;
-                        break;
-                    case 96: //Bug
-                        BugPlayer g = new BugPlayer(game);
-                        g.position = position;
-                        g.health = health;
-                        g.magic = magic;
-                        if (game.player == this)
-                        {
-                            game.player = g;
-                        }
-                        game.ReplaceEntity(g, index);
-                        killMe = true;
-                        break;
-                }
-            }
         }
     }
 }

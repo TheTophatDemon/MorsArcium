@@ -13,9 +13,9 @@ namespace Mors_Arcium
         //Android Controls
         //Difficulty Modes
         //Tutorial
-        //Nerf Bug and Eli
+        //Nerf Bug and (Eli?)
         //Credits
-        //Sounds (Add Health pickup, slot machine noises)
+        //Screen shaking
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -84,6 +84,7 @@ namespace Mors_Arcium
             thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
             renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
             MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.5f;
         }
         private void LoadTexture(string path, int index)
         {
@@ -133,6 +134,9 @@ namespace Mors_Arcium
             sounds[6] = Content.Load<SoundEffect>("sounds/throw");
             sounds[7] = Content.Load<SoundEffect>("sounds/wizard_blast");
             sounds[8] = Content.Load<SoundEffect>("sounds/wizard_fusdorah");
+            sounds[9] = Content.Load<SoundEffect>("sounds/powerup");
+            sounds[10] = Content.Load<SoundEffect>("sounds/slotmachine");
+            sounds[11] = Content.Load<SoundEffect>("sounds/hurt");
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);

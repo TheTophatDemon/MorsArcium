@@ -54,6 +54,7 @@ namespace Mors_Arcium
             maxMagic = 100;
             health = 80;
             walkSpeed = 3.0f;
+            sourceRect = new Rectangle(0, 0, 32, 32);
         }
         public override void Update(GameTime gt)
         {
@@ -157,6 +158,7 @@ namespace Mors_Arcium
             base.Attack();
             if (cooldown == 0 && animationState != "teleport" && deathTimer == 0)
             {
+                game.PlaySound(6, position);
                 if (spriteEffects == SpriteEffects.None)
                 {
                     game.AddEntity(new Crab(game, position, new Vector2(2f, aimDirection * 4f), this));
@@ -186,6 +188,7 @@ namespace Mors_Arcium
                 magic -= 75;
                 ChangeAnimationState("teleport");
                 knockback = Vector2.Zero;
+                game.PlaySound(5, position);
             }
         }
         protected override void ChangeAnimationState(string st)

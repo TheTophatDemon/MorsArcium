@@ -171,23 +171,20 @@ namespace Mors_Arcium
                 b = null;
             }
         }
-        public void PlaySound(int index, Vector2 position)
+        public void PlaySound(int index, Vector2 position, float pitch = 0.0f)
         {
-            float dist = Vector2.Distance(player.position, position);
-            float vol = 1.0f;
-            if (dist > 240.0f)
+            if (game.soundEnabled)
             {
-                vol -= (dist / 720.0f);
-                if (vol < 0.0f) vol = 0.0f;
+                float dist = Math.Abs(position.X - player.position.X);
+                if (dist < 240.0f)
+                {
+                    SoundEffectInstance e = game.sounds[index].CreateInstance();
+                    e.Volume = 1.0f;
+                    e.Pitch = pitch;
+                    e.Play();
+                    e = null;
+                }
             }
-            if (vol > 0.1f)
-            {
-                SoundEffectInstance e = game.sounds[index].CreateInstance();
-                e.Volume = vol;
-                e.Play();
-                e = null;
-            }
-            
         }
         public void Update(GameTime gt)
         {
@@ -221,19 +218,19 @@ namespace Mors_Arcium
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(player is MrBPlayer))
                 {
-                    player.ChangeInto(0);
+                    ChangePlayerType(player, 0);
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.D2) && !(player is WizardPlayer))
                 {
-                    player.ChangeInto(32);
+                    ChangePlayerType(player, 32);
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.D3) && !(player is EliPlayer))
                 {
-                    player.ChangeInto(64);
+                    ChangePlayerType(player, 64);
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.D4) && !(player is BugPlayer))
                 {
-                    player.ChangeInto(96);
+                    ChangePlayerType(player, 96);
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.U)) player.health += 5;
                 if (Keyboard.GetState().IsKeyDown(Keys.T))
@@ -404,7 +401,7 @@ namespace Mors_Arcium
                     if (entities[TYPE_PLAYER, i] != null && entities[TYPE_PLAYER, i] != player)
                     {
                         Player p = (Player)entities[TYPE_PLAYER, i];
-                        p.ChangeInto(64);
+                        ChangePlayerType(p, 64);
                         p = null;
                     }
                 }
@@ -420,7 +417,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-
+#if DEBUG
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 int x = (int)Math.Floor(((float)(Mouse.GetState().Position.X / game.scaleFactor) + cameraPosition.X) / 16);
@@ -432,6 +429,7 @@ namespace Mors_Arcium
                 tilemap.data[x, y] = -1;
                 tilemap.RefreshTiles();
             }
+#endif
             cameraPosition = player.position - cameraOffset;
             if (cameraPosition.Y + 240 > tilemap.height * 16)
             {
@@ -470,6 +468,7 @@ namespace Mors_Arcium
                         eventSelectorIndex += 1;
                         if (eventSelectorIndex > 7) eventSelectorIndex = 0;
                         eventSelectorText.Y = 152 + (eventSelectorIndex * 11);
+                        PlaySound(10, player.position);
                     }
                     if (waveTimer % 10 == 0)
                     {
@@ -709,11 +708,97 @@ namespace Mors_Arcium
             entities[e.type, index] = null;
             e.index = index;
             entities[e.type, index] = e;
+            e = null;
         }
         public void RemoveEntity(Entity e)
         {
             entities[e.type, e.index] = null;
             e = null;
+        }
+        public void ChangePlayerType(Player p, int srcRctY)
+        {
+            if (srcRctY != p.sourceRect.Y)
+            {
+                switch (srcRctY)
+                {
+                    case 0: //Mr. /b/
+                        MrBPlayer b = new MrBPlayer(this);
+                        b.position = p.position;
+                        b.health = p.health;
+                        b.magic = p.magic;
+                        b.spriteEffects = p.spriteEffects;
+                        if (player == p)
+                        {
+                            player = b;
+                            ReplaceEntity(player, p.index);
+                        }
+                        else
+                        {
+                            ReplaceEntity(b, p.index);
+                        }
+                        p.killMe = true;
+                        //b = null;
+                        break;
+                    case 32: //Wizard
+                        WizardPlayer w = new WizardPlayer(this);
+                        w.position = p.position;
+                        w.health = p.health;
+                        w.magic = p.magic;
+                        w.spriteEffects = p.spriteEffects;
+                        if (player == p)
+                        {
+                            player = w;
+                            ReplaceEntity(player, p.index);
+                        }
+                        else
+                        {
+                            ReplaceEntity(w, p.index);
+                        }
+                        p.killMe = true;
+
+                        //Console.WriteLine("OOH");
+                        //w = null;
+                        break;
+                    case 64: //Eli
+                        EliPlayer e = new EliPlayer(this);
+                        e.position = p.position;
+                        e.health = p.health;
+                        e.magic = p.magic;
+                        e.spriteEffects = p.spriteEffects;
+                        if (player == p)
+                        {
+                            player = e;
+                            ReplaceEntity(player, p.index);
+                        }
+                        else
+                        {
+                            ReplaceEntity(e, p.index);
+                        }
+                        p.killMe = true;
+
+                        // e = null;
+                        break;
+                    case 96: //Bug
+                        BugPlayer g = new BugPlayer(this);
+                        g.position = p.position;
+                        g.health = p.health;
+                        g.magic = p.magic;
+                        g.spriteEffects = p.spriteEffects;
+                        if (player == p)
+                        {
+                            player = g;
+                            ReplaceEntity(player, p.index);
+                        }
+                        else
+                        {
+                            ReplaceEntity(g, p.index);
+                        }
+                        p.killMe = true;
+                        //g = null;
+                        break;
+                }
+
+            }
         }
         public void AddParticle(Particle p)
         {

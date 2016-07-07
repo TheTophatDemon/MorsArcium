@@ -24,6 +24,7 @@ namespace Mors_Arcium
             jumpHeight = 5.0f;
             acceleration = 0.20f;
             sheetOffset = 64;
+            sourceRect = new Rectangle(0, 64, 32, 32);
             sourceRect = new Rectangle(0, 0, 40, 32);
             hitboxOffset = new Vector2(0, 0);
             hitboxSize = new Vector2(6, 16);
