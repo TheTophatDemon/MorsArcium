@@ -414,6 +414,7 @@ namespace Mors_Arcium
                 if (gravity >= 7.0f)
                 {
                     game.AddParticle(new Particle(game, new Vector2(position.X - 4, position.Y + hitboxSize.Y + hitboxOffset.Y), Vector2.Zero, 5, 8, 1));
+                    //game.PlaySound(4, position);
                 }
             }
             if ((collision_bottom && onSlope == -1) || (onSlope == -1 && wasOnSlope != -1))
@@ -460,6 +461,7 @@ namespace Mors_Arcium
                 health = 0;
                 deathTimer = 1;
                 ChangeAnimationState("dead");
+                game.PlaySound(2, position);
             }
             if (position.Y + hitboxOffset.Y + hitboxSize.Y > game.lavaHeight && deathTimer == 0)
             {
@@ -476,6 +478,7 @@ namespace Mors_Arcium
                 {
                     dead = true;
                     game.Explode(position.X, position.Y, 16f, 15);
+                    game.PlaySound(0, position);
                     for(int i = 0; i < 5; i++)
                     {
                         Particle p = new Particle(game, position, new Vector2(((float)game.game.random.NextDouble() * 5f) - 2.5f, -((float)game.game.random.NextDouble() * 2.5f) - 1.5f), 100, 8, 3);

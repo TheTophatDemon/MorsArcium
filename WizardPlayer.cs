@@ -103,6 +103,7 @@ namespace Mors_Arcium
             {
                 attacking = true;
                 cooldown = attackSpeed + game.reloadOffset;
+                game.PlaySound(7, position);
                 /*float spdx = 8.0f;
                 if (spriteEffects == SpriteEffects.FlipHorizontally) spdx = -8.0f;
                 Bullet b = new Bullet(game, position + new Vector2(spdx * 1.25f, (aimDirection * 8.0f) + 4), new Vector2(spdx, aimDirection * 8), this);
@@ -261,6 +262,7 @@ namespace Mors_Arcium
         {
             if (magic == maxMagic && collision_bottom && deathTimer == 0)
             {
+                game.PlaySound(8, position);
                 magic = 0;
                 ChangeAnimationState("special");
                 walk = 0.0f;

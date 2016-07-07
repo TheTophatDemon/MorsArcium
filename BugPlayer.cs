@@ -33,7 +33,7 @@ namespace Mors_Arcium
             health = 60;
             magic = 100;
             walkSpeed = 2.4f;
-            jumpHeight = 6.0f;
+            jumpHeight = 5.2f;
             hitboxSize = new Vector2(6, 16); //Half of the actual hitbox's size
             sheetOffset = 96;
 

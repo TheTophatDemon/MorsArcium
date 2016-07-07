@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using System.IO;
 using System;
+using Microsoft.Xna.Framework.Media;
 
 namespace Mors_Arcium
 {
@@ -11,10 +12,10 @@ namespace Mors_Arcium
     {
         //Android Controls
         //Difficulty Modes
-        //Music & Sound
         //Tutorial
         //Nerf Bug and Eli
-        //Mr. B disappears when teleporting???? (Something is removing Mr. /B/ from the entities list)
+        //Credits
+        //Sounds (Add Health pickup, slot machine noises)
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -22,6 +23,7 @@ namespace Mors_Arcium
         public Keys JUMP = Keys.Space;
         public Keys ATTACK = Keys.J;
         public Keys SPECIAL = Keys.K;
+        public Keys PAUSE = Keys.Enter;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -30,13 +32,19 @@ namespace Mors_Arcium
         public Gameplay game;
         public Menu currentMenu = null;
         private Menu nextMenu = null;
-        private bool transition = false;
+        private bool menutransition = false;
         private float fade = 1.0f;
         private bool fadeIn = false;
 
         public Texture2D[] textures;
+        public Song[] music;
         public SoundEffect[] sounds;
         public SpriteFont font1;
+
+        public Song currentMusic;
+        private Song nextMusic;
+        private bool musictransition = false;
+        private float eeeeearnis = 1.0f;
 
         public KeyboardState prevState;
 
@@ -48,11 +56,12 @@ namespace Mors_Arcium
 
         public float scaleFactor = 1.0f;
 
-        public bool pause = false;
+        public bool paused = false;
         private bool skip = false;
         private bool henry = false;
         private bool grecc = false;
         public Rectangle thing;
+        MediaState prevMedState;
         public MorsArcium()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -74,10 +83,23 @@ namespace Mors_Arcium
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
             thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
             renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
+            MediaPlayer.IsRepeating = true;
         }
         private void LoadTexture(string path, int index)
         {
             textures[index] = Content.Load<Texture2D>("textures/" + Path.GetFileNameWithoutExtension(path));
+        }
+        public void ChangeMusic(int i)
+        {
+            if (i != 15)
+            {
+                nextMusic = music[i];
+            }
+            else
+            {
+                nextMusic = null;
+            }
+            musictransition = true;
         }
         protected override void LoadContent()
         {
@@ -93,7 +115,24 @@ namespace Mors_Arcium
             LoadTexture("Content/textures/tileset.png", 5);    
             LoadTexture("Content/textures/hitbox.png", 6);    
             LoadTexture("Content/textures/particles.png", 7);  
-            LoadTexture("Content/textures/misc.png", 8); 
+            LoadTexture("Content/textures/misc.png", 8);
+
+            music = new Song[16];
+            music[0] = Content.Load<Song>("AsinosFacio");
+            music[1] = Content.Load<Song>("frozenhell");
+            music[2] = Content.Load<Song>("gasconade");
+            music[3] = Content.Load<Song>("unholywars");
+
+            sounds = new SoundEffect[32];
+            sounds[0] = Content.Load<SoundEffect>("sounds/die");
+            sounds[1] = Content.Load<SoundEffect>("sounds/explosion");
+            sounds[2] = Content.Load<SoundEffect>("sounds/freeze");
+            sounds[3] = Content.Load<SoundEffect>("sounds/jump");
+            sounds[4] = Content.Load<SoundEffect>("sounds/land");
+            sounds[5] = Content.Load<SoundEffect>("sounds/mrb_teleport");
+            sounds[6] = Content.Load<SoundEffect>("sounds/throw");
+            sounds[7] = Content.Load<SoundEffect>("sounds/wizard_blast");
+            sounds[8] = Content.Load<SoundEffect>("sounds/wizard_fusdorah");
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);
@@ -102,6 +141,18 @@ namespace Mors_Arcium
         }
         protected override void UnloadContent()
         {
+            for (int i = 0; i < sounds.Length; i++)
+            {
+                if (sounds[i] != null) sounds[i].Dispose();
+            }
+            for (int i = 0; i < textures.Length; i++)
+            {
+                if (textures[i] != null) textures[i].Dispose();
+            }
+            for (int i = 0; i < music.Length; i++)
+            {
+                if (music[i] != null) music[i].Dispose();
+            }
         }
         public void ToggleFullscreen()
         {
@@ -125,20 +176,57 @@ namespace Mors_Arcium
         {
             base.Update(gameTime);
 #if DEBUG
-            if (Keyboard.GetState().IsKeyDown(Keys.P)) pause = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.P)) paused = true;
             if (Keyboard.GetState().IsKeyDown(Keys.O) && !henry) skip = true;
-            if (Keyboard.GetState().IsKeyDown(Keys.I)) pause = false;
+            if (Keyboard.GetState().IsKeyDown(Keys.I)) paused = false;
             henry = Keyboard.GetState().IsKeyDown(Keys.O);
 #endif
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter) && !grecc)
+
+            if (musictransition)
             {
-                pause = !pause;
+                eeeeearnis -= 0.01f;
+                if (eeeeearnis <= 0.0f)
+                {
+                    eeeeearnis = 1.0f;
+                    musictransition = false;
+                    if (currentMusic != null)
+                    {
+                        MediaPlayer.Stop();
+                        //currentMusic.Dispose();
+                    }
+                    currentMusic = nextMusic;
+                    if (currentMusic != null)
+                    {
+                        MediaPlayer.Play(currentMusic);
+                        
+                    }
+                    nextMusic = null;
+                }
             }
-            grecc = Keyboard.GetState().IsKeyDown(Keys.Enter);
-            
-            if (!pause || skip)
+            else if (eeeeearnis < 1.0f)
             {
-                if (transition)
+                //eeeeearnis += 0.1f;
+                //if (eeeeearnis > 1.0f) eeeeearnis = 1.0f;
+            }
+            if (currentMusic != null)
+            {
+                if (!musicEnabled)
+                {
+                    MediaPlayer.Volume = 0.0f;
+                }
+                else
+                {
+                    MediaPlayer.Volume = eeeeearnis;
+                }
+            }
+            if (Keyboard.GetState().IsKeyDown(PAUSE) && !grecc)
+            {
+                paused = !paused;
+            }
+            grecc = Keyboard.GetState().IsKeyDown(PAUSE);
+            if (!paused || skip)
+            {
+                if (menutransition)
                 {
                     if (!fadeIn)
                     {
@@ -157,7 +245,7 @@ namespace Mors_Arcium
                         if (fade > 1.0f)
                         {
                             fade = 1.0f;
-                            transition = false;
+                            menutransition = false;
                             fadeIn = false;
                         }
                     }
@@ -172,8 +260,17 @@ namespace Mors_Arcium
                 }
                 skip = false;
             }
+            else
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                {
+                    paused = false;
+                }
+            }
             prevState = Keyboard.GetState();
+            prevMedState = MediaPlayer.State;
         }
+        
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.SetRenderTarget(renderTarget);
@@ -199,7 +296,7 @@ namespace Mors_Arcium
         public void ChangeMenuState(Menu men)
         {
             nextMenu = men;
-            transition = true;
+            menutransition = true;
         }
         public void SaveSettings()
         {
@@ -216,6 +313,7 @@ namespace Mors_Arcium
             chrick.WriteLine((int)JUMP);
             chrick.WriteLine((int)ATTACK);
             chrick.WriteLine((int)SPECIAL);
+            chrick.WriteLine((int)PAUSE);
             chrick.Close();
             chrick.Dispose();
 #endif
@@ -237,7 +335,7 @@ namespace Mors_Arcium
                 JUMP = (Keys)int.Parse(asgore.ReadLine());
                 ATTACK = (Keys)int.Parse(asgore.ReadLine());
                 SPECIAL = (Keys)int.Parse(asgore.ReadLine());
-                
+                PAUSE = (Keys)int.Parse(asgore.ReadLine());
                 asgore.Close();
                 asgore.Dispose();
             }

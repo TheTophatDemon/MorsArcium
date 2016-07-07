@@ -4,6 +4,19 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/andso/Desktop/Game Projects/C#/Mors Arcium/Mors Arcium/Content/Font1.spritefont</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/Font1.spritefont</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/AsinosFacio.ogg</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/frozenhell.ogg</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/gasconade.ogg</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/unholywars.ogg</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/die.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/explosion.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/freeze.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/jump.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/land.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/mrb_teleport.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/throw.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/wizard_blast.wav</File>
+    <File>C:/Users/andso/Desktop/Game Projects/Cee Sharp/Mors Arcium/Mors Arcium/Content/sounds/wizard_fusdorah.wav</File>
   </SourceFiles>
 </SourceFileCollection>

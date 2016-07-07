@@ -15,7 +15,7 @@ namespace Mors_Arcium
         Button undyne;
         public RebindMenu(MorsArcium g) : base(g)
         {
-            buttons = new Button[8];
+            buttons = new Button[9];
             buttons[0].source = new Rectangle(384, 152, 128, 24); //Back button
             buttons[0].position = new Vector2(16, 16);
             buttons[1].source = new Rectangle(0, 352, 64, 16); //Up
@@ -32,6 +32,8 @@ namespace Mors_Arcium
             buttons[6].position = new Vector2(16, 136);
             buttons[7].source = buttons[1].source; //Special
             buttons[7].position = new Vector2(16, 156);
+            buttons[8].source = buttons[1].source; //PAUSE
+            buttons[8].position = new Vector2(16, 176);
             for (int i = 1; i < buttons.Length; i++)
             {
                 buttons[i].position.Y += 32;
@@ -56,6 +58,7 @@ namespace Mors_Arcium
                 Keys[] k = Keyboard.GetState().GetPressedKeys();
                 if (k.Length > 0)
                 {
+               
                     if (undyne.position == buttons[1].position)
                     {
                         game.UP = k[0];
@@ -83,6 +86,10 @@ namespace Mors_Arcium
                     else if (undyne.position == buttons[7].position)
                     {
                         game.SPECIAL = k[0];
+                    }
+                    else if (undyne.position == buttons[8].position)
+                    {
+                        game.PAUSE = k[0];
                     }
                     rebinding = false;
                 }
@@ -116,6 +123,7 @@ namespace Mors_Arcium
             sp.DrawString(game.font1, "JUMP: " + game.JUMP.ToString(), buttons[5].position + new Vector2(68, 0), Color.White);
             sp.DrawString(game.font1, "ATTACK: " + game.ATTACK.ToString(), buttons[6].position + new Vector2(68, 0), Color.White);
             sp.DrawString(game.font1, "SPECIAL ATTACK: " + game.SPECIAL.ToString(), buttons[7].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "PAUSE: " + game.PAUSE.ToString(), buttons[8].position + new Vector2(68, 0), Color.White);
             sp.End();
         }
     }

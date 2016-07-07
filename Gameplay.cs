@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Mors_Arcium
 {
@@ -170,11 +171,30 @@ namespace Mors_Arcium
                 b = null;
             }
         }
+        public void PlaySound(int index, Vector2 position)
+        {
+            float dist = Vector2.Distance(player.position, position);
+            float vol = 1.0f;
+            if (dist > 240.0f)
+            {
+                vol -= (dist / 720.0f);
+                if (vol < 0.0f) vol = 0.0f;
+            }
+            if (vol > 0.1f)
+            {
+                SoundEffectInstance e = game.sounds[index].CreateInstance();
+                e.Volume = vol;
+                e.Play();
+                e = null;
+            }
+            
+        }
         public void Update(GameTime gt)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && game.currentMenu == null)
             {
                 game.ChangeMenuState(new MainMenu(game));
+                game.paused = false;
             }
             if (!player.dead)
             {
@@ -435,6 +455,10 @@ namespace Mors_Arcium
             if (wave <= 1) eventSelectorIndex = 0;
             if (waveTimer > 0)
             {
+                if (game.currentMusic != null)
+                {
+                    game.ChangeMusic(15);
+                }
                 waveTimer -= 1;
                 if (eventsEnabled && wave > 1)//96, 120
                 {
@@ -457,7 +481,10 @@ namespace Mors_Arcium
                 {
                     SpawnEnemies();
                     eventThingy = 240.0f;
-                    
+                    if (game.musicEnabled)
+                    {
+                        game.ChangeMusic(game.random.Next(0, 4));
+                    }
                 }
             }
             if (player.deathTimer > 200)
@@ -589,52 +616,55 @@ namespace Mors_Arcium
                 if (particles[i] != null) particles[i].Draw(sp);
             }
             sp.End();
-            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
-            sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
-            sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
-            sp.Draw(game.textures[2], new Rectangle(12, 2,  (int)(((float)player.health / player.maxHealth) * 104.0f), 12), hbRect, Color.White);
-            sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), mbRect, Color.White);
-            sp.DrawString(game.font1, "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
-            if (player.deathTimer == 0 && player.dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
-            if (nearestEnemy != 0 && player.deathTimer == 0 && player.dead == false)
+            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null); //HUD
+            if (!game.paused)
             {
-                if (nearestEnemy == 1)
+                sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
+                sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
+                sp.Draw(game.textures[2], new Rectangle(12, 2, (int)(((float)player.health / player.maxHealth) * 104.0f), 12), hbRect, Color.White);
+                sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), mbRect, Color.White);
+                sp.DrawString(game.font1, "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
+                if (player.deathTimer == 0 && player.dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
+                if (nearestEnemy != 0 && player.deathTimer == 0 && player.dead == false)
                 {
-                    sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
+                    if (nearestEnemy == 1)
+                    {
+                        sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
+                    }
+                    else
+                    {
+                        sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
+                    }
                 }
-                else
+                if (waveTimer > 0)
                 {
-                    sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
+                    if (waveTimer >= 100 && waveAlpha < 1.0f)
+                    {
+                        waveAlpha += 0.1f;
+                    }
+                    else if (waveTimer <= 10 && waveAlpha > 0.0f)
+                    {
+                        waveAlpha -= 0.1f;
+                    }
+                    if (wave == 1)
+                    {
+                        sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
+                    }
+                    else
+                    {
+                        sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+                        sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
+                        sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
+                    }
+
                 }
-            }
-            if (waveTimer > 0)
-            {
-                if (waveTimer >= 100 && waveAlpha < 1.0f)
+                if (player.dead)
                 {
-                    waveAlpha += 0.1f;
-                }
-                else if (waveTimer <= 10 && waveAlpha > 0.0f)
-                {
-                    waveAlpha -= 0.1f;
-                }
-                if (wave == 1)
-                {
-                    sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
-                }
-                else
-                {
-                    sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
-                    sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
-                    sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
-                }
-                
-            }
-            if (player.dead)
-            {
-                sp.Draw(game.textures[2], deathThingy, deathThingyRect, Color.White);
-                if (player.deathTimer == 150)
-                {
-                    fadeOut = 1.0f;
+                    sp.Draw(game.textures[2], deathThingy, deathThingyRect, Color.White);
+                    if (player.deathTimer == 150)
+                    {
+                        fadeOut = 1.0f;
+                    }
                 }
             }
             if (fadeOut > 0.0f)
@@ -648,9 +678,10 @@ namespace Mors_Arcium
                 fadeIn -= 0.025f;
                 sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * fadeIn);
             }
-            if (game.pause)
+            if (game.paused)
             {
                 sp.Draw(game.textures[2], new Vector2(100, 72), pauseThingyRect, Color.White);
+                sp.DrawString(game.font1, "PRESS ESCAPE TO RETURN TO THE MENU", new Vector2(4, 32), Color.White);
             }
             sp.End();
         }
