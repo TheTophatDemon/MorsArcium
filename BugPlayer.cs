@@ -80,11 +80,11 @@ namespace Mors_Arcium
         {
             if (game.player == this && game.game.bugJumpFly)
             {
-                if (Keyboard.GetState().IsKeyDown(game.game.JUMP) && !game.game.prevState.IsKeyDown(game.game.JUMP) && !granddad)
+                if ((Keyboard.GetState().IsKeyDown(game.game.JUMP) || game.game.android.jump) && (!game.game.prevState.IsKeyDown(game.game.JUMP) && !game.game.prevJump) && !granddad)
                 {
                     flymode = true;
                 }
-                if (!Keyboard.GetState().IsKeyDown(game.game.JUMP) && game.game.prevState.IsKeyDown(game.game.JUMP))
+                if ((!Keyboard.GetState().IsKeyDown(game.game.JUMP) && !game.game.android.jump) && (game.game.prevState.IsKeyDown(game.game.JUMP) || game.game.prevJump))
                 {
                     flymode = false;
                 }

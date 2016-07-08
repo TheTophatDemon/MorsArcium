@@ -7,8 +7,9 @@ namespace Mors_Arcium
         [STAThread]
         static void Main()
         {
-            using (var game = new MorsArcium(new AndroidOutlet()))
-                game.Run();
+            MorsArcium m = new MorsArcium(new AndroidOutlet());
+            m.android.game = m;
+            m.Run();
         }
     }
 }

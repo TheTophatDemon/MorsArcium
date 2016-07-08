@@ -46,6 +46,7 @@ namespace Mors_Arcium
         private float eeeeearnis = 1.0f;
 
         public KeyboardState prevState;
+        public bool prevJump = false;
 
         public Random random;
         public bool musicEnabled = true;
@@ -199,7 +200,7 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.I)) paused = false;
             henry = Keyboard.GetState().IsKeyDown(Keys.O);
 #endif
-            android.UpdateControls(gameTime);
+            
             if (musictransition)
             {
                 eeeeearnis -= 0.01f;
@@ -285,6 +286,7 @@ namespace Mors_Arcium
             }
             prevState = Keyboard.GetState();
             prevMedState = MediaPlayer.State;
+            prevJump = android.jump;
         }
         
         protected override void Draw(GameTime gameTime)

@@ -186,6 +186,7 @@ namespace Mors_Arcium
         }
         public void Update(GameTime gt)
         {
+            game.android.UpdateControls(gt);
             if ((Keyboard.GetState().IsKeyDown(Keys.Escape) || game.android.exit) && game.currentMenu == null)
             {
                 game.ChangeMenuState(new MainMenu(game));
@@ -427,14 +428,14 @@ namespace Mors_Arcium
 #if DEBUG
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                int x = (int)Math.Floor(((float)(Mouse.GetState().Position.X / game.scaleFactor) + cameraPosition.X) / 16);
+                /*int x = (int)Math.Floor(((float)(Mouse.GetState().Position.X / game.scaleFactor) + cameraPosition.X) / 16);
                 int y = (int)Math.Floor(((float)(Mouse.GetState().Position.Y / game.scaleFactor) + cameraPosition.Y) / 16);
                 if (x < 0) x = 0;
                 if (y < 0) y = 0;
                 if (x >= tilemap.width) x = tilemap.width - 1;
                 if (y >= tilemap.height) y = tilemap.height - 1;
                 tilemap.data[x, y] = -1;
-                tilemap.RefreshTiles();
+                tilemap.RefreshTiles();*/
             }
 #endif
             cameraPosition = player.position - cameraOffset;
