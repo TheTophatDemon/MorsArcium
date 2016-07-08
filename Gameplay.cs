@@ -55,7 +55,8 @@ namespace Mors_Arcium
         int eventSelectorTimer = 0;
         Rectangle eventSelectorText;
         public float gravityAcceleration = 0.15f;
-
+        bool shakeScreen = false;
+        float cameraShake = 0.0f;
         public float lavaHeight = 0.0f;
         public int lavaAnim = 0;
         Rectangle lavaTop;
@@ -185,7 +186,7 @@ namespace Mors_Arcium
         }
         public void Update(GameTime gt)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape) && game.currentMenu == null)
+            if ((Keyboard.GetState().IsKeyDown(Keys.Escape) || game.android.exit) && game.currentMenu == null)
             {
                 game.ChangeMenuState(new MainMenu(game));
                 game.paused = false;
@@ -277,26 +278,26 @@ namespace Mors_Arcium
 
                 if (player.deathTimer == 0)
                 {
-                    if (Keyboard.GetState().IsKeyDown(game.JUMP))
+                    if (Keyboard.GetState().IsKeyDown(game.JUMP) || game.android.jump)
                     {
                         player.Jump();
                     }
 
-                    if (Keyboard.GetState().IsKeyDown(game.RIGHT))
+                    if (Keyboard.GetState().IsKeyDown(game.RIGHT) || game.android.right)
                     {
                         player.spriteEffects = SpriteEffects.None;
                         player.Walk();
                     }
-                    else if (Keyboard.GetState().IsKeyDown(game.LEFT))
+                    else if (Keyboard.GetState().IsKeyDown(game.LEFT) || game.android.left)
                     {
                         player.spriteEffects = SpriteEffects.FlipHorizontally;
                         player.Walk();
                     }
-                    if (Keyboard.GetState().IsKeyDown(game.UP))
+                    if (Keyboard.GetState().IsKeyDown(game.UP) || game.android.up)
                     {
                         player.aimDirection = -1;
                     }
-                    else if (Keyboard.GetState().IsKeyDown(game.DOWN))
+                    else if (Keyboard.GetState().IsKeyDown(game.DOWN) || game.android.down)
                     {
                         player.aimDirection = 1;
                     }
@@ -304,11 +305,11 @@ namespace Mors_Arcium
                     {
                         player.aimDirection = 0;
                     }
-                    if (Keyboard.GetState().IsKeyDown(game.ATTACK))
+                    if (Keyboard.GetState().IsKeyDown(game.ATTACK) || game.android.attack)
                     {
                         player.Attack();
                     }
-                    if (Keyboard.GetState().IsKeyDown(game.SPECIAL))
+                    if (Keyboard.GetState().IsKeyDown(game.SPECIAL) || game.android.special)
                     {
                         player.Special();
                     }
@@ -388,6 +389,15 @@ namespace Mors_Arcium
                         }
                     }
                 }
+            }
+
+            if (shakeScreen)
+            {
+                cameraShake = ((float)game.random.NextDouble() - 0.5f) * 5.0f;
+            }
+            else
+            {
+                cameraShake = 0.0f;
             }
             if (cheatString.Contains("TDGMH"))
             {
@@ -517,16 +527,18 @@ namespace Mors_Arcium
             {
                 satan = null;
             }
-
+            shakeScreen = false;
             if ((eventSelectorIndex != 1 || lavaTimer > 200) && lavaHeight < defaultLavaHeight)
             {
                 lavaHeight += 4;
+                shakeScreen = true;
             }
             if (lavaAnim > 5)
             {
                 if (eventSelectorIndex == 1 && eventThingy == 240.0f && lavaHeight > tilemap.height * 8 && wave > 1)
                 {
                     lavaHeight -= 1;
+                    shakeScreen = true;
                 }
                 else if (lavaHeight <= tilemap.height * 8)
                 {
@@ -558,7 +570,7 @@ namespace Mors_Arcium
         }
         public void Draw(SpriteBatch sp)
         {
-            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition, 0f)));
+            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition.X + cameraShake, -cameraPosition.Y, 0f)));
             for (int y = 0; y < entities.GetLength(1); y++)
             {
                 if (entities[TYPE_PROP, y] != null)
@@ -662,6 +674,7 @@ namespace Mors_Arcium
                         fadeOut = 1.0f;
                     }
                 }
+                game.android.DrawControls(sp);
             }
             if (fadeOut > 0.0f)
             {

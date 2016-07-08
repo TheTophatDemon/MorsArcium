@@ -16,7 +16,7 @@ namespace Mors_Arcium
         {
             if (g.game.started)
             {
-                buttons = new Button[4];
+                buttons = new Button[5];
                 buttons[0].position = new Vector2(96, 88);
                 buttons[0].source = new Rectangle(0, 200, 128, 24);
                 buttons[0].function = ResumeGame;
@@ -29,10 +29,12 @@ namespace Mors_Arcium
                 buttons[3].position = new Vector2(96, 208);
                 buttons[3].source = new Rectangle(0, 176, 128, 24);
                 buttons[3].function = GotoOptions;
+                buttons[4].position = new Vector2(16, 208);
+                buttons[4].source = new Rectangle(384, 176, 64, 24);
             }
             else
             {
-                buttons = new Button[3];
+                buttons = new Button[4];
                 buttons[0].position = new Vector2(96, 128);
                 buttons[0].source = new Rectangle(0, 128, 128, 24);
                 buttons[0].function = StartGame;
@@ -42,6 +44,8 @@ namespace Mors_Arcium
                 buttons[2].position = new Vector2(96, 208);
                 buttons[2].source = new Rectangle(0, 176, 128, 24);
                 buttons[2].function = GotoOptions;
+                buttons[3].position = new Vector2(16, 208);
+                buttons[3].source = new Rectangle(384, 176, 64, 24);
             }
             backgroundPosition = Vector2.Zero;
             backgroundColor = new Color(32, 32, 32);
@@ -86,6 +90,13 @@ namespace Mors_Arcium
         private void GotoOptions()
         {
             game.ChangeMenuState(new OptionsMenu(game));
+        }
+        public override void OnButtonPress(Button source)
+        {
+            if (source.source.X == 384)
+            {
+                game.ChangeMenuState(new CreditsMenu(game));
+            }
         }
     }
 }

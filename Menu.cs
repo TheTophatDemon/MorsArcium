@@ -51,8 +51,8 @@ namespace Mors_Arcium
                 }
                 if (touches.Count > 0)
                 {
-                    if (touches[0].Position.X > buttons[i].position.X && touches[0].Position.X < buttons[i].position.X + buttons[i].source.Width
-                        && touches[0].Position.Y > buttons[i].position.Y && touches[0].Position.Y < buttons[i].position.Y + buttons[i].source.Height)
+                    if (tx > buttons[i].position.X && tx < buttons[i].position.X + buttons[i].source.Width
+                        && ty > buttons[i].position.Y && ty < buttons[i].position.Y + buttons[i].source.Height)
                     {
                         buttons[i].hover = true;
                         if (touches[0].State == TouchLocationState.Pressed && prevTouches.Count == 0)

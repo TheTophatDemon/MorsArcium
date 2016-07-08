@@ -13,9 +13,6 @@ namespace Mors_Arcium
         //Android Controls
         //Difficulty Modes
         //Tutorial
-        //Nerf Bug and (Eli?)
-        //Credits
-        //Screen shaking
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -25,6 +22,7 @@ namespace Mors_Arcium
         public Keys SPECIAL = Keys.K;
         public Keys PAUSE = Keys.Enter;
 
+        public AndroidOutlet android;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RenderTarget2D renderTarget;
@@ -63,8 +61,9 @@ namespace Mors_Arcium
         private bool grecc = false;
         public Rectangle thing;
         MediaState prevMedState;
-        public MorsArcium()
+        public MorsArcium(AndroidOutlet a)
         {
+            android = a;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             LoadSettings();
@@ -113,7 +112,8 @@ namespace Mors_Arcium
             LoadTexture("Content/textures/characters.png", 0);
             LoadTexture("Content/textures/sky.png", 1);
             LoadTexture("Content/textures/hud.png", 2);        
-            LoadTexture("Content/textures/projectiles.png", 3);   
+            LoadTexture("Content/textures/projectiles.png", 3);
+            LoadTexture("Content/textures/credits.png", 4);
             LoadTexture("Content/textures/tileset.png", 5);    
             LoadTexture("Content/textures/hitbox.png", 6);    
             LoadTexture("Content/textures/particles.png", 7);  
@@ -124,6 +124,7 @@ namespace Mors_Arcium
             music[1] = Content.Load<Song>("frozenhell");
             music[2] = Content.Load<Song>("gasconade");
             music[3] = Content.Load<Song>("unholywars");
+            music[14] = Content.Load<Song>("tehcrankles");
 
             sounds = new SoundEffect[32];
             sounds[0] = Content.Load<SoundEffect>("sounds/die");
@@ -171,6 +172,7 @@ namespace Mors_Arcium
         }
         public void ToggleFullscreen()
         {
+#if WINDOWS
             Window.Position = new Point(0, 0);
             if (fullscreen)
             {
@@ -186,6 +188,7 @@ namespace Mors_Arcium
             graphics.ToggleFullScreen();
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
             thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
+#endif
         }
         protected override void Update(GameTime gameTime)
         {
@@ -196,7 +199,7 @@ namespace Mors_Arcium
             if (Keyboard.GetState().IsKeyDown(Keys.I)) paused = false;
             henry = Keyboard.GetState().IsKeyDown(Keys.O);
 #endif
-
+            android.UpdateControls(gameTime);
             if (musictransition)
             {
                 eeeeearnis -= 0.01f;
@@ -229,11 +232,14 @@ namespace Mors_Arcium
                     MediaPlayer.Volume = eeeeearnis;
                 }
             }
-            if (Keyboard.GetState().IsKeyDown(PAUSE) && !grecc)
+            if ((Keyboard.GetState().IsKeyDown(PAUSE) || android.pause) && !grecc)
             {
                 paused = !paused;
             }
             grecc = Keyboard.GetState().IsKeyDown(PAUSE);
+#if ANDROID
+            grecc = android.pause;
+#endif
             if (!paused || skip)
             {
                 if (menutransition)
@@ -272,7 +278,7 @@ namespace Mors_Arcium
             }
             else
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                if (Keyboard.GetState().IsKeyDown(Keys.Escape) || android.exit)
                 {
                     paused = false;
                 }
@@ -327,6 +333,10 @@ namespace Mors_Arcium
             chrick.Close();
             chrick.Dispose();
 #endif
+
+#if ANDROID
+            android.SaveSettings();
+#endif
         }
         public void LoadSettings()
         {
@@ -353,6 +363,9 @@ namespace Mors_Arcium
             {
                 Console.WriteLine("Well darn! It's not there!");
             }
+#endif
+#if ANDROID
+                android.LoadSettings();
 #endif
         }
     }
