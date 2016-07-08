@@ -66,6 +66,10 @@ namespace Mors_Arcium
         public int reloadOffset = 0;
         public Satan satan;
 
+        public bool tutorial = false;
+        int tutorialTimer = 0;
+        public int tutorialPhase = 0;
+
         public Gameplay(MorsArcium g)
         {
             game = g;
@@ -77,8 +81,33 @@ namespace Mors_Arcium
             deathThingy = new Vector2(100, 240);
             entities = new Entity[8, 128];
             particles = new Particle[128];
-            tilemap = new Tilemap(this, game.textures[5], 129, 24);
-            tilemap.Generate();
+            if (tutorial)
+            {
+                tilemap = new Tilemap(this, game.textures[5], 25, 24);
+                int h = 0;
+                for (int i = 0; i < tilemap.width; i++)
+                {
+                    if (i < 5)
+                    {
+                        h += 1;
+                    }
+                    if (i >= 20)
+                    {
+                        h -= 1;
+                    }
+                    for (int j = h; j < tilemap.height; j++)
+                    {
+                        tilemap.data[i, j] = 1;
+                    }
+                }
+                tilemap.RefreshTiles();
+            }
+            else
+            {
+                tilemap = new Tilemap(this, game.textures[5], 129, 24);
+                tilemap.Generate();
+            }
+            
             lavaHeight = (tilemap.height * 16) - 32;
             defaultLavaHeight = lavaHeight;
             lavaTop = new Rectangle(0, 80, 16, 16);
@@ -99,6 +128,13 @@ namespace Mors_Arcium
                     break;
             }
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
+            if (tutorial)
+            {
+                player.maxHealth = 600;
+                player.health = 600;
+                healthPackTimer = 0;
+                player.position.X = 200;
+            }
             //SpawnEnemies();
             AddEntity(player);
             fadeOut = 0f;
@@ -108,6 +144,8 @@ namespace Mors_Arcium
             waveAlpha = 1.0f;
             numPlayers = 1;
             started = true;
+            tutorialPhase = 0;
+            tutorialTimer = 0;
             //Satan satan = new Satan(this, new Vector2(256, 0));
             //AddEntity(satan);
         }
@@ -139,37 +177,40 @@ namespace Mors_Arcium
                 }
             }*
             numPlayers = numCPUs + 1;*/
-            for (int i = 0; i < 3; i++)
+            if (!tutorial || tutorialPhase == 11)
             {
-                MrBPlayer p = new MrBPlayer(this);
-                p.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
-                p.position.Y = -96.0f;
-                AddEntity(p);
-                p = null;
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                WizardPlayer w = new WizardPlayer(this);
-                w.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
-                w.position.Y = -96.0f;
-                AddEntity(w);
-                w = null;
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                EliPlayer e = new EliPlayer(this);
-                e.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
-                e.position.Y = -96.0f;
-                AddEntity(e);
-                e = null;
-            }
-            for(int i = 0; i < 3; i++)
-            {
-                BugPlayer b = new BugPlayer(this);
-                b.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
-                b.position.Y = -96.0f;
-                AddEntity(b);
-                b = null;
+                for (int i = 0; i < 3; i++)
+                {
+                    MrBPlayer p = new MrBPlayer(this);
+                    p.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
+                    p.position.Y = -96.0f;
+                    AddEntity(p);
+                    p = null;
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    WizardPlayer w = new WizardPlayer(this);
+                    w.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
+                    w.position.Y = -96.0f;
+                    AddEntity(w);
+                    w = null;
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    EliPlayer e = new EliPlayer(this);
+                    e.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
+                    e.position.Y = -96.0f;
+                    AddEntity(e);
+                    e = null;
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    BugPlayer b = new BugPlayer(this);
+                    b.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
+                    b.position.Y = -96.0f;
+                    AddEntity(b);
+                    b = null;
+                }
             }
         }
         public void PlaySound(int index, Vector2 position, float pitch = 0.0f)
@@ -450,7 +491,7 @@ namespace Mors_Arcium
                 terrainModified = false;
                 tilemap.RefreshTiles();
             }
-            if (player.deathTimer == 0 && numPlayers == 1 && waveTimer == 0)
+            if (player.deathTimer == 0 && numPlayers == 1 && waveTimer == 0 && !tutorial)
             {
                 wave += 1;
                 waveTimer = 200;
@@ -498,7 +539,15 @@ namespace Mors_Arcium
             }
             if (player.deathTimer > 200)
             {
-                Initialize(game.random.Next(0, 3));
+                if (tutorial)
+                {
+                    game.ChangeMenuState(new MainMenu(game));
+                    started = false;
+                }
+                else
+                {
+                    Initialize(game.random.Next(0, 3));
+                }
             }
             lavaAnim += 1;
 
@@ -560,6 +609,93 @@ namespace Mors_Arcium
                 }
                 lavaBase.X = lavaTop.X + 48;
             }
+            if (tutorial)
+            {
+                tutorialTimer += 1;
+                if (tutorialPhase == 0 && tutorialTimer > 525)
+                {
+                    tutorialTimer = 0;
+                    tutorialPhase += 1;
+                }
+                else if (tutorialPhase == 1 && tutorialTimer > 250)
+                {
+                    tutorialTimer = 0;
+                    tutorialPhase += 1;
+                    //Spawn an enemy
+                    WizardPlayer w = new WizardPlayer(this);
+                    w.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
+                    w.position.Y = -96.0f;
+                    AddEntity(w);
+                    w = null;
+                }
+                else if ((tutorialPhase == 3 && tutorialTimer > 250) || (tutorialPhase == 6 && tutorialTimer > 350))
+                {
+                    tutorialTimer = 0;
+                    tutorialPhase += 1;
+                }
+                else if (tutorialPhase == 4 && tutorialTimer > 250)
+                {
+                    tutorialTimer = 0;
+                    tutorialPhase += 1;
+                    BugPlayer g = new BugPlayer(this);
+                    g.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
+                    g.position.Y = -96.0f;
+                    AddEntity(g);
+                    g = null;
+                }
+                else if (tutorialPhase == 7 && tutorialTimer > 250)
+                {
+                    tutorialTimer = 0;
+                    tutorialPhase += 1;
+                    EliPlayer e = new EliPlayer(this);
+                    e.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
+                    e.position.Y = -96.0f;
+                    AddEntity(e);
+                    e = null;
+                }
+                else if (tutorialPhase == 9 && tutorialTimer > 250)
+                {
+                    tutorialTimer = 0;
+                    tutorialPhase += 1;
+                    MrBPlayer b = new MrBPlayer(this);
+                    b.position.X = 200;
+                    b.position.Y = -96.0f;
+                    AddEntity(b);
+                    b = null;
+                }
+                if (tutorialPhase == 2 && numPlayers == 1 && tutorialTimer > 10)
+                {
+                    tutorialPhase += 1;
+                    tutorialTimer = 0;
+                    player.health = 600;
+                    player.maxHealth = 600;
+                    ChangePlayerType(player, 32);
+                }
+                if (tutorialPhase == 5 && numPlayers == 1 && tutorialTimer > 10)
+                {
+                    tutorialPhase += 1;
+                    tutorialTimer = 0;
+                    player.health = 600;
+                    player.maxHealth = 600;
+                    ChangePlayerType(player, 96);
+                }
+                if (tutorialPhase == 8 && numPlayers == 1 && tutorialTimer > 10)
+                {
+                    tutorialPhase += 1;
+                    tutorialTimer = 0;
+                    player.health = 600;
+                    player.maxHealth = 600;
+                    ChangePlayerType(player, 64);
+                }
+                if (tutorialPhase == 10 && numPlayers == 1 && tutorialTimer > 10)
+                {
+                    tutorialPhase += 1;
+                    tutorialTimer = 0;
+                    ChangePlayerType(player, 0);
+                    SpawnEnemies();
+                    SpawnEnemies();
+                }
+            }
             if (time == DateTime.Now.Second)
             {
                 ticks += 1;
@@ -573,7 +709,7 @@ namespace Mors_Arcium
         }
         public void Draw(SpriteBatch sp)
         {
-            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition.X + cameraShake, -cameraPosition.Y, 0f)));
+            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3((float)Math.Floor(-cameraPosition.X + cameraShake), (float)Math.Floor(-cameraPosition.Y), 0f)));
             for (int y = 0; y < entities.GetLength(1); y++)
             {
                 if (entities[TYPE_PROP, y] != null)
@@ -589,6 +725,38 @@ namespace Mors_Arcium
                 }
             }
             tilemap.Draw(sp);
+            if (tutorial)
+            {
+                switch(tutorialPhase)
+                {
+                    case 0:
+                        sp.DrawString(game.font1, "USE " + game.LEFT + " AND " + game.RIGHT + " TO WALK.", new Vector2(72, -16.0f), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.UP + " AND " + game.DOWN + " TO AIM.", new Vector2(72, 32), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+                        break;
+                    case 9:
+                    case 7:
+                    case 4:
+                    case 1:
+                        sp.DrawString(game.font1, "AN ENEMY IS BEING SENT YOUR WAY...", new Vector2(52, 0.0f), Color.White);
+                        break;
+                    case 3:
+                        sp.DrawString(game.font1, "IT FEELS GOOD TO WEAR THE SKIN", new Vector2(56, 0.0f), Color.White);
+                        sp.DrawString(game.font1, "OF YOUR ENEMIES, DOESN'T IT?", new Vector2(56, 16.0f), Color.White);
+                        break;
+                    case 6:
+                        sp.DrawString(game.font1, "YOU CAN FLY NOW.", new Vector2(56, 0.0f), Color.White);
+                        sp.DrawString(game.font1, "YOU'LL BE THANKFUL FOR THAT.", new Vector2(56, 16.0f), Color.White);
+                        sp.DrawString(game.font1, "(USE YOUR SPECIAL ABILITY IN THE AIR).", new Vector2(56, 32.0f), Color.White);
+                        break;
+                    case 11:
+                        sp.DrawString(game.font1, "GOOD WORK. NOW DIE!!!", new Vector2(80, 0.0f), Color.White);
+                        break;
+                }
+                
+            }
             for (int x = 0; x < entities.GetLength(0); x++)
             {
                 if (x != TYPE_BEAM && x != TYPE_PROP)
@@ -619,7 +787,9 @@ namespace Mors_Arcium
                     }
                 }
             }
+
             
+
             sp.End();
             sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition, 0f)));
             for (int i = 0; i < particles.Length; i++)
@@ -630,44 +800,49 @@ namespace Mors_Arcium
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null); //HUD
             if (!game.paused)
             {
+#if DEBUG
                 sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
+#endif
                 sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
                 sp.Draw(game.textures[2], new Rectangle(12, 2, (int)(((float)player.health / player.maxHealth) * 104.0f), 12), hbRect, Color.White);
                 sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)player.magic / player.maxMagic) * 104.0f), 12), mbRect, Color.White);
-                sp.DrawString(game.font1, "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
-                if (player.deathTimer == 0 && player.dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
-                if (nearestEnemy != 0 && player.deathTimer == 0 && player.dead == false)
+                if (!tutorial)
                 {
-                    if (nearestEnemy == 1)
+                    sp.DrawString(game.font1, "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
+                    if (player.deathTimer == 0 && player.dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
+                    if (nearestEnemy != 0 && player.deathTimer == 0 && player.dead == false)
                     {
-                        sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
+                        if (nearestEnemy == 1)
+                        {
+                            sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
+                        }
+                        else
+                        {
+                            sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
+                        }
                     }
-                    else
+                    if (waveTimer > 0)
                     {
-                        sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
-                    }
-                }
-                if (waveTimer > 0)
-                {
-                    if (waveTimer >= 100 && waveAlpha < 1.0f)
-                    {
-                        waveAlpha += 0.1f;
-                    }
-                    else if (waveTimer <= 10 && waveAlpha > 0.0f)
-                    {
-                        waveAlpha -= 0.1f;
-                    }
-                    if (wave == 1)
-                    {
-                        sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
-                    }
-                    else
-                    {
-                        sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
-                        sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
-                        sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
-                    }
+                        if (waveTimer >= 100 && waveAlpha < 1.0f)
+                        {
+                            waveAlpha += 0.1f;
+                        }
+                        else if (waveTimer <= 10 && waveAlpha > 0.0f)
+                        {
+                            waveAlpha -= 0.1f;
+                        }
+                        if (wave == 1)
+                        {
+                            sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
+                        }
+                        else
+                        {
+                            sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+                            sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
+                            sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
+                        }
 
+                    }
                 }
                 if (player.dead)
                 {

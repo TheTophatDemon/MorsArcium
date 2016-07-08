@@ -78,6 +78,7 @@ namespace Mors_Arcium
         private void StartGame()
         {
             game.ChangeMenuState(new ClassMenu(game));
+            game.game.tutorial = false;
         }
         private void ResumeGame()
         {
@@ -85,7 +86,9 @@ namespace Mors_Arcium
         }
         private void GotoTutorial()
         {
-            Console.WriteLine("VIDEO TUTORALS!?!?!!?!");
+            game.ChangeMenuState(null);
+            game.game.tutorial = true;
+            game.game.Initialize(0);
         }
         private void GotoOptions()
         {

@@ -135,11 +135,11 @@ namespace Mors_Arcium
                 {
                     if (spriteEffects == SpriteEffects.None)
                     {
-                        sp.Draw(texture, position - origin, sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                        sp.Draw(texture, new Vector2((float)Math.Floor(position.X - origin.X), (float)Math.Floor(position.Y - origin.Y)), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
                     }
                     else
                     {
-                        sp.Draw(texture, position - origin - new Vector2(8, 0), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                        sp.Draw(texture, new Vector2((float)Math.Floor(position.X - origin.X - 8), (float)Math.Floor(position.Y - origin.Y)), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
                     }
                 }
             }

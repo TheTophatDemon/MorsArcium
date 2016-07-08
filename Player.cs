@@ -465,7 +465,14 @@ namespace Mors_Arcium
             }
             if (position.Y + hitboxOffset.Y + hitboxSize.Y > game.lavaHeight && deathTimer == 0)
             {
-                health = 0;
+                if (game.tutorial && game.player == this && game.tutorialPhase != 11)
+                {
+                    knockback.Y = -64.0f;
+                }
+                else
+                {
+                    health = 0;
+                }
                 //deathTimer = 99;
                 Console.WriteLine("THIS IS MADNESS! " + sourceRect.Y);
             }
@@ -498,7 +505,7 @@ namespace Mors_Arcium
         {
             if (hurtTimer == 0 || hurtTimer % 4 == 0)
             {
-                sp.Draw(texture, position, sourceRect, color, rotation, origin, scale, spriteEffects, 0);
+                sp.Draw(texture, new Vector2((float)Math.Floor(position.X), (float)Math.Floor(position.Y)), sourceRect, color, rotation, origin, scale, spriteEffects, 0);
             }
         }
         public virtual void Damage(int amount, Entity perpetrator = null)

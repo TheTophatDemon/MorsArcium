@@ -28,9 +28,9 @@ namespace Mors_Arcium
         public BugPlayer(Gameplay g) : base(g)
         {
             attackSpeed = 35;
-            maxHealth = 60;
+            maxHealth = 70;
             maxMagic = 100;
-            health = 60;
+            health = 70;
             magic = 100;
             walkSpeed = 2.4f;
             jumpHeight = 5.2f;

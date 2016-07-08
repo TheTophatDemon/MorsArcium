@@ -27,7 +27,7 @@ namespace Mors_Arcium
                     data[x, y] = -1;
                 }
             }
-            
+            jumpNodes = new Vector2[width];
         }
         public void Generate()
         {
@@ -67,7 +67,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            jumpNodes = new Vector2[width];
+            
             RefreshTiles();
             RefreshTiles(); //Fix jumpin off cliffs and walking into walls
         }
