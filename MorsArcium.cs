@@ -12,7 +12,7 @@ namespace Mors_Arcium
     {
         //Difficulty Modes
         //Save & Load settings on Android?
-        //Android-Specific Tutorial
+#if WINDOWS
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;
@@ -21,6 +21,17 @@ namespace Mors_Arcium
         public Keys ATTACK = Keys.J;
         public Keys SPECIAL = Keys.K;
         public Keys PAUSE = Keys.Enter;
+#endif
+#if ANDROID
+        public Keys UP = Keys.B;
+        public Keys DOWN = Keys.C;
+        public Keys RIGHT = Keys.Right;
+        public Keys LEFT = Keys.Left;
+        public Keys JUMP = Keys.J;
+        public Keys ATTACK = Keys.A;
+        public Keys SPECIAL = Keys.S;
+        public Keys PAUSE = Keys.Enter;
+#endif
 
         public AndroidOutlet android;
         GraphicsDeviceManager graphics;
@@ -33,7 +44,7 @@ namespace Mors_Arcium
         private bool menutransition = false;
         private float fade = 1.0f;
         private bool fadeIn = false;
-
+        public bool vsync = false;
         public Texture2D[] textures;
         public Song[] music;
         public SoundEffect[] sounds;
@@ -62,6 +73,7 @@ namespace Mors_Arcium
         private bool grecc = false;
         public Rectangle thing;
         MediaState prevMedState;
+        public bool playedBefore = false;
         public MorsArcium(AndroidOutlet a)
         {
             android = a;
@@ -77,15 +89,17 @@ namespace Mors_Arcium
             Window.Position = new Point(0, 0);
             graphics.PreferredBackBufferWidth = 960;
             graphics.PreferredBackBufferHeight = 720;
-            graphics.ApplyChanges();
             IsMouseVisible = true;
+            graphics.ApplyChanges();
 #endif
-            
+
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
             thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
             renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.5f;
+            graphics.SynchronizeWithVerticalRetrace = vsync;
+            graphics.ApplyChanges();
         }
         private void LoadTexture(string path, int index)
         {
@@ -102,6 +116,12 @@ namespace Mors_Arcium
                 nextMusic = null;
             }
             musictransition = true;
+        }
+        public void ToggleVsync()
+        {
+            vsync = !vsync;
+            graphics.SynchronizeWithVerticalRetrace = vsync;
+            graphics.ApplyChanges();
         }
         protected override void LoadContent()
         {
@@ -332,6 +352,8 @@ namespace Mors_Arcium
             chrick.WriteLine((int)ATTACK);
             chrick.WriteLine((int)SPECIAL);
             chrick.WriteLine((int)PAUSE);
+            chrick.WriteLine(playedBefore);
+            chrick.WriteLine(vsync.ToString());
             chrick.Close();
             chrick.Dispose();
 #endif
@@ -358,6 +380,8 @@ namespace Mors_Arcium
                 ATTACK = (Keys)int.Parse(asgore.ReadLine());
                 SPECIAL = (Keys)int.Parse(asgore.ReadLine());
                 PAUSE = (Keys)int.Parse(asgore.ReadLine());
+                playedBefore = bool.Parse(asgore.ReadLine());
+                vsync = bool.Parse(asgore.ReadLine());
                 asgore.Close();
                 asgore.Dispose();
             }

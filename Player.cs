@@ -505,7 +505,7 @@ namespace Mors_Arcium
         {
             if (hurtTimer == 0 || hurtTimer % 4 == 0)
             {
-                sp.Draw(texture, new Vector2((float)Math.Floor(position.X), (float)Math.Floor(position.Y)), sourceRect, color, rotation, origin, scale, spriteEffects, 0);
+                sp.Draw(texture, position, sourceRect, color, rotation, origin, scale, spriteEffects, 0);
             }
         }
         public virtual void Damage(int amount, Entity perpetrator = null)

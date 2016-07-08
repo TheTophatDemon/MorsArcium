@@ -77,8 +77,15 @@ namespace Mors_Arcium
         }
         private void StartGame()
         {
-            game.ChangeMenuState(new ClassMenu(game));
-            game.game.tutorial = false;
+            if (!game.playedBefore)
+            {
+                game.ChangeMenuState(new DisclaimerMenu(game));
+            }
+            else
+            {
+                game.ChangeMenuState(new ClassMenu(game));
+                game.game.tutorial = false;
+            }
         }
         private void ResumeGame()
         {

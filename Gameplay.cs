@@ -237,6 +237,11 @@ namespace Mors_Arcium
             }
             if (!player.dead)
             {
+                if (!game.playedBefore)
+                {
+                    game.playedBefore = true;
+                    game.SaveSettings();
+                }
 #if DEBUG
                 if (Keyboard.GetState().IsKeyDown(Keys.D6))
                 {
@@ -695,6 +700,13 @@ namespace Mors_Arcium
                     SpawnEnemies();
                     SpawnEnemies();
                 }
+                if (tutorialPhase == 11 && numPlayers == 1 && tutorialTimer % 50 == 0 && tutorialTimer > 10)
+                {
+                    SpookyScarySkeleton s = new SpookyScarySkeleton(this);
+                    s.position = new Vector2(game.random.Next(0, 400), -64.0f);
+                    AddEntity(s);
+                    s = null;
+                }
             }
             if (time == DateTime.Now.Second)
             {
@@ -709,7 +721,7 @@ namespace Mors_Arcium
         }
         public void Draw(SpriteBatch sp)
         {
-            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3((float)Math.Floor(-cameraPosition.X + cameraShake), (float)Math.Floor(-cameraPosition.Y), 0f)));
+            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-cameraPosition, 0f)));
             for (int y = 0; y < entities.GetLength(1); y++)
             {
                 if (entities[TYPE_PROP, y] != null)
@@ -730,11 +742,20 @@ namespace Mors_Arcium
                 switch(tutorialPhase)
                 {
                     case 0:
+#if WINDOWS
                         sp.DrawString(game.font1, "USE " + game.LEFT + " AND " + game.RIGHT + " TO WALK.", new Vector2(72, -16.0f), Color.White);
                         sp.DrawString(game.font1, "USE " + game.JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
                         sp.DrawString(game.font1, "USE " + game.ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
                         sp.DrawString(game.font1, "USE " + game.UP + " AND " + game.DOWN + " TO AIM.", new Vector2(72, 32), Color.White);
                         sp.DrawString(game.font1, "USE " + game.SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+#endif
+#if ANDROID
+                        sp.DrawString(game.font1, "TOUCH THE ARROWS TO WALK.", new Vector2(72, -16.0f), Color.White);
+                        sp.DrawString(game.font1, "PRESS " + game.JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
+                        sp.DrawString(game.font1, "PRESS " + game.ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
+                        sp.DrawString(game.font1, "PRESS " + game.UP + " AND " + game.DOWN + " TO ATTACK VERTICALLY.", new Vector2(72, 32), Color.White);
+                        sp.DrawString(game.font1, "PRESS " + game.SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+#endif
                         break;
                     case 9:
                     case 7:

@@ -17,7 +17,7 @@ namespace Mors_Arcium
         Color backgroundColor = Color.Gray;
         public OptionsMenu(MorsArcium g) : base(g)
         {
-            buttons = new Button[6];
+            buttons = new Button[7];
             buttons[0].source = new Rectangle(384, 152, 128, 24); //Back button
             buttons[0].position = new Vector2(16, 16);
 #if WINDOWS
@@ -30,6 +30,8 @@ namespace Mors_Arcium
             buttons[3].position = new Vector2(16, 124);
             buttons[4].source = new Rectangle(Convert.ToInt32(game.bugJumpFly) * 32, 320, 32, 32); //Bug Jumping
             buttons[4].position = new Vector2(16, 156);
+            buttons[6].source = new Rectangle(Convert.ToInt32(game.vsync) * 32, 320, 32, 32); //Vsync
+            buttons[6].position = new Vector2(160, 124);
 #if WINDOWS
             buttons[5].source = new Rectangle(384, 128, 128, 24); //Rebind keys
             buttons[5].position = new Vector2(16, 200);
@@ -62,6 +64,7 @@ namespace Mors_Arcium
             sp.DrawString(game.font1, "SOUND", new Vector2(52, 100), Color.White);
             sp.DrawString(game.font1, "MUSIC", new Vector2(52, 132), Color.White);
             sp.DrawString(game.font1, "FLY BY JUMPING IN MIDAIR", new Vector2(52, 164), Color.White);
+            sp.DrawString(game.font1, "VSYNC", new Vector2(196, 132), Color.White);
             sp.End();
         }
         public override void OnButtonPress(Button source)
@@ -125,6 +128,18 @@ namespace Mors_Arcium
             else if (source.position == buttons[5].position)
             {
                 game.ChangeMenuState(new RebindMenu(game));
+            }
+            else if (source.position == buttons[6].position)
+            {
+                game.ToggleVsync();
+                if (game.vsync)
+                {
+                    buttons[6].source.X = 32;
+                }
+                else
+                {
+                    buttons[6].source.X = 0;
+                }
             }
         }
     }
