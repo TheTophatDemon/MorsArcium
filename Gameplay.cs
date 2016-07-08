@@ -186,7 +186,9 @@ namespace Mors_Arcium
         }
         public void Update(GameTime gt)
         {
+#if ANDROID
             game.android.UpdateControls(gt);
+#endif
             if ((Keyboard.GetState().IsKeyDown(Keys.Escape) || game.android.exit) && game.currentMenu == null)
             {
                 game.ChangeMenuState(new MainMenu(game));
@@ -675,7 +677,9 @@ namespace Mors_Arcium
                         fadeOut = 1.0f;
                     }
                 }
+#if ANDROID
                 game.android.DrawControls(sp);
+#endif
             }
             if (fadeOut > 0.0f)
             {

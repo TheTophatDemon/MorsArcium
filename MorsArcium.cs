@@ -10,9 +10,9 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //Android Controls
         //Difficulty Modes
         //Tutorial
+        //Save & Load settings on Android?
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
         public Keys RIGHT = Keys.D;

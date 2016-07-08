@@ -17,26 +17,29 @@ namespace Mors_Arcium
         public bool special = false;
         public bool pause = false;
         public bool exit = false;
-        bool move = false;
         protected Button[] buttons;
         MouseState prevMouseState;
         TouchCollection prevTouches;
         public MorsArcium game;
         public AndroidOutlet()
         {
-            buttons = new Button[6];
-            buttons[0].source = new Rectangle(128, 96, 32, 32); //1 button (Attack)
-            buttons[0].position = new Vector2(208, 160);
-            buttons[1].source = new Rectangle(128, 128, 32, 32); //2 button (Special)
-            buttons[1].position = new Vector2(272, 160);
-            buttons[2].source = new Rectangle(128, 160, 32, 32); //Jump button
-            buttons[2].position = new Vector2(240, 192);
-            //buttons[3].source = new Rectangle(192, 96, 32, 32); //Pause Button
-            //buttons[3].position = new Vector2(216, 4);
+            buttons = new Button[8];
+            buttons[0].source = new Rectangle(432, 208, 40, 32); //1 button (Attack)
+            buttons[0].position = new Vector2(224, 184);
+            buttons[1].source = new Rectangle(432, 240, 32, 32); //2 button (Special)
+            buttons[1].position = new Vector2(288, 184);
+            buttons[2].source = new Rectangle(432, 272, 40, 32); //Jump button
+            buttons[2].position = new Vector2(256, 208);
+            buttons[3].source = new Rectangle(384, 208, 48, 32); //Right Button
+            buttons[3].position = new Vector2(40, 192);
             buttons[4].source = new Rectangle(448, 176, 64, 32); //Menu Button
-            buttons[4].position = new Vector2(252, 4);
-            buttons[5].source = new Rectangle(160, 96, 32, 32); //Joystick
-            buttons[5].position = new Vector2(32, 192);
+            buttons[4].position = new Vector2(252, 36);
+            buttons[5].source = new Rectangle(160, 96, 32, 32); //Left Button
+            buttons[5].position = new Vector2(0, 192);
+            buttons[6].source = new Rectangle(432, 304, 48, 32); //Up attack!
+            buttons[6].position = new Vector2(232, 152);
+            buttons[7].source = new Rectangle(432, 336, 48, 24); // Down Attack!
+            buttons[7].position = new Vector2(216, 216);
         }
         public virtual void UpdateControls(GameTime gt)
         {
@@ -53,17 +56,6 @@ namespace Mors_Arcium
             TouchCollection touches = TouchPanel.GetState();
             int mx = (int)((mouseState.Position.X - game.thing.X) / game.scaleFactor);
             int my = (int)(mouseState.Position.Y / game.scaleFactor);
-            int tx = -256;
-            int ty = -256;
-            if (Mouse.GetState().LeftButton == ButtonState.Released && touches.Count == 0)
-            {
-                move = false;
-            }
-            if (touches.Count > 0)
-            {
-                tx = (int)((touches[0].Position.X - game.thing.X) / game.scaleFactor);
-                ty = (int)(touches[0].Position.Y / game.scaleFactor);
-            }
             for (int i = 0; i < buttons.Length; i++)
             {
                 if (buttons[i].position != null)
@@ -78,42 +70,32 @@ namespace Mors_Arcium
                             OnButtonPress(buttons[i]);
                         }
                     }
-                    if (touches.Count > 0)
+                    for (int j = 0; j < touches.Count; j++)
                     {
-                        if (tx > buttons[i].position.X && tx < buttons[i].position.X + buttons[i].source.Width
-                            && ty > buttons[i].position.Y && ty < buttons[i].position.Y + buttons[i].source.Height)
+                        int tx = (int)((touches[j].Position.X - game.thing.X) / game.scaleFactor);
+                        int ty = (int)(touches[j].Position.Y / game.scaleFactor);
+                        if (i == 3 || i == 5)
                         {
-                            buttons[i].hover = true;
-                            if (buttons[i].function != null) buttons[i].function();
-                            OnButtonPress(buttons[i]);
+                            if ((tx > buttons[i].position.X || i == 5) && tx < buttons[i].position.X + buttons[i].source.Width)
+                            {
+                                buttons[i].hover = true;
+                                if (buttons[i].function != null) buttons[i].function();
+                                OnButtonPress(buttons[i], tx, ty);
+                            }
+                        }
+                        else
+                        {
+                            if (tx > buttons[i].position.X && tx < buttons[i].position.X + buttons[i].source.Width
+                                && ty > buttons[i].position.Y && ty < buttons[i].position.Y + buttons[i].source.Height)
+                            {
+                                buttons[i].hover = true;
+                                if (buttons[i].function != null) buttons[i].function();
+                                OnButtonPress(buttons[i], tx, ty);
+                            }
                         }
                     }
                 }
             }
-            if (move)
-            {
-                buttons[5].position.X = tx - 16;
-                buttons[5].position.Y = ty - 16;
-#if WINDOWS
-                buttons[5].position.X = mx - 16;
-                buttons[5].position.Y = my - 16;
-#endif
-                if (buttons[5].position.X > 48) buttons[5].position.X = 64;
-                if (buttons[5].position.X < 16) buttons[5].position.X = 16;
-                if (buttons[5].position.Y > 208) buttons[5].position.Y = 208;
-                if (buttons[5].position.Y < 176) buttons[5].position.Y = 176;
-            }
-            else
-            {
-                buttons[5].position.X = 32;
-                buttons[5].position.Y = 192;
-            }
-            float ofsx = buttons[5].position.X - 32;
-            float ofsy = buttons[5].position.Y - 192;
-            if (ofsx > 4.0f) right = true;
-            if (ofsx < -4.0f) left = true;
-            if (ofsy > 4.0f) down = true;
-            if (ofsy < -4.0f) up = true;
             prevMouseState = mouseState;
             prevTouches = touches;
         }
@@ -129,7 +111,7 @@ namespace Mors_Arcium
         }
         public virtual void SaveSettings() { }
         public virtual void LoadSettings() { }
-        protected void OnButtonPress(Button source)
+        protected void OnButtonPress(Button source, int tx = 0, int ty = 0)
         {
             if (source.position == buttons[0].position)
             {
@@ -145,7 +127,7 @@ namespace Mors_Arcium
             }
             else if (source.position == buttons[3].position)
             {
-                pause = true;
+                right = true;
             }
             else if (source.position == buttons[4].position)
             {
@@ -153,7 +135,17 @@ namespace Mors_Arcium
             }
             else if (source.position == buttons[5].position)
             {
-                move = true;
+                left = true;
+            }
+            else if (source.position == buttons[6].position)
+            {
+                up = true;
+                attack = true;
+            }
+            else if (source.position == buttons[7].position)
+            {
+                down = true;
+                attack = true;
             }
         }
     }
