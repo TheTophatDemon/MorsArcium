@@ -11,6 +11,7 @@ namespace Mors_Arcium
         public int maxMagic = 100;
         public int health = 100;
         public int magic = 100;
+        public int healthHandicap = 0;
         
         public SpriteEffects spriteEffects;
         protected int sheetOffset;
@@ -48,8 +49,9 @@ namespace Mors_Arcium
         public Vector2 knockback = Vector2.Zero;
 
         public static int[] PlayerCollisionMask = new int[] { Gameplay.TYPE_PROJECTILE, Gameplay.TYPE_PLAYER };
-        public Player(Gameplay g) : base(g)
+        public Player(Gameplay g, int hhh) : base(g)
         {
+            healthHandicap = hhh;
             collisionMask = PlayerCollisionMask;
             texture = g.game.textures[0];
             type = Gameplay.TYPE_PLAYER;

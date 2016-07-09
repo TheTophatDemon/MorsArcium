@@ -83,7 +83,7 @@ namespace Mors_Arcium
             }
             else
             {
-                game.ChangeMenuState(new ClassMenu(game));
+                game.ChangeMenuState(new DifficultyMenu(game));
                 game.game.tutorial = false;
             }
         }

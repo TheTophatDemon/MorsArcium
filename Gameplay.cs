@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using System.IO;
 
 namespace Mors_Arcium
 {
@@ -70,12 +71,55 @@ namespace Mors_Arcium
         int tutorialTimer = 0;
         public int tutorialPhase = 0;
 
+        public string difficulty = "hard";
+        int num_mr_b = 3;
+        int num_wizard = 3;
+        int num_fingers = 3;
+        int num_bugs = 3;
+        public float projectileSpeedMultiplier = 1.0f;
+
         public Gameplay(MorsArcium g)
         {
             game = g;
         }
+        
         public void Initialize(int playerClass = 0)
         {
+            int mapw = 129;
+            int plhlha = 0;
+            if (tutorial) difficulty = "hard";
+            if (difficulty != "????")
+            {
+#if WINDOWS
+                StreamReader ronaldMcDonald = new StreamReader(difficulty + "_difficulty.txt");
+                string nmb = ronaldMcDonald.ReadLine(); num_mr_b = int.Parse(nmb.Substring(nmb.IndexOf(':') + 1));
+                string nw = ronaldMcDonald.ReadLine(); num_wizard = int.Parse(nw.Substring(nw.IndexOf(':') + 1));
+                string ne = ronaldMcDonald.ReadLine(); num_fingers = int.Parse(ne.Substring(ne.IndexOf(':') + 1));
+                string nb = ronaldMcDonald.ReadLine(); num_bugs = int.Parse(nb.Substring(nb.IndexOf(':') + 1));
+                string hpf = ronaldMcDonald.ReadLine(); healthPackFrequency = int.Parse(hpf.Substring(hpf.IndexOf(':') + 1));
+                string phh = ronaldMcDonald.ReadLine(); plhlha = int.Parse(phh.Substring(phh.IndexOf(':') + 1));
+                string ee = ronaldMcDonald.ReadLine(); eventsEnabled = bool.Parse(ee.Substring(ee.IndexOf(':') + 1));
+                string pso = ronaldMcDonald.ReadLine(); projectileSpeedMultiplier = float.Parse(pso.Substring(pso.IndexOf(':') + 1));
+                string mw = ronaldMcDonald.ReadLine(); mapw = int.Parse(mw.Substring(mw.IndexOf(':') + 1));
+                ronaldMcDonald.Close();
+                ronaldMcDonald.Dispose();
+#endif
+#if ANDROID
+            game.android.LoadDifficulty(difficulty + "_difficulty.txt");
+#endif
+            }
+            else
+            {
+                num_mr_b = game.random.Next(0, 10);
+                num_wizard = game.random.Next(0, 10);
+                num_fingers = game.random.Next(0, 10);
+                num_bugs = game.random.Next(0, 10);
+                healthPackFrequency = game.random.Next(50, 1000);
+                plhlha = game.random.Next(-60, 60);
+                projectileSpeedMultiplier = ((float)game.random.NextDouble() * 2.0f) - 1.0f;
+                mapw = game.random.Next(4, 200);
+            }
+            
             eventSelectorIndex = 0; eventSelectorSpeed = 1; eventSelectorTimer = 0;
             eventSelectorText = new Rectangle(256, 152, 124, 11);
             deathThingy = new Vector2(100, 240);
@@ -104,7 +148,7 @@ namespace Mors_Arcium
             }
             else
             {
-                tilemap = new Tilemap(this, game.textures[5], 129, 24);
+                tilemap = new Tilemap(this, game.textures[5], mapw, 24);
                 tilemap.Generate();
             }
             
@@ -115,16 +159,16 @@ namespace Mors_Arcium
             switch (playerClass)
             {
                 case 0:
-                    player = new MrBPlayer(this);
+                    player = new MrBPlayer(this, plhlha);
                     break;
                 case 1:
-                    player = new WizardPlayer(this);
+                    player = new WizardPlayer(this, plhlha);
                     break;
                 case 2:
-                    player = new EliPlayer(this);
+                    player = new EliPlayer(this, plhlha);
                     break;
                 case 3:
-                    player = new BugPlayer(this);
+                    player = new BugPlayer(this, plhlha);
                     break;
             }
             player.position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
@@ -179,7 +223,7 @@ namespace Mors_Arcium
             numPlayers = numCPUs + 1;*/
             if (!tutorial || tutorialPhase == 11)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < num_mr_b; i++)
                 {
                     MrBPlayer p = new MrBPlayer(this);
                     p.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
@@ -187,7 +231,7 @@ namespace Mors_Arcium
                     AddEntity(p);
                     p = null;
                 }
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < num_wizard; i++)
                 {
                     WizardPlayer w = new WizardPlayer(this);
                     w.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
@@ -195,7 +239,7 @@ namespace Mors_Arcium
                     AddEntity(w);
                     w = null;
                 }
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < num_fingers; i++)
                 {
                     EliPlayer e = new EliPlayer(this);
                     e.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
@@ -203,7 +247,7 @@ namespace Mors_Arcium
                     AddEntity(e);
                     e = null;
                 }
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < num_bugs; i++)
                 {
                     BugPlayer b = new BugPlayer(this);
                     b.position.X = game.random.Next(64, (tilemap.width * 16) - 64);
@@ -672,25 +716,25 @@ namespace Mors_Arcium
                 {
                     tutorialPhase += 1;
                     tutorialTimer = 0;
+                    ChangePlayerType(player, 32);
                     player.health = 600;
                     player.maxHealth = 600;
-                    ChangePlayerType(player, 32);
                 }
                 if (tutorialPhase == 5 && numPlayers == 1 && tutorialTimer > 10)
                 {
                     tutorialPhase += 1;
                     tutorialTimer = 0;
+                    ChangePlayerType(player, 96);
                     player.health = 600;
                     player.maxHealth = 600;
-                    ChangePlayerType(player, 96);
                 }
                 if (tutorialPhase == 8 && numPlayers == 1 && tutorialTimer > 10)
                 {
                     tutorialPhase += 1;
                     tutorialTimer = 0;
+                    ChangePlayerType(player, 64);
                     player.health = 600;
                     player.maxHealth = 600;
-                    ChangePlayerType(player, 64);
                 }
                 if (tutorialPhase == 10 && numPlayers == 1 && tutorialTimer > 10)
                 {
@@ -700,12 +744,17 @@ namespace Mors_Arcium
                     SpawnEnemies();
                     SpawnEnemies();
                 }
+                if (tutorialPhase == 11 && numPlayers == 1 && game.currentMusic != game.music[12] && tutorialTimer > 10)
+                {
+                    game.ChangeMusic(12);
+                }
                 if (tutorialPhase == 11 && numPlayers == 1 && tutorialTimer % 50 == 0 && tutorialTimer > 10)
                 {
                     SpookyScarySkeleton s = new SpookyScarySkeleton(this);
                     s.position = new Vector2(game.random.Next(0, 400), -64.0f);
                     AddEntity(s);
                     s = null;
+                    
                 }
             }
             if (time == DateTime.Now.Second)
@@ -769,8 +818,12 @@ namespace Mors_Arcium
                         break;
                     case 6:
                         sp.DrawString(game.font1, "YOU CAN FLY NOW.", new Vector2(56, 0.0f), Color.White);
-                        sp.DrawString(game.font1, "YOU'LL BE THANKFUL FOR THAT.", new Vector2(56, 16.0f), Color.White);
-                        sp.DrawString(game.font1, "(USE YOUR SPECIAL ABILITY IN THE AIR).", new Vector2(56, 32.0f), Color.White);
+#if WINDOWS
+                        sp.DrawString(game.font1, "(USE YOUR SPECIAL ABILITY IN THE AIR)", new Vector2(56, 16.0f), Color.White);
+#endif
+#if ANDROID
+                        sp.DrawString(game.font1, "(HOLD J WHILE IN THE AIR)", new Vector2(56, 16.0f), Color.White);
+#endif
                         break;
                     case 11:
                         sp.DrawString(game.font1, "GOOD WORK. NOW DIE!!!", new Vector2(80, 0.0f), Color.White);
@@ -937,6 +990,7 @@ namespace Mors_Arcium
                         b.position = p.position;
                         b.health = p.health;
                         b.magic = p.magic;
+                        b.maxHealth += p.healthHandicap;
                         b.spriteEffects = p.spriteEffects;
                         if (player == p)
                         {
@@ -955,6 +1009,7 @@ namespace Mors_Arcium
                         w.position = p.position;
                         w.health = p.health;
                         w.magic = p.magic;
+                        w.maxHealth += p.healthHandicap;
                         w.spriteEffects = p.spriteEffects;
                         if (player == p)
                         {
@@ -975,6 +1030,7 @@ namespace Mors_Arcium
                         e.position = p.position;
                         e.health = p.health;
                         e.magic = p.magic;
+                        e.maxHealth += p.healthHandicap;
                         e.spriteEffects = p.spriteEffects;
                         if (player == p)
                         {
@@ -994,6 +1050,7 @@ namespace Mors_Arcium
                         g.position = p.position;
                         g.health = p.health;
                         g.magic = p.magic;
+                        g.maxHealth += p.healthHandicap;
                         g.spriteEffects = p.spriteEffects;
                         if (player == p)
                         {

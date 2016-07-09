@@ -25,12 +25,12 @@ namespace Mors_Arcium
         bool tryingToFly = false;
         bool flymode = false;
 
-        public BugPlayer(Gameplay g) : base(g)
+        public BugPlayer(Gameplay g, int hhh = 0) : base(g, hhh)
         {
             attackSpeed = 35;
-            maxHealth = 70;
+            maxHealth = 70 + healthHandicap;
             maxMagic = 100;
-            health = 70;
+            health = 70 + healthHandicap;
             magic = 100;
             walkSpeed = 2.5f;
             jumpHeight = 5.2f;

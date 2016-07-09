@@ -111,6 +111,8 @@ namespace Mors_Arcium
         }
         public virtual void SaveSettings() { }
         public virtual void LoadSettings() { }
+        public virtual void LoadDifficulty(string path)
+        { }
         protected void OnButtonPress(Button source, int tx = 0, int ty = 0)
         {
             if (source.position == buttons[0].position)

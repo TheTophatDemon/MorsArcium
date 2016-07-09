@@ -19,7 +19,7 @@ namespace Mors_Arcium
         static Vector2 flashOffset = new Vector2(-7, -7);
         static Vector2 flashOffset2 = new Vector2(-2, -7);
         bool desperate = false;
-        public MrBPlayer(Gameplay g) : base(g)
+        public MrBPlayer(Gameplay g, int hhh = 0) : base(g, hhh)
         {
 
             attackSpeed = 35;
@@ -50,9 +50,9 @@ namespace Mors_Arcium
             deathAnimation.looping = false;
             deathAnimation.speed = 5;
             animation = idleAnimation;
-            maxHealth = 80;
+            maxHealth = 80 + healthHandicap;
             maxMagic = 100;
-            health = 80;
+            health = 80 + healthHandicap;
             walkSpeed = 3.0f;
             sourceRect = new Rectangle(0, 0, 32, 32);
         }

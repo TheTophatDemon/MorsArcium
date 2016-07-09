@@ -10,8 +10,8 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //Difficulty Modes
-        //Save & Load settings on Android?
+        //Saving & Loading on Android
+        //Moar Music
 #if WINDOWS
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
@@ -145,6 +145,7 @@ namespace Mors_Arcium
             music[1] = Content.Load<Song>("frozenhell");
             music[2] = Content.Load<Song>("gasconade");
             music[3] = Content.Load<Song>("unholywars");
+            music[12] = Content.Load<Song>("skelesong");
             music[14] = Content.Load<Song>("tehcrankles");
 
             sounds = new SoundEffect[32];

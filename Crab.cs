@@ -51,7 +51,7 @@ namespace Mors_Arcium
                 speed.Y = 0.5f;
             }
             lastPos = position;
-            TryMove(speed + knockback);
+            TryMove((speed + knockback) * game.projectileSpeedMultiplier);
             anim += 1;
             if (anim > 5)
             {

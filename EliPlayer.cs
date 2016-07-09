@@ -13,12 +13,12 @@ namespace Mors_Arcium
         Animation walkAttackAnimation;
         Animation jumpAttackAnimation;
         Animation deathAnimation;
-        public EliPlayer(Gameplay g) : base(g)
+        public EliPlayer(Gameplay g, int hhh = 0) : base(g, hhh)
         {
             attackSpeed = 5;
-            maxHealth = 80;
+            maxHealth = 80 + healthHandicap;
             maxMagic = 200;
-            health = 80;
+            health = 80 + healthHandicap;
             magic = 200;
             walkSpeed = 2.2f;
             jumpHeight = 5.0f;
@@ -135,11 +135,11 @@ namespace Mors_Arcium
                 {
                     if (spriteEffects == SpriteEffects.None)
                     {
-                        sp.Draw(texture, new Vector2((float)Math.Floor(position.X - origin.X), (float)Math.Floor(position.Y - origin.Y)), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                        sp.Draw(texture, position - origin, sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
                     }
                     else
                     {
-                        sp.Draw(texture, new Vector2((float)Math.Floor(position.X - origin.X - 8), (float)Math.Floor(position.Y - origin.Y)), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                        sp.Draw(texture, position - origin - new Vector2(8, 0), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
                     }
                 }
             }

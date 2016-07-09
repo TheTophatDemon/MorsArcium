@@ -24,12 +24,12 @@ namespace Mors_Arcium
         int inaccuracy = 0;
         bool missed = false;
         int framesSinceLastAttack = 0;
-        public WizardPlayer(Gameplay g) : base(g)
+        public WizardPlayer(Gameplay g, int hhh = 0) : base(g, hhh)
         {
             attackSpeed = 75;
-            maxHealth = 100;
+            maxHealth = 100 + healthHandicap;
             maxMagic = 150;
-            health = 100;
+            health = 100 + healthHandicap;
             magic = 150;
             walkSpeed = 2.0f;
             jumpHeight = 4.5f;
@@ -77,7 +77,7 @@ namespace Mors_Arcium
                     color = Color.White;
                 }
             }*/
-            if (cooldown > 20)
+            if (cooldown > 20 && deathTimer == 0)
             {
                 color = Color.CornflowerBlue;
             }

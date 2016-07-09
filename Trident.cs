@@ -28,7 +28,7 @@ namespace Mors_Arcium
         public override void Update(GameTime gt)
         {
             base.Update(gt);
-            TryMove(speed + knockback, false);
+            TryMove((speed + knockback) * game.projectileSpeedMultiplier, false);
             if ((collision_left || collision_right || collision_bottom || collision_top) && !landed)
             {
                 game.PlaySound(4, position);

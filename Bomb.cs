@@ -30,7 +30,7 @@ namespace Mors_Arcium
             {
                 speed.Y = 0.0f;
             }
-            TryMove(speed);
+            TryMove(speed * game.projectileSpeedMultiplier);
             if (granddad)
             {
                 timer = 0;
