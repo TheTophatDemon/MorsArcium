@@ -10,8 +10,9 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //Saving & Loading on Android
-        //Moar Music
+        //TODO: Migrate to API level 26 by November 1
+        //TODO: Polish Eli Charging. Make accessible to AI.
+        //TODO: Make HUD more flexible
 #if WINDOWS
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
@@ -84,14 +85,12 @@ namespace Mors_Arcium
         protected override void Initialize()
         {
             base.Initialize();
-#if WINDOWS
             Window.Title = "MORS ARCIUM";
-            Window.Position = new Point(0, 0);
+            Window.Position = new Point(64, 64);
             graphics.PreferredBackBufferWidth = 960;
             graphics.PreferredBackBufferHeight = 720;
             IsMouseVisible = true;
             graphics.ApplyChanges();
-#endif
 
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
             thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
@@ -145,6 +144,7 @@ namespace Mors_Arcium
             music[1] = Content.Load<Song>("frozenhell");
             music[2] = Content.Load<Song>("gasconade");
             music[3] = Content.Load<Song>("unholywars");
+            music[11] = Content.Load<Song>("welcometohell");
             music[12] = Content.Load<Song>("skelesong");
             music[14] = Content.Load<Song>("tehcrankles");
 
@@ -365,7 +365,6 @@ namespace Mors_Arcium
         }
         public void LoadSettings()
         {
-#if WINDOWS
             try
             {
                 StreamReader asgore = new StreamReader("settings.txt");
@@ -390,7 +389,6 @@ namespace Mors_Arcium
             {
                 Console.WriteLine("Well darn! It's not there!");
             }
-#endif
 #if ANDROID
                 android.LoadSettings();
 #endif

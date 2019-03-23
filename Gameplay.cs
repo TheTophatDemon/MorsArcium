@@ -87,10 +87,9 @@ namespace Mors_Arcium
         {
             int mapw = 129;
             int plhlha = 0;
-            if (tutorial) difficulty = "hard";
+            if (tutorial) { difficulty = "normal"; game.ChangeMusic(11); }
             if (difficulty != "????")
             {
-#if WINDOWS
                 StreamReader ronaldMcDonald = new StreamReader(difficulty + "_difficulty.txt");
                 string nmb = ronaldMcDonald.ReadLine(); num_mr_b = int.Parse(nmb.Substring(nmb.IndexOf(':') + 1));
                 string nw = ronaldMcDonald.ReadLine(); num_wizard = int.Parse(nw.Substring(nw.IndexOf(':') + 1));
@@ -103,7 +102,6 @@ namespace Mors_Arcium
                 string mw = ronaldMcDonald.ReadLine(); mapw = int.Parse(mw.Substring(mw.IndexOf(':') + 1));
                 ronaldMcDonald.Close();
                 ronaldMcDonald.Dispose();
-#endif
 #if ANDROID
             game.android.LoadDifficulty(difficulty + "_difficulty.txt");
 #endif
@@ -195,32 +193,6 @@ namespace Mors_Arcium
         }
         private void SpawnEnemies()
         {
-            /*for (int i = 0; i < numCPUs; i++)
-            {
-                int t = game.random.Next(0, 3);
-                switch (t)
-                {
-                    case 0:
-                        MrBPlayer p = new MrBPlayer(this);
-                        p.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                        AddEntity(p);
-                        p = null;
-                        break;
-                    case 1:
-                        WizardPlayer w = new WizardPlayer(this);
-                        w.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                        AddEntity(w);
-                        w = null;
-                        break;
-                    case 2:
-                        EliPlayer e = new EliPlayer(this);
-                        e.position.X = game.random.Next(32, (tilemap.width * 16) - 32);
-                        AddEntity(e);
-                        e = null;
-                        break;
-                }
-            }*
-            numPlayers = numCPUs + 1;*/
             if (!tutorial || tutorialPhase == 11)
             {
                 for (int i = 0; i < num_mr_b; i++)
@@ -369,7 +341,7 @@ namespace Mors_Arcium
                     }
                 }
 
-                if (player.deathTimer == 0)
+                if (player.deathTimer == 0 && player.controllable)
                 {
                     if (Keyboard.GetState().IsKeyDown(game.JUMP) || game.android.jump)
                     {
@@ -972,100 +944,43 @@ namespace Mors_Arcium
             entities[e.type, index] = null;
             e.index = index;
             entities[e.type, index] = e;
-            e = null;
         }
         public void RemoveEntity(Entity e)
         {
             entities[e.type, e.index] = null;
-            e = null;
         }
         public void ChangePlayerType(Player p, int srcRctY)
         {
             if (srcRctY != p.sourceRect.Y)
             {
+                p.killMe = true;
+                Player newPlayer = null;
                 switch (srcRctY)
                 {
-                    case 0: //Mr. /b/
-                        MrBPlayer b = new MrBPlayer(this);
-                        b.position = p.position;
-                        b.health = p.health;
-                        b.magic = p.magic;
-                        b.maxHealth += p.healthHandicap;
-                        b.spriteEffects = p.spriteEffects;
-                        if (player == p)
-                        {
-                            player = b;
-                            ReplaceEntity(player, p.index);
-                        }
-                        else
-                        {
-                            ReplaceEntity(b, p.index);
-                        }
-                        p.killMe = true;
-                        //b = null;
+                    default:
+                    case 0:
+                        newPlayer = new MrBPlayer(this);
                         break;
-                    case 32: //Wizard
-                        WizardPlayer w = new WizardPlayer(this);
-                        w.position = p.position;
-                        w.health = p.health;
-                        w.magic = p.magic;
-                        w.maxHealth += p.healthHandicap;
-                        w.spriteEffects = p.spriteEffects;
-                        if (player == p)
-                        {
-                            player = w;
-                            ReplaceEntity(player, p.index);
-                        }
-                        else
-                        {
-                            ReplaceEntity(w, p.index);
-                        }
-                        p.killMe = true;
-
-                        //Console.WriteLine("OOH");
-                        //w = null;
+                    case 32:
+                        newPlayer = new WizardPlayer(this);
                         break;
-                    case 64: //Eli
-                        EliPlayer e = new EliPlayer(this);
-                        e.position = p.position;
-                        e.health = p.health;
-                        e.magic = p.magic;
-                        e.maxHealth += p.healthHandicap;
-                        e.spriteEffects = p.spriteEffects;
-                        if (player == p)
-                        {
-                            player = e;
-                            ReplaceEntity(player, p.index);
-                        }
-                        else
-                        {
-                            ReplaceEntity(e, p.index);
-                        }
-                        p.killMe = true;
-
-                        // e = null;
+                    case 64:
+                        newPlayer = new EliPlayer(this);
                         break;
-                    case 96: //Bug
-                        BugPlayer g = new BugPlayer(this);
-                        g.position = p.position;
-                        g.health = p.health;
-                        g.magic = p.magic;
-                        g.maxHealth += p.healthHandicap;
-                        g.spriteEffects = p.spriteEffects;
-                        if (player == p)
-                        {
-                            player = g;
-                            ReplaceEntity(player, p.index);
-                        }
-                        else
-                        {
-                            ReplaceEntity(g, p.index);
-                        }
-                        p.killMe = true;
-                        //g = null;
+                    case 96:
+                        newPlayer = new BugPlayer(this);
                         break;
                 }
-
+                if (player == p)
+                {
+                    player = newPlayer;
+                }
+                newPlayer.position = p.position;
+                newPlayer.health = p.health;
+                newPlayer.magic = p.magic;
+                newPlayer.maxHealth += p.healthHandicap;
+                newPlayer.spriteEffects = p.spriteEffects;
+                AddEntity(newPlayer);
             }
         }
         public void AddParticle(Particle p)

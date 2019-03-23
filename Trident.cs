@@ -33,6 +33,7 @@ namespace Mors_Arcium
             {
                 game.PlaySound(4, position);
                 landed = true;
+                speed = Vector2.Zero;
             }
             timer += 1;
             if (timer > 90)

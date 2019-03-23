@@ -13,6 +13,12 @@ namespace Mors_Arcium
         Animation walkAttackAnimation;
         Animation jumpAttackAnimation;
         Animation deathAnimation;
+        Vector2[] lastPositions;
+        float afterImageCount = 8;
+        int afterImageCounter = 0;
+        float originalWalkSpeed;
+        float damageMultiplier = 1.0f;
+        float boost;
         public EliPlayer(Gameplay g, int hhh = 0) : base(g, hhh)
         {
             attackSpeed = 5;
@@ -21,6 +27,8 @@ namespace Mors_Arcium
             health = 80 + healthHandicap;
             magic = 200;
             walkSpeed = 2.2f;
+            originalWalkSpeed = walkSpeed;
+            boost = 0.0f;
             jumpHeight = 5.0f;
             acceleration = 0.20f;
             sheetOffset = 64;
@@ -38,48 +46,88 @@ namespace Mors_Arcium
             deathAnimation.frames = new int[] { 23, 24, 25 };
             deathAnimation.speed = 5;
             deathAnimation.looping = false;
+            lastPositions = new Vector2[8];
+            for (int i = 0; i < lastPositions.Length; i++)
+            {
+                lastPositions[i] = position;
+            }
         }
         public override void Update(GameTime gt)
         {
+            magic += 1;
             base.Update(gt);
+            if (boost > 0.0f)
+            {
+                controllable = false;
+                gravity = 0.0f;
+                jump = 0.0f;
+                damageMultiplier = 2.0f;
+                boost -= 1.0f;
+                if (boost <= 0.0f)
+                {
+                    boost = 0.0f;
+                }
+                if (boost <= 25.0f)
+                {
+                    walk = walkSpeed;
+                    if (spriteEffects == SpriteEffects.FlipHorizontally) walk = -walk;
+                    cooldown = 0;
+                    Attack();
+                    knockback = Vector2.Zero;
+                }
+                if (boost <= 10.0f)
+                {
+                    afterImageCount -= 0.8f;
+                }
+                lastPositions[afterImageCounter] = position;
+                afterImageCounter += 1;
+                if (afterImageCounter >= afterImageCount) afterImageCounter = 0;
+                walkSpeed = originalWalkSpeed * 5.0f;
+            }
+            else
+            {
+                controllable = true;
+                damageMultiplier = 1.0f;
+                walkSpeed = originalWalkSpeed;
+            }
         }
         public override void Attack()
         {
             base.Attack();
-            if (cooldown == 0 && deathTimer == 0)
+            //if (boost <= 0.0f)
             {
-                attacking = true;
-                cooldown = Math.Max(0, attackSpeed + game.reloadOffset);
-                for (int i = 0; i < game.entities.GetLength(1); i++)
+                if (cooldown == 0 && deathTimer == 0)
                 {
-                    if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
+                    attacking = true;
+                    cooldown = Math.Max(0, attackSpeed + game.reloadOffset);
+                    for (int i = 0; i < game.entities.GetLength(1); i++)
                     {
-                        if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 32)
+                        if (game.entities[Gameplay.TYPE_PLAYER, i] != null)
                         {
-                            Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
-                            if (spriteEffects == SpriteEffects.None && p.position.X > position.X)
+                            if (Vector2.Distance(game.entities[Gameplay.TYPE_PLAYER, i].position, position) < 32)
                             {
-                                p.knockback = new Vector2(8.0f, 0.0f);
-                                if (game.reloadOffset >= 0)
+                                Player p = (Player)game.entities[Gameplay.TYPE_PLAYER, i];
+                                bool damage = false;
+                                if (spriteEffects == SpriteEffects.None && p.position.X > position.X)
                                 {
-                                    p.Damage(7, this);
+                                    p.knockback = new Vector2(8.0f, 0.0f);
+                                    damage = true;
                                 }
-                                else
+                                else if (spriteEffects == SpriteEffects.FlipHorizontally && p.position.X < position.X)
                                 {
-                                    p.Damage(14, this);
+                                    p.knockback = new Vector2(-8.0f, 0.0f);
+                                    damage = true;
                                 }
-                                
-                            }
-                            else if (spriteEffects == SpriteEffects.FlipHorizontally && p.position.X < position.X)
-                            {
-                                p.knockback = new Vector2(-8.0f, 0.0f);
-                                if (game.reloadOffset >= 0)
+                                if (damage)
                                 {
-                                    p.Damage(7, this);
-                                }
-                                else
-                                {
-                                    p.Damage(14, this);
+                                    if (game.reloadOffset >= 0)
+                                    {
+                                        p.Damage((int)Math.Floor(7 * damageMultiplier), this);
+                                    }
+                                    else
+                                    {
+                                        p.Damage((int)Math.Floor(14 * damageMultiplier), this);
+                                    }
                                 }
                             }
                         }
@@ -89,8 +137,25 @@ namespace Mors_Arcium
         }
         public override void Special()
         {
+            if (magic == maxMagic && deathTimer == 0 && boost == 0.0f)
+            {
+                boost = 50.0f;
+                magic = 0;
+                afterImageCount = 8;
+                afterImageCounter = 0;
+                knockback = Vector2.Zero;
+                jump = 0.0f;
+                for (int i = 0; i < lastPositions.Length; i++)
+                {
+                    lastPositions[i] = position;
+                }
+            }
             base.Special();
             
+        }
+        public override void Damage(int amount, Entity perpetrator = null)
+        {
+            if (boost <= 0.0f) base.Damage(amount, perpetrator);
         }
         protected override void ChangeAnimationState(string st)
         {
@@ -131,15 +196,22 @@ namespace Mors_Arcium
         {
             if (deathTimer == 0)
             {
+                if (boost > 0.0f)
+                {
+                    for (int i = 0; i < afterImageCount; i++)
+                    {
+                        sp.Draw(texture, lastPositions[i] - origin, sourceRect, new Color(Color.White, 1.0f - ((float)i / lastPositions.Length)), rotation, Vector2.Zero, scale, spriteEffects, 0);
+                    }
+                }
                 if (hurtTimer == 0 || hurtTimer % 4 == 0)
                 {
                     if (spriteEffects == SpriteEffects.None)
                     {
-                        sp.Draw(texture, position - origin, sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                        sp.Draw(texture, position - origin, sourceRect, boost > 0 ? Color.AliceBlue : Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
                     }
                     else
                     {
-                        sp.Draw(texture, position - origin - new Vector2(8, 0), sourceRect, Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
+                        sp.Draw(texture, position - origin - new Vector2(8, 0), sourceRect, boost > 0 ? Color.AliceBlue : Color.White, rotation, Vector2.Zero, scale, spriteEffects, 0);
                     }
                 }
             }

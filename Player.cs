@@ -32,6 +32,8 @@ namespace Mors_Arcium
         protected int cooldown = 0;
         public int aimDirection = 0;
 
+        public bool controllable = true;
+
         protected float maxGravity = 8.0f;
 
         protected string animationState = "idle";
