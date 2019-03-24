@@ -991,8 +991,8 @@ namespace Mors_Arcium
             int halfHeight = sp.GraphicsDevice.Viewport.Height / 2;
             sp.Draw(guis[0].renderTarget, new Rectangle(0, 0, halfWidth, halfHeight), Color.White * game.fade);
             sp.Draw(guis[1].renderTarget, new Rectangle(halfWidth, 0, halfWidth, halfHeight), Color.White * game.fade);
-            sp.Draw(guis[2].renderTarget, new Rectangle(halfWidth, halfHeight, halfWidth, halfHeight), Color.White * game.fade);
-            sp.Draw(guis[3].renderTarget, new Rectangle(0, halfHeight, halfWidth, halfHeight), Color.White * game.fade);
+            sp.Draw(guis[2].renderTarget, new Rectangle(0, halfHeight, halfWidth, halfHeight), Color.White * game.fade);
+            sp.Draw(guis[3].renderTarget, new Rectangle(halfWidth, halfHeight, halfWidth, halfHeight), Color.White * game.fade);
             sp.End();
         }
         public void AddEntity(Entity e)
