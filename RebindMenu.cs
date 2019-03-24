@@ -108,14 +108,14 @@ namespace Mors_Arcium
             if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
         }
-        public override void Draw(SpriteBatch sp)
+        public override void DrawExtra(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 0), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
-            base.Draw(sp);
+            DrawButtons(sp);
             sp.DrawString(game.font1, "AIM UP: " + game.UP.ToString(), buttons[1].position + new Vector2(68, 0), Color.White);
             sp.DrawString(game.font1, "AIM DOWN: " + game.DOWN.ToString(), buttons[2].position + new Vector2(68, 0), Color.White);
             sp.DrawString(game.font1, "WALK LEFT: " + game.LEFT.ToString(), buttons[3].position + new Vector2(68, 0), Color.White);

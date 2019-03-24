@@ -19,21 +19,25 @@ namespace Mors_Arcium
         protected MorsArcium game;
         MouseState prevMouseState;
         TouchCollection prevTouches;
+        RenderTarget2D renderTarget;
+        Rectangle displayRect;
         public Menu(MorsArcium g)
         {
             game = g;
+            renderTarget = new RenderTarget2D(g.GraphicsDevice, 320, 240);
         }
         public virtual void Update(GameTime g)
         {
+            displayRect = new Rectangle((int)(game.GraphicsDevice.Viewport.Width - (320 * game.scaleFactor)) / 2, 0, (int)(320 * game.scaleFactor), (int)(240 * game.scaleFactor));
             MouseState mouseState = Mouse.GetState(game.Window);
             TouchCollection touches = TouchPanel.GetState();
-            int mx = (int)((mouseState.Position.X - game.thing.X) / game.scaleFactor);
+            int mx = (int)((mouseState.Position.X - displayRect.X) / game.scaleFactor);
             int my = (int)(mouseState.Position.Y / game.scaleFactor);
             int tx = -256;
             int ty = -256;
             if (touches.Count > 0)
             {
-                tx = (int)((touches[0].Position.X - game.thing.X) / game.scaleFactor);
+                tx = (int)((touches[0].Position.X - displayRect.X) / game.scaleFactor);
                 ty = (int)(touches[0].Position.Y / game.scaleFactor);
             }
             for (int i = 0; i < buttons.Length; i++)
@@ -67,12 +71,25 @@ namespace Mors_Arcium
             prevMouseState = mouseState;
             prevTouches = touches;
         }
-        public virtual void Draw(SpriteBatch sp)
+        public void DrawButtons(SpriteBatch sp)
         {
             for (int i = 0; i < buttons.Length; i++)
             {
                 sp.Draw(game.textures[2], buttons[i].position, buttons[i].source, (buttons[i].hover == true) ? Color.Gray : Color.White);
             }
+        }
+        public void Draw(SpriteBatch sp)
+        {
+            sp.GraphicsDevice.SetRenderTarget(renderTarget);
+            DrawExtra(sp);
+            sp.GraphicsDevice.SetRenderTarget(null);
+            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, null, null, null);
+            sp.Draw(renderTarget, displayRect, Color.White * game.fade);
+            sp.End();
+        }
+        public virtual void DrawExtra(SpriteBatch sp)
+        {
+
         }
         public virtual void OnButtonPress(Button source)
         {

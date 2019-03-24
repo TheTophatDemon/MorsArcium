@@ -14,21 +14,23 @@ namespace Mors_Arcium
         float f = 0.0f;
         Vector2 backgroundPosition;
         Color backgroundColor = Color.Gray;
+        int[] selections = new int[4];
+        int selection = 0;
         public ClassMenu(MorsArcium g) : base(g)
         {
             buttons = new Button[4];
             buttons[0].source = new Rectangle(160, 128, 96, 96);
             buttons[0].position = new Vector2(56, 40);
-            buttons[0].function = StartGame;
+            buttons[0].function = SelectPlayer;
             buttons[1].source = new Rectangle(160, 224, 96, 96);
             buttons[1].position = new Vector2(168, 40);
-            buttons[1].function = StartGame;
+            buttons[1].function = SelectPlayer;
             buttons[2].source = new Rectangle(64, 224, 96, 96);
             buttons[2].position = new Vector2(56, 136);
-            buttons[2].function = StartGame;
+            buttons[2].function = SelectPlayer;
             buttons[3].source = new Rectangle(160, 320, 96, 96);
             buttons[3].position = new Vector2(168, 136);
-            buttons[3].function = StartGame;
+            buttons[3].function = SelectPlayer;
             game.game.started = false;
         }
         public override void Update(GameTime g)
@@ -44,7 +46,7 @@ namespace Mors_Arcium
             if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
         }
-        public override void Draw(SpriteBatch sp)
+        public override void DrawExtra(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
@@ -66,14 +68,20 @@ namespace Mors_Arcium
             sp.Draw(game.textures[2], new Vector2(70, 16), selectClass, Color.White);
             sp.End();
         }
-        private void StartGame()
+        private void SelectPlayer()
         {
-            game.ChangeMenuState(null);
             for (int i = 0; i < 4; i++)
             {
                 if (buttons[i].hover)
                 {
-                    if (game.game.started == false) game.game.Initialize(i);
+                    selections[selection] = i;
+                    selection++;
+                    if (selection == selections.Length)
+                    {
+                        game.ChangeMenuState(null);
+                        if (game.game.started == false) game.game.Initialize(selections);
+                    }
+                    break;
                 }
             }
         }

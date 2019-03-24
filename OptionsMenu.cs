@@ -50,14 +50,14 @@ namespace Mors_Arcium
             if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
         }
-        public override void Draw(SpriteBatch sp)
+        public override void DrawExtra(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 0), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
-            base.Draw(sp);
+            DrawButtons(sp);
 #if WINDOWS
             sp.DrawString(game.font1, "FULLSCREEN", new Vector2(52, 68), Color.White);
 #endif

@@ -12,7 +12,12 @@ namespace Mors_Arcium
     {
         //TODO: Migrate to API level 26 by November 1
         //TODO: Polish Eli Charging. Make accessible to AI.
-        //TODO: Make HUD more flexible
+        //TODO: Add Android HUD customization
+        //TODO: Optimize GUI elements
+        //TODO: Make Satan & Bombs respond to multiple players
+        //TODO: Multiplayer match setup interface
+        //TODO: Make multiplayer matches end when they should
+        //TODO: Make separate customizable rebindings for each player
 #if WINDOWS
         public Keys UP = Keys.W;
         public Keys DOWN = Keys.S;
@@ -37,13 +42,12 @@ namespace Mors_Arcium
         public AndroidOutlet android;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        RenderTarget2D renderTarget;
 
         public Gameplay game;
         public Menu currentMenu = null;
         private Menu nextMenu = null;
         private bool menutransition = false;
-        private float fade = 1.0f;
+        public float fade = 1.0f;
         private bool fadeIn = false;
         public bool vsync = false;
         public Texture2D[] textures;
@@ -70,9 +74,7 @@ namespace Mors_Arcium
 
         public bool paused = false;
         private bool skip = false;
-        private bool henry = false;
         private bool grecc = false;
-        public Rectangle thing;
         MediaState prevMedState;
         public bool playedBefore = false;
         public MorsArcium(AndroidOutlet a)
@@ -93,8 +95,6 @@ namespace Mors_Arcium
             graphics.ApplyChanges();
 
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
-            thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
-            renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.5f;
             graphics.SynchronizeWithVerticalRetrace = vsync;
@@ -209,7 +209,6 @@ namespace Mors_Arcium
             graphics.ApplyChanges();
             graphics.ToggleFullScreen();
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
-            thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
 #endif
         }
         protected override void Update(GameTime gameTime)
@@ -312,7 +311,6 @@ namespace Mors_Arcium
         
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.DarkBlue);
             if (currentMenu != null)
             {
@@ -322,10 +320,6 @@ namespace Mors_Arcium
             {
                 game.Draw(spriteBatch);
             }
-            GraphicsDevice.SetRenderTarget(null);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, null, null, null);
-            spriteBatch.Draw(renderTarget, thing, Color.White * fade);
-            spriteBatch.End();
             base.Draw(gameTime);
         }
         public static float WeightedAverage(float x2, float x, float x1, float Q11, float Q21)

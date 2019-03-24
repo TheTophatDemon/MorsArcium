@@ -32,14 +32,14 @@ namespace Mors_Arcium
             if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
         }
-        public override void Draw(SpriteBatch sp)
+        public override void DrawExtra(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 0), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
-            base.Draw(sp);
+            DrawButtons(sp);
             sp.DrawString(game.font1, "IF YOU DO NOT WANT YOUR BUTT\nHANDED TO YOU ON A SILVER PLATTER, \nYOU SHOULD CLICK ON THAT \n'HOW TO PLAY' BUTTON.\n\nESPECIALLY YOU, JACOB.", new Vector2(8, 8), Color.White);
             sp.End();
         }
@@ -49,7 +49,7 @@ namespace Mors_Arcium
             {
                 game.ChangeMenuState(null);
                 game.game.tutorial = true;
-                game.game.Initialize(0);
+                game.game.Initialize(new int[] { 0 , 0, 0, 0 });
             }
             else
             {

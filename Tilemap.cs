@@ -71,10 +71,10 @@ namespace Mors_Arcium
             RefreshTiles();
             RefreshTiles(); //Fix jumpin off cliffs and walking into walls
         }
-        public void Draw(SpriteBatch sp)
+        public void Draw(SpriteBatch sp, Gameplay.GUI gui)
         {
-            int xx = (int)Math.Floor(game.cameraPosition.X / 16); if (xx < 0) xx = 0;
-            int yy = (int)Math.Floor(game.cameraPosition.Y / 16); if (yy < 0) yy = 0;
+            int xx = (int)Math.Floor(gui.cameraPosition.X / 16); if (xx < 0) xx = 0;
+            int yy = (int)Math.Floor(gui.cameraPosition.Y / 16); if (yy < 0) yy = 0;
             //22, 17
             for (int y = yy; y < Math.Min(height, yy + 17); y++)
             {

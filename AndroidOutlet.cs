@@ -43,7 +43,7 @@ namespace Mors_Arcium
         }
         public virtual void UpdateControls(GameTime gt)
         {
-            up = false;
+            /*up = false;
             down = false;
             right = false;
             left = false;
@@ -97,7 +97,7 @@ namespace Mors_Arcium
                 }
             }
             prevMouseState = mouseState;
-            prevTouches = touches;
+            prevTouches = touches;*/
         }
         public virtual void DrawControls(SpriteBatch sp)
         {

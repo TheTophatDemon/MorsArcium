@@ -46,7 +46,8 @@ namespace Mors_Arcium
                 {
                     targetX = game.game.random.Next(32, (game.tilemap.width - 2) * 16);
                 }
-                if (Math.Abs(game.player.position.X - position.X) < 96.0f)
+                //TODO: Make generic
+                if (Math.Abs(game.humanPlayers[0].position.X - position.X) < 96.0f)
                 {
                     animation = attackAnimation;
                     frame = 0;
