@@ -29,6 +29,8 @@ namespace Mors_Arcium
         public bool started = false;
         public bool multiplayer = true;
 
+        int screenOffset = 0;
+
         public Entity[,] entities;
         public Tilemap tilemap;
         private Particle[] particles;
@@ -283,6 +285,7 @@ namespace Mors_Arcium
 #if ANDROID
             game.android.UpdateControls(gt);
 #endif
+            screenOffset = (int)(game.GraphicsDevice.Viewport.Width - (320 * game.scaleFactor)) / 2;
             if ((Keyboard.GetState().IsKeyDown(Keys.Escape) || game.android.exit) && game.currentMenu == null)
             {
                 game.ChangeMenuState(new MainMenu(game));
@@ -987,12 +990,12 @@ namespace Mors_Arcium
             }
             sp.GraphicsDevice.SetRenderTarget(null);
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, null, null, null);
-            int halfWidth = sp.GraphicsDevice.Viewport.Width / 2;
-            int halfHeight = sp.GraphicsDevice.Viewport.Height / 2;
-            sp.Draw(guis[0].renderTarget, new Rectangle(0, 0, halfWidth, halfHeight), Color.White * game.fade);
-            sp.Draw(guis[1].renderTarget, new Rectangle(halfWidth, 0, halfWidth, halfHeight), Color.White * game.fade);
-            sp.Draw(guis[2].renderTarget, new Rectangle(0, halfHeight, halfWidth, halfHeight), Color.White * game.fade);
-            sp.Draw(guis[3].renderTarget, new Rectangle(halfWidth, halfHeight, halfWidth, halfHeight), Color.White * game.fade);
+            int scrWidth = (int)(160 * game.scaleFactor);
+            int scrHeight = (int)(120 * game.scaleFactor);
+            sp.Draw(guis[0].renderTarget, new Rectangle(screenOffset, 0, scrWidth, scrHeight), Color.White * game.fade);
+            sp.Draw(guis[1].renderTarget, new Rectangle(screenOffset + scrWidth, 0, scrWidth, scrHeight), Color.White * game.fade);
+            sp.Draw(guis[2].renderTarget, new Rectangle(screenOffset, scrHeight, scrWidth, scrHeight), Color.White * game.fade);
+            sp.Draw(guis[3].renderTarget, new Rectangle(screenOffset + scrWidth, scrHeight, scrWidth, scrHeight), Color.White * game.fade);
             sp.End();
         }
         public void AddEntity(Entity e)
