@@ -12,6 +12,7 @@ namespace Mors_Arcium
         public Rectangle source;
         public Action function;
         public bool hover;
+        public SpriteEffects spriteEffect;
     }
     public class Menu
     {
@@ -75,7 +76,7 @@ namespace Mors_Arcium
         {
             for (int i = 0; i < buttons.Length; i++)
             {
-                sp.Draw(game.textures[2], buttons[i].position, buttons[i].source, (buttons[i].hover == true) ? Color.Gray : Color.White);
+                sp.Draw(game.textures[2], buttons[i].position, buttons[i].source, (buttons[i].hover == true) ? Color.Gray : Color.White, 0.0f, Vector2.Zero, 1.0f, buttons[i].spriteEffect, 0.0f);
             }
         }
         public void Draw(SpriteBatch sp)

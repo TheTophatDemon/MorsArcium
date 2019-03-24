@@ -27,6 +27,7 @@ namespace Mors_Arcium
         
         public MorsArcium game;
         public bool started = false;
+        public bool multiplayer = true;
 
         public Entity[,] entities;
         public Tilemap tilemap;
@@ -124,10 +125,20 @@ namespace Mors_Arcium
             }
             else
             {
-                num_mr_b = game.random.Next(0, 10);
-                num_wizard = game.random.Next(0, 10);
-                num_fingers = game.random.Next(0, 10);
-                num_bugs = game.random.Next(0, 10);
+                if (multiplayer)
+                {
+                    num_mr_b = 0;
+                    num_wizard = 0;
+                    num_fingers = 0;
+                    num_bugs = 0;
+                }
+                else
+                {
+                    num_mr_b = game.random.Next(0, 10);
+                    num_wizard = game.random.Next(0, 10);
+                    num_fingers = game.random.Next(0, 10);
+                    num_bugs = game.random.Next(0, 10);
+                }
                 healthPackFrequency = game.random.Next(50, 1000);
                 plhlha = game.random.Next(-60, 60);
                 projectileSpeedMultiplier = ((float)game.random.NextDouble() * 2.0f) - 1.0f;
@@ -173,22 +184,7 @@ namespace Mors_Arcium
             
             for (int i = 0; i < humanPlayers.Length; i++)
             {
-                switch (playerClasses[i])
-                {
-                    case 0:
-                        humanPlayers[i] = new MrBPlayer(this, plhlha);
-                        break;
-                    case 1:
-                        humanPlayers[i] = new WizardPlayer(this, plhlha);
-                        break;
-                    case 2:
-                        humanPlayers[i] = new EliPlayer(this, plhlha);
-                        break;
-                    case 3:
-                        humanPlayers[i] = new BugPlayer(this, plhlha);
-                        break;
-                }
-                humanPlayers[i].position = new Vector2(game.random.Next(32, (tilemap.width * 16) - 32), 0.0f);
+                humanPlayers[i] = SpawnPlayer(playerClasses[i], plhlha);
                 if (tutorial)
                 {
                     humanPlayers[i].maxHealth = 600;
@@ -196,7 +192,6 @@ namespace Mors_Arcium
                     healthPackTimer = 0;
                     humanPlayers[i].position.X = 200;
                 }
-                AddEntity(humanPlayers[i]);
             }
             //SpawnEnemies();
             
@@ -210,6 +205,28 @@ namespace Mors_Arcium
             tutorialTimer = 0;
             //Satan satan = new Satan(this, new Vector2(256, 0));
             //AddEntity(satan);
+        }
+        Player SpawnPlayer(int playerClass, int plhlha)
+        {
+            Player p;
+            switch (playerClass)
+            {
+                case 1:
+                    p = new WizardPlayer(this, plhlha);
+                    break;
+                case 2:
+                    p = new EliPlayer(this, plhlha);
+                    break;
+                case 3:
+                    p = new BugPlayer(this, plhlha);
+                    break;
+                default:
+                    p = new MrBPlayer(this, plhlha);
+                    break;
+            }
+            p.position = new Vector2(game.random.Next(32, (tilemap.width* 16) - 32), 0.0f);
+            AddEntity(p);
+            return p;
         }
         private void SpawnEnemies()
         {
@@ -373,26 +390,26 @@ namespace Mors_Arcium
                 {
                     if (humanPlayers[i].deathTimer == 0 && humanPlayers[i].controllable)
                     {
-                        if (Keyboard.GetState().IsKeyDown(game.JUMP) || game.android.jump)
+                        if (game.bindings[i].JUMP.IsDown() || game.android.jump)
                         {
                             humanPlayers[i].Jump();
                         }
 
-                        if (Keyboard.GetState().IsKeyDown(game.RIGHT) || game.android.right)
+                        if (game.bindings[i].RIGHT.IsDown() || game.android.right)
                         {
                             humanPlayers[i].spriteEffects = SpriteEffects.None;
                             humanPlayers[i].Walk();
                         }
-                        else if (Keyboard.GetState().IsKeyDown(game.LEFT) || game.android.left)
+                        else if (game.bindings[i].LEFT.IsDown() || game.android.left)
                         {
                             humanPlayers[i].spriteEffects = SpriteEffects.FlipHorizontally;
                             humanPlayers[i].Walk();
                         }
-                        if (Keyboard.GetState().IsKeyDown(game.UP) || game.android.up)
+                        if (game.bindings[i].UP.IsDown() || game.android.up)
                         {
                             humanPlayers[i].aimDirection = -1;
                         }
-                        else if (Keyboard.GetState().IsKeyDown(game.DOWN) || game.android.down)
+                        else if (game.bindings[i].DOWN.IsDown() || game.android.down)
                         {
                             humanPlayers[i].aimDirection = 1;
                         }
@@ -400,11 +417,11 @@ namespace Mors_Arcium
                         {
                             humanPlayers[i].aimDirection = 0;
                         }
-                        if (Keyboard.GetState().IsKeyDown(game.ATTACK) || game.android.attack)
+                        if (game.bindings[i].ATTACK.IsDown() || game.android.attack)
                         {
                             humanPlayers[i].Attack();
                         }
-                        if (Keyboard.GetState().IsKeyDown(game.SPECIAL) || game.android.special)
+                        if (game.bindings[i].SPECIAL.IsDown() || game.android.special)
                         {
                             humanPlayers[i].Special();
                         }
@@ -576,7 +593,17 @@ namespace Mors_Arcium
                 }
                 if (waveTimer == 0)
                 {
-                    SpawnEnemies();
+                    if (!multiplayer) SpawnEnemies();
+                    for (int i = 0; i < humanPlayers.Length; i++)
+                    {
+                        if (humanPlayers[i].dead)
+                        {
+                            humanPlayers[i] = SpawnPlayer(game.random.Next(4), humanPlayers[i].healthHandicap);
+                            guis[i].fadeIn = 1.0f;
+                            guis[i].fadeOut = 0.0f;
+                            guis[i].deathThingy = new Vector2(0, 0);
+                        }
+                    }
                     eventThingy = 240.0f;
                     if (game.musicEnabled)
                     {
@@ -802,11 +829,11 @@ namespace Mors_Arcium
                     {
                         case 0:
 #if WINDOWS
-                            sp.DrawString(game.font1, "USE " + game.LEFT + " AND " + game.RIGHT + " TO WALK.", new Vector2(72, -16.0f), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.UP + " AND " + game.DOWN + " TO AIM.", new Vector2(72, 32), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+                            sp.DrawString(game.font1, "USE " + game.bindings[i].LEFT + " AND " + game.bindings[i].RIGHT + " TO WALK.", new Vector2(72, -16.0f), Color.White);
+                            sp.DrawString(game.font1, "USE " + game.bindings[i].JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
+                            sp.DrawString(game.font1, "USE " + game.bindings[i].ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
+                            sp.DrawString(game.font1, "USE " + game.bindings[i].UP + " AND " + game.bindings[i].DOWN + " TO AIM.", new Vector2(72, 32), Color.White);
+                            sp.DrawString(game.font1, "USE " + game.bindings[i].SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
 #endif
 #if ANDROID
                         sp.DrawString(game.font1, "TOUCH THE ARROWS TO WALK.", new Vector2(72, -16.0f), Color.White);
@@ -1004,6 +1031,14 @@ namespace Mors_Arcium
                 if (humanPlayers[i] == p) return true;
             }
             return false;
+        }
+        public int GetHumanID(Player p)
+        {
+            for (int i = 0; i < humanPlayers.Length; i++)
+            {
+                if (humanPlayers[i] == p) return i;
+            }
+            return -1;
         }
         public void ChangePlayerType(Player p, int srcRctY)
         {

@@ -17,27 +17,26 @@ namespace Mors_Arcium
         //TODO: Make Satan & Bombs respond to multiple players
         //TODO: Multiplayer match setup interface
         //TODO: Make multiplayer matches end when they should
-        //TODO: Make separate customizable rebindings for each player
-#if WINDOWS
-        public Keys UP = Keys.W;
-        public Keys DOWN = Keys.S;
-        public Keys RIGHT = Keys.D;
-        public Keys LEFT = Keys.A;
-        public Keys JUMP = Keys.Space;
-        public Keys ATTACK = Keys.J;
-        public Keys SPECIAL = Keys.K;
-        public Keys PAUSE = Keys.Enter;
-#endif
-#if ANDROID
-        public Keys UP = Keys.B;
-        public Keys DOWN = Keys.C;
-        public Keys RIGHT = Keys.Right;
-        public Keys LEFT = Keys.Left;
-        public Keys JUMP = Keys.J;
-        public Keys ATTACK = Keys.A;
-        public Keys SPECIAL = Keys.S;
-        public Keys PAUSE = Keys.Enter;
-#endif
+        //TODO: Make new rebindings savable to settings
+        //TODO: Determine whose PAUSE button does the thing
+        //TODO: Add Joystick Hat Capability
+        //TODO: Add Joystick Axis Capability
+        //TODO: Add proper keyboard key names
+        //TODO: Make music happen in first wave multiplayer
+        //TODO: Fix Death & Event HUD in multiplayer
+
+        public struct PlayerBindings
+        {
+            public IBinding UP;
+            public IBinding DOWN;
+            public IBinding RIGHT;
+            public IBinding LEFT;
+            public IBinding JUMP;
+            public IBinding ATTACK;
+            public IBinding SPECIAL;
+            public IBinding PAUSE;
+        }
+        public PlayerBindings[] bindings = new PlayerBindings[4];
 
         public AndroidOutlet android;
         GraphicsDeviceManager graphics;
@@ -253,11 +252,11 @@ namespace Mors_Arcium
                     MediaPlayer.Volume = eeeeearnis;
                 }
             }
-            if ((Keyboard.GetState().IsKeyDown(PAUSE) || android.pause) && !grecc)
+            if ((bindings[0].PAUSE.IsDown() || android.pause) && !grecc)
             {
                 paused = !paused;
             }
-            grecc = Keyboard.GetState().IsKeyDown(PAUSE);
+            grecc = bindings[0].PAUSE.IsDown();
 #if ANDROID
             grecc = android.pause;
 #endif
@@ -334,7 +333,7 @@ namespace Mors_Arcium
         public void SaveSettings()
         {
 #if WINDOWS
-            StreamWriter chrick = new StreamWriter("settings.txt");
+            /*StreamWriter chrick = new StreamWriter("settings.txt");
             chrick.WriteLine(fullscreen.ToString());
             chrick.WriteLine(soundEnabled.ToString());
             chrick.WriteLine(musicEnabled.ToString());
@@ -350,7 +349,7 @@ namespace Mors_Arcium
             chrick.WriteLine(playedBefore);
             chrick.WriteLine(vsync.ToString());
             chrick.Close();
-            chrick.Dispose();
+            chrick.Dispose();*/
 #endif
 
 #if ANDROID
@@ -359,9 +358,20 @@ namespace Mors_Arcium
         }
         public void LoadSettings()
         {
+            for (int i = 0; i < bindings.Length; i++)
+            {
+                bindings[i].UP = new KeyBinding(Keys.W);
+                bindings[i].DOWN = new KeyBinding(Keys.S);
+                bindings[i].RIGHT = new KeyBinding(Keys.D);
+                bindings[i].LEFT = new KeyBinding(Keys.A);
+                bindings[i].JUMP = new KeyBinding(Keys.Space);
+                bindings[i].ATTACK = new KeyBinding(Keys.J);
+                bindings[i].SPECIAL = new KeyBinding(Keys.K);
+                bindings[i].PAUSE = new KeyBinding(Keys.Enter);
+            }
             try
             {
-                StreamReader asgore = new StreamReader("settings.txt");
+                /*StreamReader asgore = new StreamReader("settings.txt");
                 fullscreen = bool.Parse(asgore.ReadLine());
                 soundEnabled = bool.Parse(asgore.ReadLine());
                 musicEnabled = bool.Parse(asgore.ReadLine());
@@ -377,7 +387,7 @@ namespace Mors_Arcium
                 playedBefore = bool.Parse(asgore.ReadLine());
                 vsync = bool.Parse(asgore.ReadLine());
                 asgore.Close();
-                asgore.Dispose();
+                asgore.Dispose();*/
             }
             catch
             {

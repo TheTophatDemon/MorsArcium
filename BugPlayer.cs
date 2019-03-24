@@ -24,6 +24,7 @@ namespace Mors_Arcium
         Animation jumpAnimation;
         bool tryingToFly = false;
         bool flymode = false;
+        bool wasJump = false;
 
         public BugPlayer(Gameplay g, int hhh = 0) : base(g, hhh)
         {
@@ -80,11 +81,12 @@ namespace Mors_Arcium
         {
             if (game.IsHuman(this) && game.game.bugJumpFly)
             {
-                if ((Keyboard.GetState().IsKeyDown(game.game.JUMP) || game.game.android.jump) && (!game.game.prevState.IsKeyDown(game.game.JUMP) && !game.game.prevJump) && !granddad)
+                int id = game.GetHumanID(this);
+                if ((game.game.bindings[id].JUMP.IsDown() || game.game.android.jump) && (!wasJump && !game.game.prevJump) && !granddad)
                 {
                     flymode = true;
                 }
-                if ((!Keyboard.GetState().IsKeyDown(game.game.JUMP) && !game.game.android.jump) && (game.game.prevState.IsKeyDown(game.game.JUMP) || game.game.prevJump))
+                if ((!game.game.bindings[id].JUMP.IsDown() && !game.game.android.jump) && (wasJump || game.game.prevJump))
                 {
                     flymode = false;
                 }
@@ -92,6 +94,7 @@ namespace Mors_Arcium
                 {
                     Special();
                 }
+                wasJump = game.game.bindings[id].JUMP.IsDown();
             }
             if (animationState == "fly")
             {
