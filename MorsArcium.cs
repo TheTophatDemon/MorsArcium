@@ -12,18 +12,18 @@ namespace Mors_Arcium
     {
         //TODO: Migrate to API level 26 by November 1
         //TODO: Polish Eli Charging. Make accessible to AI.
-        //TODO: Add Android HUD customization
+
         //TODO: Optimize GUI elements
-        //TODO: Make Satan & Bombs respond to multiple players
-        //TODO: Multiplayer match setup interface
-        //TODO: Make multiplayer matches end when they should
         //TODO: Make new rebindings savable to settings
-        //TODO: Determine whose PAUSE button does the thing
         //TODO: Add Joystick Hat Capability
         //TODO: Add Joystick Axis Capability
         //TODO: Add proper keyboard key names
-        //TODO: Make music happen in first wave multiplayer
-        //TODO: Fix Death & Event HUD in multiplayer
+        //TODO: Add Android HUD customization
+
+        //TODO: Multiplayer
+        //TODO: Multiplayer match setup interface
+        //TODO: Determine whose PAUSE button does the thing
+        //TODO: Fix Event HUD in multiplayer
 
         public struct PlayerBindings
         {

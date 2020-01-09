@@ -82,6 +82,36 @@ namespace Mors_Arcium
             return "Joystick Button " + button.ToString();
         }
     }
+    public class JoystickHatBinding : IBinding
+    {
+        public enum Button
+        {
+            UP,
+            DOWN,
+            LEFT,
+            RIGHT
+        }
+        readonly int joyIndex;
+        readonly int hat;
+        readonly Button button;
+        public JoystickHatBinding(int joyIndex, int hat, Button button)
+        {
+            this.joyIndex = joyIndex;
+            this.hat = hat;
+            this.button = button;
+        }
+        public bool IsDown()
+        {
+            switch (button)
+            {
+                case Button.UP: return Joystick.GetState(joyIndex).Hats[hat].Up == ButtonState.Pressed;
+                case Button.DOWN: return Joystick.GetState(joyIndex).Hats[hat].Down == ButtonState.Pressed;
+                case Button.LEFT: return Joystick.GetState(joyIndex).Hats[hat].Left == ButtonState.Pressed;
+                case Button.RIGHT: return Joystick.GetState(joyIndex).Hats[hat].Right == ButtonState.Pressed;
+            }
+            return false;
+        }
+    }
     public class JoystickAxisBinding : IBinding
     {
         readonly int joyIndex;

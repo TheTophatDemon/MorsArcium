@@ -128,6 +128,34 @@ namespace Mors_Arcium
                             }
                         }
                         if (!rebinding) break;
+                        for (int j = 0; j < capabilities.HatCount; j++)
+                        {
+                            if (state.Hats[j].Up == ButtonState.Pressed)
+                            {
+                                SetBinding(buttonLastPressed, new JoystickHatBinding(i, j, JoystickHatBinding.Button.UP));
+                                rebinding = false;
+                                break;
+                            }
+                            else if (state.Hats[j].Down == ButtonState.Pressed)
+                            {
+                                SetBinding(buttonLastPressed, new JoystickHatBinding(i, j, JoystickHatBinding.Button.DOWN));
+                                rebinding = false;
+                                break;
+                            }
+                            else if (state.Hats[j].Left == ButtonState.Pressed)
+                            {
+                                SetBinding(buttonLastPressed, new JoystickHatBinding(i, j, JoystickHatBinding.Button.LEFT));
+                                rebinding = false;
+                                break;
+                            }
+                            else if (state.Hats[j].Right == ButtonState.Pressed)
+                            {
+                                SetBinding(buttonLastPressed, new JoystickHatBinding(i, j, JoystickHatBinding.Button.RIGHT));
+                                rebinding = false;
+                                break;
+                            }
+                        }
+                        if (!rebinding) break;
                         /*for (int j = 0; j < capabilities.AxisCount; j++)
                         {
                             if (Math.Abs(state.Axes[j]) > 0.25f)

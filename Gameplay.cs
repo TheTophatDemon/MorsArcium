@@ -10,14 +10,18 @@ namespace Mors_Arcium
 {
     public class Gameplay
     {
-        public struct GUI
+        public class GUI
         {
             public Vector2 cameraPosition;
             public RenderTarget2D renderTarget;
-            public Vector2 deathThingy;
-            public float fadeIn;
-            public float fadeOut;
-            public int nearestEnemy;
+            public Vector2 deathThingy = new Vector2(100, 200);
+            public float fadeIn = 1.0f;
+            public float fadeOut = 0.0f;
+            public int nearestEnemy = -1;
+            public GUI(GraphicsDevice device)
+            {
+                renderTarget = new RenderTarget2D(device, 320, 240);
+            }
         }
         public const int TYPE_PLAYER = 6;
         public const int TYPE_PROJECTILE = 4;
@@ -98,10 +102,7 @@ namespace Mors_Arcium
             guis = new GUI[4];
             for (int i = 0; i < humanPlayers.Length; i++)
             {
-                guis[i].renderTarget = new RenderTarget2D(game.GraphicsDevice, 320, 240);
-                guis[i].deathThingy = new Vector2(100, 200);
-                guis[i].fadeOut = 0f;
-                guis[i].fadeIn = 1.0f;
+                guis[i] = new GUI(game.GraphicsDevice);
             }
 
             int mapw = 129;
@@ -198,8 +199,8 @@ namespace Mors_Arcium
             //SpawnEnemies();
             
             
-            wave = 0;
-            waveTimer = 0;
+            wave = 1;
+            waveTimer = 100;
             waveAlpha = 1.0f;
             numPlayers = humanPlayers.Length;
             started = true;
@@ -272,11 +273,15 @@ namespace Mors_Arcium
         {
             if (game.soundEnabled)
             {
-                float dist = Math.Abs(position.X - humanPlayers[0].position.X);
-                if (dist < 240.0f)
+                for (int i = 0; i < humanPlayers.Length; i++)
                 {
-                    game.soundInstances[index].Stop();
-                    game.soundInstances[index].Play();
+                    float dist = Math.Abs(position.X - humanPlayers[i].position.X);
+                    if (dist < 240.0f)
+                    {
+                        game.soundInstances[index].Stop();
+                        game.soundInstances[index].Play();
+                        break;
+                    }
                 }
             }
         }
@@ -330,6 +335,10 @@ namespace Mors_Arcium
             else if (Keyboard.GetState().IsKeyDown(Keys.D9))
             {
                 eventSelectorIndex = 2;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.D0)) //Sudden death
+            {
+                eventSelectorIndex = 3;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(humanPlayers[0] is MrBPlayer))
             {
@@ -437,7 +446,7 @@ namespace Mors_Arcium
                     humanPlayers[i].deathTimer += 1;
                 }
             }
-            if (healthPackTimer > 0)
+            if (healthPackTimer > 0 && eventSelectorIndex != 3)
             {
                 healthPackTimer -= 1;
                 if (healthPackTimer == 0)
@@ -458,9 +467,6 @@ namespace Mors_Arcium
                         {
                             Player p = (Player)entities[x, y];
                             if (!IsHuman(p)) p.UpdateCPU();
-                        }
-                        if (entities[x, y].type == TYPE_PLAYER)
-                        {
                             numPlayers += 1;
                         }
                         entities[x, y].Update(gt);
@@ -561,8 +567,7 @@ namespace Mors_Arcium
                 {
                     if (humanPlayers[i].deathTimer == 0)
                     {
-                        humanPlayers[i].health += 25;
-                        if (humanPlayers[i].health > humanPlayers[i].maxHealth) humanPlayers[i].health = humanPlayers[i].maxHealth;
+                        humanPlayers[i].health = humanPlayers[i].maxHealth;
                     }
                 }
                 eventSelectorIndex = game.random.Next(0, 7); eventSelectorSpeed = 1; eventSelectorTimer = 0;
@@ -602,9 +607,20 @@ namespace Mors_Arcium
                         if (humanPlayers[i].dead)
                         {
                             humanPlayers[i] = SpawnPlayer(game.random.Next(4), humanPlayers[i].healthHandicap);
-                            guis[i].fadeIn = 1.0f;
-                            guis[i].fadeOut = 0.0f;
-                            guis[i].deathThingy = new Vector2(0, 0);
+                            RenderTarget2D renderTarget = guis[i].renderTarget;
+                            guis[i] = new GUI(game.GraphicsDevice);
+                            guis[i].renderTarget = renderTarget;
+                        }
+                    }
+                    for (int y = 0; y < entities.GetLength(1); y++)
+                    {
+                        Player p = (Player)entities[TYPE_PLAYER, y];
+                        if (p != null)
+                        {
+                            if (eventSelectorIndex == 3)
+                            {
+                                p.health = 1;
+                            }
                         }
                     }
                     eventThingy = 240.0f;
@@ -951,7 +967,7 @@ namespace Mors_Arcium
                             }
                             else
                             {
-                                sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+                                if (wave != 1) sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
                                 sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
                                 sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
                             }
@@ -1065,11 +1081,16 @@ namespace Mors_Arcium
                         newPlayer = new BugPlayer(this);
                         break;
                 }
-                for (int i = 0; i < humanPlayers.Length; i++)
+                if (IsHuman(p))
                 {
-                    if (humanPlayers[i] == p)
+                    int id = GetHumanID(p);
+                    if (id >= 0)
                     {
-                        humanPlayers[i] = newPlayer;
+                        humanPlayers[id] = newPlayer;
+                    }
+                    else
+                    {
+                        Console.WriteLine("What in tarnation!!??");
                     }
                 }
                 newPlayer.position = p.position;
