@@ -469,7 +469,7 @@ namespace Mors_Arcium
             }
             if (position.Y + hitboxOffset.Y + hitboxSize.Y > game.lavaHeight && deathTimer == 0)
             {
-                if (game.tutorial && game.player == this && game.tutorialPhase != 11)
+                if (game.tutorial && game.IsHuman(this) && game.tutorialPhase != 11)
                 {
                     knockback.Y = -64.0f;
                 }

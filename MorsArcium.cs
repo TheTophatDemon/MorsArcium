@@ -10,41 +10,40 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Migrate to API level 26 by November 1
-        //TODO: Polish Eli Charging. Make accessible to AI.
-        //TODO: Make HUD more flexible
+        //TODO: Optimize GUI elements
+        //TODO: Make new rebindings savable to settings
+        //TODO: Add Joystick Hat Capability
+        //TODO: Add Joystick Axis Capability
+        //TODO: Add proper keyboard key names
+        //TODO: Add Android HUD customization
 
-#if WINDOWS
-        public Keys UP = Keys.W;
-        public Keys DOWN = Keys.S;
-        public Keys RIGHT = Keys.D;
-        public Keys LEFT = Keys.A;
-        public Keys JUMP = Keys.Space;
-        public Keys ATTACK = Keys.J;
-        public Keys SPECIAL = Keys.K;
-        public Keys PAUSE = Keys.Enter;
-#endif
-#if ANDROID
-        public Keys UP = Keys.B;
-        public Keys DOWN = Keys.C;
-        public Keys RIGHT = Keys.Right;
-        public Keys LEFT = Keys.Left;
-        public Keys JUMP = Keys.J;
-        public Keys ATTACK = Keys.A;
-        public Keys SPECIAL = Keys.S;
-        public Keys PAUSE = Keys.Enter;
-#endif
+        //TODO: Multiplayer
+        //TODO: Multiplayer match setup interface
+        //TODO: Determine whose PAUSE button does the thing
+        //TODO: Fix Event HUD in multiplayer
+
+        public struct PlayerBindings
+        {
+            public IBinding UP;
+            public IBinding DOWN;
+            public IBinding RIGHT;
+            public IBinding LEFT;
+            public IBinding JUMP;
+            public IBinding ATTACK;
+            public IBinding SPECIAL;
+            public IBinding PAUSE;
+        }
+        public PlayerBindings[] bindings = new PlayerBindings[4];
 
         public AndroidOutlet android;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        RenderTarget2D renderTarget;
 
         public Gameplay game;
         public Menu currentMenu = null;
         private Menu nextMenu = null;
         private bool menutransition = false;
-        private float fade = 1.0f;
+        public float fade = 1.0f;
         private bool fadeIn = false;
         public bool vsync = false;
         public Texture2D[] textures;
@@ -71,9 +70,7 @@ namespace Mors_Arcium
 
         public bool paused = false;
         private bool skip = false;
-        private bool henry = false;
         private bool grecc = false;
-        public Rectangle thing;
         MediaState prevMedState;
         public bool playedBefore = false;
         public MorsArcium(AndroidOutlet a)
@@ -94,8 +91,6 @@ namespace Mors_Arcium
             graphics.ApplyChanges();
 
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
-            thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
-            renderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.5f;
             graphics.SynchronizeWithVerticalRetrace = vsync;
@@ -210,7 +205,6 @@ namespace Mors_Arcium
             graphics.ApplyChanges();
             graphics.ToggleFullScreen();
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
-            thing = new Rectangle((int)(GraphicsDevice.Viewport.Width - (320 * scaleFactor)) / 2, 0, (int)(320 * scaleFactor), (int)(240 * scaleFactor));
 #endif
         }
         protected override void Update(GameTime gameTime)
@@ -255,11 +249,11 @@ namespace Mors_Arcium
                     MediaPlayer.Volume = eeeeearnis;
                 }
             }
-            if ((Keyboard.GetState().IsKeyDown(PAUSE) || android.pause) && !grecc)
+            if ((bindings[0].PAUSE.IsDown() || android.pause) && !grecc)
             {
                 paused = !paused;
             }
-            grecc = Keyboard.GetState().IsKeyDown(PAUSE);
+            grecc = bindings[0].PAUSE.IsDown();
 #if ANDROID
             grecc = android.pause;
 #endif
@@ -313,7 +307,6 @@ namespace Mors_Arcium
         
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.DarkBlue);
             if (currentMenu != null)
             {
@@ -323,10 +316,6 @@ namespace Mors_Arcium
             {
                 game.Draw(spriteBatch);
             }
-            GraphicsDevice.SetRenderTarget(null);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, null, null, null);
-            spriteBatch.Draw(renderTarget, thing, Color.White * fade);
-            spriteBatch.End();
             base.Draw(gameTime);
         }
         public static float WeightedAverage(float x2, float x, float x1, float Q11, float Q21)
@@ -341,7 +330,7 @@ namespace Mors_Arcium
         public void SaveSettings()
         {
 #if WINDOWS
-            StreamWriter chrick = new StreamWriter("settings.txt");
+            /*StreamWriter chrick = new StreamWriter("settings.txt");
             chrick.WriteLine(fullscreen.ToString());
             chrick.WriteLine(soundEnabled.ToString());
             chrick.WriteLine(musicEnabled.ToString());
@@ -357,7 +346,7 @@ namespace Mors_Arcium
             chrick.WriteLine(playedBefore);
             chrick.WriteLine(vsync.ToString());
             chrick.Close();
-            chrick.Dispose();
+            chrick.Dispose();*/
 #endif
 
 #if ANDROID
@@ -366,9 +355,20 @@ namespace Mors_Arcium
         }
         public void LoadSettings()
         {
+            for (int i = 0; i < bindings.Length; i++)
+            {
+                bindings[i].UP = new KeyBinding(Keys.W);
+                bindings[i].DOWN = new KeyBinding(Keys.S);
+                bindings[i].RIGHT = new KeyBinding(Keys.D);
+                bindings[i].LEFT = new KeyBinding(Keys.A);
+                bindings[i].JUMP = new KeyBinding(Keys.Space);
+                bindings[i].ATTACK = new KeyBinding(Keys.J);
+                bindings[i].SPECIAL = new KeyBinding(Keys.K);
+                bindings[i].PAUSE = new KeyBinding(Keys.Enter);
+            }
             try
             {
-                StreamReader asgore = new StreamReader("settings.txt");
+                /*StreamReader asgore = new StreamReader("settings.txt");
                 fullscreen = bool.Parse(asgore.ReadLine());
                 soundEnabled = bool.Parse(asgore.ReadLine());
                 musicEnabled = bool.Parse(asgore.ReadLine());
@@ -384,7 +384,7 @@ namespace Mors_Arcium
                 playedBefore = bool.Parse(asgore.ReadLine());
                 vsync = bool.Parse(asgore.ReadLine());
                 asgore.Close();
-                asgore.Dispose();
+                asgore.Dispose();*/
             }
             catch
             {

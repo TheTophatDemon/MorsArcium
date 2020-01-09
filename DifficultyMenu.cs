@@ -39,14 +39,14 @@ namespace Mors_Arcium
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
         }
-        public override void Draw(SpriteBatch sp)
+        public override void DrawExtra(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 0), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
-            base.Draw(sp);
+            DrawButtons(sp);
             sp.Draw(game.textures[2], new Vector2(53, 20), ass, Color.White);
             sp.End();
         }

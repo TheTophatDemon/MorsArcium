@@ -15,11 +15,11 @@ namespace Mors_Arcium
             buttons[0].position = new Vector2(16, 16);
             game.ChangeMusic(14);
         }
-        public override void Draw(SpriteBatch sp)
+        public override void DrawExtra(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.Draw(game.textures[4], Vector2.Zero, Color.White);
-            base.Draw(sp);
+            DrawButtons(sp);
             sp.End();
         }
         public override void OnButtonPress(Button source)

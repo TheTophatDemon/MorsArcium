@@ -61,7 +61,7 @@ namespace Mors_Arcium
                 controllable = false;
                 gravity = 0.0f;
                 jump = 0.0f;
-                damageMultiplier = 2.0f;
+                damageMultiplier = 4.0f;
                 boost -= 1.0f;
                 if (boost <= 0.0f)
                 {

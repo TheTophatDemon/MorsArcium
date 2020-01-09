@@ -21,7 +21,8 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
-            if (position.X > game.cameraPosition.X && position.X < game.cameraPosition.X + 320 && timer % 2 == 0) {
+            //if (position.X > game.cameraPosition.X && position.X < game.cameraPosition.X + 320 && timer % 2 == 0) {
+            if (timer % 2 == 0) {
                 game.AddParticle(new Particle(game, position + new Vector2(-4, -8), new Vector2((float)(game.game.random.NextDouble() - 0.5f) * 10.0f, -4.0f), 3, 8, 6));
             }
             speed.Y += game.gravityAcceleration;

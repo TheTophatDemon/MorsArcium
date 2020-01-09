@@ -64,7 +64,7 @@ namespace Mors_Arcium
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) game.Exit();
         }
-        public override void Draw(SpriteBatch sp)
+        public override void DrawExtra(SpriteBatch sp)
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
             sp.Draw(game.textures[1], backgroundPosition, backgroundColor);
@@ -72,7 +72,7 @@ namespace Mors_Arcium
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
             sp.Draw(game.textures[2], new Vector2(64, 4 + (float)Math.Sin(floaty) * 4.0f), titleRect, Color.White);
-            base.Draw(sp);
+            DrawButtons(sp);
             sp.End();
         }
         private void StartGame()
@@ -95,7 +95,7 @@ namespace Mors_Arcium
         {
             game.ChangeMenuState(null);
             game.game.tutorial = true;
-            game.game.Initialize(0);
+            game.game.Initialize(new int[] { 0, 0, 0, 0 });
         }
         private void GotoOptions()
         {

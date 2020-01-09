@@ -46,11 +46,15 @@ namespace Mors_Arcium
                 {
                     targetX = game.game.random.Next(32, (game.tilemap.width - 2) * 16);
                 }
-                if (Math.Abs(game.player.position.X - position.X) < 96.0f)
+                for (int i = 0; i < game.humanPlayers.Length; i++)
                 {
-                    animation = attackAnimation;
-                    frame = 0;
-                    anim = 0;
+                    if (Math.Abs(game.humanPlayers[i].position.X - position.X) < 96.0f)
+                    {
+                        animation = attackAnimation;
+                        frame = 0;
+                        anim = 0;
+                        break;
+                    }
                 }
             }
             else if (animation.frames == attackAnimation.frames)
