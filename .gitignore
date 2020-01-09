@@ -1,0 +1,10 @@
+/Content/obj/*
+*.dll
+*.config
+*.exe
+*.pdb
+/Content/obj
+/Properties
+/obj
+*.user
+*.manifest
