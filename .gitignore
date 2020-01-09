@@ -8,3 +8,6 @@
 /obj
 *.user
 *.manifest
+/Content/bin
+/Content/bin/*
+bin/DesktopGL/x86/**/*.txt
