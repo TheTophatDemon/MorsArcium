@@ -8,7 +8,6 @@ namespace Mors_Arcium
 {
     public class RebindMenu : Menu
     {
-        int playerIndex = 0;
         float floaty = 0.0f;
         Vector2 backgroundPosition;
         Color backgroundColor = Color.Gray;
@@ -36,11 +35,6 @@ namespace Mors_Arcium
             buttons[7].position = new Vector2(16, 156+32);
             buttons[8].source = buttons[1].source; //PAUSE
             buttons[8].position = new Vector2(16, 176+32);
-            buttons[9].source = new Rectangle(160, 96, 32, 32);
-            buttons[9].position = new Vector2(160, 16);
-            buttons[10].source = buttons[9].source;
-            buttons[10].position = buttons[9].position + new Vector2(128, 0);
-            buttons[10].spriteEffect = SpriteEffects.FlipHorizontally;
         }
         public override void OnButtonPress(Button source)
         {
@@ -52,14 +46,6 @@ namespace Mors_Arcium
             if (index == 0)
             {
                 game.ChangeMenuState(new OptionsMenu(game));
-            }
-            else if (index == 9)
-            {
-                playerIndex = Math.Max(0, playerIndex - 1);
-            }
-            else if (index == 10)
-            {
-                playerIndex = Math.Min(3, playerIndex + 1);
             }
             else
             {
@@ -76,14 +62,14 @@ namespace Mors_Arcium
             }
             switch (index)
             {
-                case 1: game.bindings[playerIndex].UP = newBinding; break;
-                case 2: game.bindings[playerIndex].DOWN = newBinding; break;
-                case 3: game.bindings[playerIndex].LEFT = newBinding; break;
-                case 4: game.bindings[playerIndex].RIGHT = newBinding; break;
-                case 5: game.bindings[playerIndex].JUMP = newBinding; break;
-                case 6: game.bindings[playerIndex].ATTACK = newBinding; break;
-                case 7: game.bindings[playerIndex].SPECIAL = newBinding; break;
-                case 8: game.bindings[playerIndex].PAUSE = newBinding; break;
+                case 1: game.bindings.UP = newBinding; break;
+                case 2: game.bindings.DOWN = newBinding; break;
+                case 3: game.bindings.LEFT = newBinding; break;
+                case 4: game.bindings.RIGHT = newBinding; break;
+                case 5: game.bindings.JUMP = newBinding; break;
+                case 6: game.bindings.ATTACK = newBinding; break;
+                case 7: game.bindings.SPECIAL = newBinding; break;
+                case 8: game.bindings.PAUSE = newBinding; break;
             }
         }
         public override void Update(GameTime g)
@@ -192,15 +178,14 @@ namespace Mors_Arcium
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
             DrawButtons(sp);
-            sp.DrawString(game.font1, "AIM UP: " + game.bindings[playerIndex].UP.ToString(), buttons[1].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "AIM DOWN: " + game.bindings[playerIndex].DOWN.ToString(), buttons[2].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "WALK LEFT: " + game.bindings[playerIndex].LEFT.ToString(), buttons[3].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "WALK RIGHT: " + game.bindings[playerIndex].RIGHT.ToString(), buttons[4].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "JUMP: " + game.bindings[playerIndex].JUMP.ToString(), buttons[5].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "ATTACK: " + game.bindings[playerIndex].ATTACK.ToString(), buttons[6].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "SPECIAL: " + game.bindings[playerIndex].SPECIAL.ToString(), buttons[7].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "PAUSE: " + game.bindings[playerIndex].PAUSE.ToString(), buttons[8].position + new Vector2(68, 0), Color.White);
-            sp.DrawString(game.font1, "PLAYER " + (playerIndex + 1).ToString(), buttons[9].position + new Vector2(48, 8), Color.White);
+            sp.DrawString(game.font1, "AIM UP: " +     game.bindings.UP.ToString(), buttons[1].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "AIM DOWN: " +   game.bindings.DOWN.ToString(), buttons[2].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "WALK LEFT: " +  game.bindings.LEFT.ToString(), buttons[3].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "WALK RIGHT: " + game.bindings.RIGHT.ToString(), buttons[4].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "JUMP: " +       game.bindings.JUMP.ToString(), buttons[5].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "ATTACK: " +     game.bindings.ATTACK.ToString(), buttons[6].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "SPECIAL: " +    game.bindings.SPECIAL.ToString(), buttons[7].position + new Vector2(68, 0), Color.White);
+            sp.DrawString(game.font1, "PAUSE: " +      game.bindings.PAUSE.ToString(), buttons[8].position + new Vector2(68, 0), Color.White);
             sp.End();
         }
     }

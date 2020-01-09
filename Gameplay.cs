@@ -31,7 +31,6 @@ namespace Mors_Arcium
         
         public MorsArcium game;
         public bool started = false;
-        public bool multiplayer = true;
 
         int screenOffset = 0;
 
@@ -53,8 +52,8 @@ namespace Mors_Arcium
         Rectangle mbhbRect = new Rectangle(0, 0, 117, 32);
         Rectangle pauseThingyRect = new Rectangle(0, 99, 124, 25);
         public int healthPackFrequency = 500;
-        public Player[] humanPlayers;
-        public GUI[] guis;
+        public Player humanPlayer;
+        public GUI gui;
         
         public int numCPUs = 20;
         public int numPlayers = 11;
@@ -96,14 +95,9 @@ namespace Mors_Arcium
             game = g;
         }
         
-        public void Initialize(int[] playerClasses)
+        public void Initialize(int playerClass)
         {
-            humanPlayers = new Player[4];
-            guis = new GUI[4];
-            for (int i = 0; i < humanPlayers.Length; i++)
-            {
-                guis[i] = new GUI(game.GraphicsDevice);
-            }
+            gui = new GUI(game.GraphicsDevice);
 
             int mapw = 129;
             int plhlha = 0;
@@ -128,20 +122,10 @@ namespace Mors_Arcium
             }
             else
             {
-                if (multiplayer)
-                {
-                    num_mr_b = 0;
-                    num_wizard = 0;
-                    num_fingers = 0;
-                    num_bugs = 0;
-                }
-                else
-                {
-                    num_mr_b = game.random.Next(0, 10);
-                    num_wizard = game.random.Next(0, 10);
-                    num_fingers = game.random.Next(0, 10);
-                    num_bugs = game.random.Next(0, 10);
-                }
+                num_mr_b = game.random.Next(0, 10);
+                num_wizard = game.random.Next(0, 10);
+                num_fingers = game.random.Next(0, 10);
+                num_bugs = game.random.Next(0, 10);
                 healthPackFrequency = game.random.Next(50, 1000);
                 plhlha = game.random.Next(-60, 60);
                 projectileSpeedMultiplier = ((float)game.random.NextDouble() * 2.0f) - 1.0f;
@@ -183,26 +167,21 @@ namespace Mors_Arcium
             defaultLavaHeight = lavaHeight;
             lavaTop = new Rectangle(0, 80, 16, 16);
             lavaBase = new Rectangle(48, 80, 16, 16);
-
             
-            for (int i = 0; i < humanPlayers.Length; i++)
+            humanPlayer = SpawnPlayer(playerClass, plhlha);
+            if (tutorial)
             {
-                humanPlayers[i] = SpawnPlayer(playerClasses[i], plhlha);
-                if (tutorial)
-                {
-                    humanPlayers[i].maxHealth = 600;
-                    humanPlayers[i].health = 600;
-                    healthPackTimer = 0;
-                    humanPlayers[i].position.X = 200;
-                }
+                humanPlayer.maxHealth = 600;
+                humanPlayer.health = 600;
+                healthPackTimer = 0;
+                humanPlayer.position.X = 200;
             }
-            //SpawnEnemies();
             
             
             wave = 1;
             waveTimer = 100;
             waveAlpha = 1.0f;
-            numPlayers = humanPlayers.Length;
+            numPlayers = 1 + num_mr_b + num_fingers + num_bugs + num_wizard;
             started = true;
             tutorialPhase = 0;
             tutorialTimer = 0;
@@ -273,15 +252,11 @@ namespace Mors_Arcium
         {
             if (game.soundEnabled)
             {
-                for (int i = 0; i < humanPlayers.Length; i++)
+                float dist = Math.Abs(position.X - humanPlayer.position.X);
+                if (dist < 240.0f)
                 {
-                    float dist = Math.Abs(position.X - humanPlayers[i].position.X);
-                    if (dist < 240.0f)
-                    {
-                        game.soundInstances[index].Stop();
-                        game.soundInstances[index].Play();
-                        break;
-                    }
+                    game.soundInstances[index].Stop();
+                    game.soundInstances[index].Play();
                 }
             }
         }
@@ -340,41 +315,29 @@ namespace Mors_Arcium
             {
                 eventSelectorIndex = 3;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(humanPlayers[0] is MrBPlayer))
+            if (Keyboard.GetState().IsKeyDown(Keys.D1) && !(humanPlayer is MrBPlayer))
             {
-                ChangePlayerType(humanPlayers[0], 0);
+                ChangePlayerType(humanPlayer, 0);
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.D2) && !(humanPlayers[0] is WizardPlayer))
+            else if (Keyboard.GetState().IsKeyDown(Keys.D2) && !(humanPlayer is WizardPlayer))
             {
-                ChangePlayerType(humanPlayers[0], 32);
+                ChangePlayerType(humanPlayer, 32);
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.D3) && !(humanPlayers[0] is EliPlayer))
+            else if (Keyboard.GetState().IsKeyDown(Keys.D3) && !(humanPlayer is EliPlayer))
             {
-                ChangePlayerType(humanPlayers[0], 64);
+                ChangePlayerType(humanPlayer, 64);
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.D4) && !(humanPlayers[0] is BugPlayer))
+            else if (Keyboard.GetState().IsKeyDown(Keys.D4) && !(humanPlayer is BugPlayer))
             {
-                ChangePlayerType(humanPlayers[0], 96);
+                ChangePlayerType(humanPlayer, 96);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.U))
             {
-                for (int i = 0; i < humanPlayers.Length; i++) humanPlayers[i].health += 5;
+                humanPlayer.health += 5;
             }
-            /*if (Keyboard.GetState().IsKeyDown(Keys.T))
-            {
-                for (int i = 0; i < entities.GetLength(1); i++)
-                {
-                    if (entities[TYPE_PLAYER, i] != null)
-                    {
-                        Player p = (Player)entities[TYPE_PLAYER, i];
-                        p.target = player;
-                        p = null;
-                    }
-                }
-            }*/
             if (Keyboard.GetState().IsKeyDown(Keys.Y))
             {
-                for (int i = 0; i < humanPlayers.Length; i++) humanPlayers[i].health -= 1;
+                humanPlayer.health -= 1;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.T))
             {
@@ -382,70 +345,62 @@ namespace Mors_Arcium
                 {
                     if (entities[TYPE_PLAYER, i] != null)
                     {
-                        bool abort = false;
-                        for (int j = 0; j < humanPlayers.Length; j++)
-                        {
-                            if (humanPlayers[j].index == i)
-                            {
-                                abort = true;
-                            }
-                        }
-                        if (abort) break;
+                        if (humanPlayer.index == i) continue;
                         Player p = (Player)entities[TYPE_PLAYER, i];
                         p.health = 0;
                     }
                 }
             }
-            for (int i = 0; i < humanPlayers.Length; i++)
-            {
-                if (!humanPlayers[i].dead)
-                {
-                    if (humanPlayers[i].deathTimer == 0 && humanPlayers[i].controllable)
-                    {
-                        if (game.bindings[i].JUMP.IsDown() || game.android.jump)
-                        {
-                            humanPlayers[i].Jump();
-                        }
 
-                        if (game.bindings[i].RIGHT.IsDown() || game.android.right)
-                        {
-                            humanPlayers[i].spriteEffects = SpriteEffects.None;
-                            humanPlayers[i].Walk();
-                        }
-                        else if (game.bindings[i].LEFT.IsDown() || game.android.left)
-                        {
-                            humanPlayers[i].spriteEffects = SpriteEffects.FlipHorizontally;
-                            humanPlayers[i].Walk();
-                        }
-                        if (game.bindings[i].UP.IsDown() || game.android.up)
-                        {
-                            humanPlayers[i].aimDirection = -1;
-                        }
-                        else if (game.bindings[i].DOWN.IsDown() || game.android.down)
-                        {
-                            humanPlayers[i].aimDirection = 1;
-                        }
-                        else
-                        {
-                            humanPlayers[i].aimDirection = 0;
-                        }
-                        if (game.bindings[i].ATTACK.IsDown() || game.android.attack)
-                        {
-                            humanPlayers[i].Attack();
-                        }
-                        if (game.bindings[i].SPECIAL.IsDown() || game.android.special)
-                        {
-                            humanPlayers[i].Special();
-                        }
+            if (!humanPlayer.dead)
+            {
+                if (humanPlayer.deathTimer == 0 && humanPlayer.controllable)
+                {
+                    if (game.bindings.JUMP.IsDown() || game.android.jump)
+                    {
+                        humanPlayer.Jump();
+                    }
+
+                    if (game.bindings.RIGHT.IsDown() || game.android.right)
+                    {
+                        humanPlayer.spriteEffects = SpriteEffects.None;
+                        humanPlayer.Walk();
+                    }
+                    else if (game.bindings.LEFT.IsDown() || game.android.left)
+                    {
+                        humanPlayer.spriteEffects = SpriteEffects.FlipHorizontally;
+                        humanPlayer.Walk();
+                    }
+                    if (game.bindings.UP.IsDown() || game.android.up)
+                    {
+                        humanPlayer.aimDirection = -1;
+                    }
+                    else if (game.bindings.DOWN.IsDown() || game.android.down)
+                    {
+                        humanPlayer.aimDirection = 1;
+                    }
+                    else
+                    {
+                        humanPlayer.aimDirection = 0;
+                    }
+                    if (game.bindings.ATTACK.IsDown() || game.android.attack)
+                    {
+                        humanPlayer.Attack();
+                    }
+                    if (game.bindings.SPECIAL.IsDown() || game.android.special)
+                    {
+                        humanPlayer.Special();
                     }
                 }
-                else
-                {
-                    guis[i].deathThingy.Y -= (guis[i].deathThingy.Y - 72f) / 4;
-                    if (guis[i].deathThingy.Y < 73) guis[i].deathThingy.Y = 72;
-                    humanPlayers[i].deathTimer += 1;
-                }
             }
+            else
+            {
+                gui.deathThingy.Y -= (gui.deathThingy.Y - 72f) / 4;
+                if (gui.deathThingy.Y < 73) gui.deathThingy.Y = 72;
+                humanPlayer.deathTimer += 1;
+            }
+
+
             if (healthPackTimer > 0 && eventSelectorIndex != 3)
             {
                 healthPackTimer -= 1;
@@ -455,8 +410,9 @@ namespace Mors_Arcium
                     healthPackTimer = healthPackFrequency;
                 }
             }
+
             numPlayers = 0;
-            for (int i = 0; i < humanPlayers.Length; i++) guis[i].nearestEnemy = 0;
+            gui.nearestEnemy = 0;
             for (int x = 0; x < entities.GetLength(0); x++)
             {
                 for (int y = 0; y < entities.GetLength(1); y++)
@@ -550,25 +506,21 @@ namespace Mors_Arcium
                 terrainModified = false;
                 tilemap.RefreshTiles();
             }
-            for (int i = 0; i < humanPlayers.Length; i++)
+
+            gui.cameraPosition = humanPlayer.position - cameraOffset;
+            if (gui.cameraPosition.Y + 240 > tilemap.height * 16)
             {
-                guis[i].cameraPosition = humanPlayers[i].position - cameraOffset;
-                if (guis[i].cameraPosition.Y + 240 > tilemap.height * 16)
-                {
-                    guis[i].cameraPosition.Y = (tilemap.height * 16) - 240;
-                }
+                gui.cameraPosition.Y = (tilemap.height * 16) - 240;
             }
+
             if (numPlayers == 1 && waveTimer == 0 && !tutorial)
             {
                 wave += 1;
                 waveTimer = 200;
                 waveAlpha = 0.0f;
-                for (int i = 0; i < humanPlayers.Length; i++)
+                if (humanPlayer.deathTimer == 0)
                 {
-                    if (humanPlayers[i].deathTimer == 0)
-                    {
-                        humanPlayers[i].health = humanPlayers[i].maxHealth;
-                    }
+                    humanPlayer.health = humanPlayer.maxHealth;
                 }
                 eventSelectorIndex = game.random.Next(0, 7); eventSelectorSpeed = 1; eventSelectorTimer = 0;
                 eventSelectorText.Y = 152 + (eventSelectorIndex * 11);
@@ -576,7 +528,7 @@ namespace Mors_Arcium
             if (wave <= 1) eventSelectorIndex = 0;
             if (waveTimer > 0)
             {
-                if (game.currentMusic != null)
+                if (game.currentMusic != null && !tutorial)
                 {
                     game.ChangeMusic(15);
                 }
@@ -591,7 +543,7 @@ namespace Mors_Arcium
                         eventSelectorIndex += 1;
                         if (eventSelectorIndex > 7) eventSelectorIndex = 0;
                         eventSelectorText.Y = 152 + (eventSelectorIndex * 11);
-                        PlaySound(10, humanPlayers[0].position);
+                        PlaySound(10, humanPlayer.position);
                     }
                     if (waveTimer % 10 == 0)
                     {
@@ -599,19 +551,18 @@ namespace Mors_Arcium
                     }
                     lavaTimer = 0;
                 }
-                if (waveTimer == 0)
+                if (waveTimer == 0 && !tutorial)
                 {
-                    if (!multiplayer) SpawnEnemies();
-                    for (int i = 0; i < humanPlayers.Length; i++)
+                    SpawnEnemies();
+
+                    if (humanPlayer.dead)
                     {
-                        if (humanPlayers[i].dead)
-                        {
-                            humanPlayers[i] = SpawnPlayer(game.random.Next(4), humanPlayers[i].healthHandicap);
-                            RenderTarget2D renderTarget = guis[i].renderTarget;
-                            guis[i] = new GUI(game.GraphicsDevice);
-                            guis[i].renderTarget = renderTarget;
-                        }
+                        humanPlayer = SpawnPlayer(game.random.Next(4), humanPlayer.healthHandicap);
+                        RenderTarget2D renderTarget = gui.renderTarget;
+                        gui = new GUI(game.GraphicsDevice);
+                        gui.renderTarget = renderTarget;
                     }
+
                     for (int y = 0; y < entities.GetLength(1); y++)
                     {
                         Player p = (Player)entities[TYPE_PLAYER, y];
@@ -630,15 +581,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            int deadHumans = 0;
-            for (int i = 0; i < humanPlayers.Length; i++)
-            {
-                if (humanPlayers[i].deathTimer > 200)
-                {
-                    deadHumans++;
-                }
-            }
-            if (deadHumans >= humanPlayers.Length)
+            if (humanPlayer.deathTimer > 200)
             {
                 if (tutorial)
                 {
@@ -647,7 +590,7 @@ namespace Mors_Arcium
                 }
                 else
                 {
-                    Initialize(new int[] { game.random.Next(0, 3), game.random.Next(0, 3), game.random.Next(0, 3), game.random.Next(0, 3) });
+                    Initialize(game.random.Next(0, 3));
                 }
             }
             lavaAnim += 1;
@@ -768,31 +711,31 @@ namespace Mors_Arcium
                 {
                     tutorialPhase += 1;
                     tutorialTimer = 0;
-                    ChangePlayerType(humanPlayers[0], 32);
-                    humanPlayers[0].health = 600;
-                    humanPlayers[0].maxHealth = 600;
+                    ChangePlayerType(humanPlayer, 32);
+                    humanPlayer.health = 600;
+                    humanPlayer.maxHealth = 600;
                 }
                 if (tutorialPhase == 5 && numPlayers == 1 && tutorialTimer > 10)
                 {
                     tutorialPhase += 1;
                     tutorialTimer = 0;
-                    ChangePlayerType(humanPlayers[0], 96);
-                    humanPlayers[0].health = 600;
-                    humanPlayers[0].maxHealth = 600;
+                    ChangePlayerType(humanPlayer, 96);
+                    humanPlayer.health = 600;
+                    humanPlayer.maxHealth = 600;
                 }
                 if (tutorialPhase == 8 && numPlayers == 1 && tutorialTimer > 10)
                 {
                     tutorialPhase += 1;
                     tutorialTimer = 0;
-                    ChangePlayerType(humanPlayers[0], 64);
-                    humanPlayers[0].health = 600;
-                    humanPlayers[0].maxHealth = 600;
+                    ChangePlayerType(humanPlayer, 64);
+                    humanPlayer.health = 600;
+                    humanPlayer.maxHealth = 600;
                 }
                 if (tutorialPhase == 10 && numPlayers == 1 && tutorialTimer > 10)
                 {
                     tutorialPhase += 1;
                     tutorialTimer = 0;
-                    ChangePlayerType(humanPlayers[0], 0);
+                    ChangePlayerType(humanPlayer, 0);
                     SpawnEnemies();
                     SpawnEnemies();
                 }
@@ -822,196 +765,188 @@ namespace Mors_Arcium
         }
         public void Draw(SpriteBatch sp)
         {
-            for (int i = 0; i < humanPlayers.Length; i++)
+            sp.GraphicsDevice.SetRenderTarget(gui.renderTarget);
+            sp.GraphicsDevice.Clear(Color.DarkBlue);
+            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-gui.cameraPosition, 0f)));
+            for (int y = 0; y < entities.GetLength(1); y++)
             {
-                sp.GraphicsDevice.SetRenderTarget(guis[i].renderTarget);
-                sp.GraphicsDevice.Clear(Color.DarkBlue);
-                sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-guis[i].cameraPosition, 0f)));
-                for (int y = 0; y < entities.GetLength(1); y++)
+                if (entities[TYPE_PROP, y] != null)
                 {
-                    if (entities[TYPE_PROP, y] != null)
-                    {
-                        entities[TYPE_PROP, y].Draw(sp);
-                    }
+                    entities[TYPE_PROP, y].Draw(sp);
                 }
-                for (int y = 0; y < entities.GetLength(1); y++)
-                {
-                    if (entities[TYPE_BEAM, y] != null)
-                    {
-                        entities[TYPE_BEAM, y].Draw(sp);
-                    }
-                }
-                tilemap.Draw(sp, guis[i]);
-                if (tutorial)
-                {
-                    switch (tutorialPhase)
-                    {
-                        case 0:
-#if WINDOWS
-                            sp.DrawString(game.font1, "USE " + game.bindings[i].LEFT + " AND " + game.bindings[i].RIGHT + " TO WALK.", new Vector2(72, -16.0f), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.bindings[i].JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.bindings[i].ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.bindings[i].UP + " AND " + game.bindings[i].DOWN + " TO AIM.", new Vector2(72, 32), Color.White);
-                            sp.DrawString(game.font1, "USE " + game.bindings[i].SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
-#endif
-#if ANDROID
-                        sp.DrawString(game.font1, "TOUCH THE ARROWS TO WALK.", new Vector2(72, -16.0f), Color.White);
-                        sp.DrawString(game.font1, "PRESS " + game.JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
-                        sp.DrawString(game.font1, "PRESS " + game.ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
-                        sp.DrawString(game.font1, "PRESS " + game.UP + " AND " + game.DOWN + " TO ATTACK VERTICALLY.", new Vector2(72, 32), Color.White);
-                        sp.DrawString(game.font1, "PRESS " + game.SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
-#endif
-                            break;
-                        case 9:
-                        case 7:
-                        case 4:
-                        case 1:
-                            sp.DrawString(game.font1, "AN ENEMY IS BEING SENT YOUR WAY...", new Vector2(52, 0.0f), Color.White);
-                            break;
-                        case 3:
-                            sp.DrawString(game.font1, "IT FEELS GOOD TO WEAR THE SKIN", new Vector2(56, 0.0f), Color.White);
-                            sp.DrawString(game.font1, "OF YOUR ENEMIES, DOESN'T IT?", new Vector2(56, 16.0f), Color.White);
-                            break;
-                        case 6:
-                            sp.DrawString(game.font1, "YOU CAN FLY NOW.", new Vector2(56, 0.0f), Color.White);
-#if WINDOWS
-                            sp.DrawString(game.font1, "(USE YOUR SPECIAL ABILITY IN THE AIR)", new Vector2(56, 16.0f), Color.White);
-#endif
-#if ANDROID
-                        sp.DrawString(game.font1, "(HOLD J WHILE IN THE AIR)", new Vector2(56, 16.0f), Color.White);
-#endif
-                            break;
-                        case 11:
-                            sp.DrawString(game.font1, "GOOD WORK. NOW DIE!!!", new Vector2(80, 0.0f), Color.White);
-                            break;
-                    }
-
-                }
-                for (int x = 0; x < entities.GetLength(0); x++)
-                {
-                    if (x != TYPE_BEAM && x != TYPE_PROP)
-                    {
-                        for (int y = 0; y < entities.GetLength(1); y++)
-                        {
-                            if (entities[x, y] != null)
-                            {
-                                entities[x, y].Draw(sp);
-#if DEBUG
-                            //sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
-#endif
-
-                            }
-                        }
-                    }
-                }
-                if (lavaHeight < guis[i].cameraPosition.Y + 240)
-                {
-                    int cx = (int)Math.Floor(guis[i].cameraPosition.X / 16.0f);
-                    int ch = (int)Math.Ceiling((guis[i].cameraPosition.Y + 240 - lavaHeight) / 16.0f);
-                    for (int j = 0; j < 22; j++)
-                    {
-                        sp.Draw(game.textures[5], new Vector2((cx + j) * 16, lavaHeight), lavaTop, Color.White);
-                        for (int k = 1; k < ch; k++)
-                        {
-                            sp.Draw(game.textures[5], new Vector2((cx + j) * 16, lavaHeight + (k * 16)), lavaBase, Color.White);
-                        }
-                    }
-                }
-
-
-
-                sp.End();
-                sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-guis[i].cameraPosition, 0f)));
-                for (int j = 0; j < particles.Length; j++)
-                {
-                    if (particles[j] != null) particles[j].Draw(sp);
-                }
-                sp.End();
-                sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null); //HUD
-                if (!game.paused)
-                {
-#if DEBUG
-                sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
-#endif
-                    sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
-                    sp.Draw(game.textures[2], new Rectangle(12, 2, (int)(((float)humanPlayers[i].health / humanPlayers[i].maxHealth) * 104.0f), 12), hbRect, Color.White);
-                    sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)humanPlayers[i].magic / humanPlayers[i].maxMagic) * 104.0f), 12), mbRect, Color.White);
-                    if (!tutorial)
-                    {
-                        sp.DrawString(game.font1, "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
-                        if (humanPlayers[i].deathTimer == 0 && humanPlayers[i].dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
-                        if (guis[i].nearestEnemy != 0 && humanPlayers[i].deathTimer == 0 && humanPlayers[i].dead == false)
-                        {
-                            if (guis[i].nearestEnemy == 1)
-                            {
-                                sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
-                            }
-                            else
-                            {
-                                sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
-                            }
-                        }
-                        if (waveTimer > 0)
-                        {
-                            if (waveTimer >= 100 && waveAlpha < 1.0f)
-                            {
-                                waveAlpha += 0.1f;
-                            }
-                            else if (waveTimer <= 10 && waveAlpha > 0.0f)
-                            {
-                                waveAlpha -= 0.1f;
-                            }
-                            if (wave == 1)
-                            {
-                                sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
-                            }
-                            else
-                            {
-                                if (wave != 1) sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
-                                sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
-                                sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
-                            }
-
-                        }
-                    }
-                    if (humanPlayers[i].dead)
-                    {
-                        sp.Draw(game.textures[2], guis[i].deathThingy, deathThingyRect, Color.White);
-                        if (humanPlayers[i].deathTimer == 150)
-                        {
-                            guis[i].fadeOut = 1.0f;
-                        }
-                    }
-#if ANDROID
-                game.android.DrawControls(sp);
-#endif
-                }
-                if (guis[i].fadeOut > 0.0f)
-                {
-                    guis[i].fadeOut -= 0.025f;
-                    if (guis[i].fadeOut < 0.025f) guis[i].fadeOut = 0.025f;
-                    sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * (1.0f - guis[i].fadeOut));
-                }
-                if (guis[i].fadeIn > 0.0f)
-                {
-                    guis[i].fadeIn -= 0.025f;
-                    sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * guis[i].fadeIn);
-                }
-                if (game.paused)
-                {
-                    sp.Draw(game.textures[2], new Vector2(100, 72), pauseThingyRect, Color.White);
-                    sp.DrawString(game.font1, "PRESS ESCAPE TO RETURN TO THE MENU", new Vector2(4, 32), Color.White);
-                }
-                sp.End();
             }
+            for (int y = 0; y < entities.GetLength(1); y++)
+            {
+                if (entities[TYPE_BEAM, y] != null)
+                {
+                    entities[TYPE_BEAM, y].Draw(sp);
+                }
+            }
+            tilemap.Draw(sp, gui);
+            if (tutorial)
+            {
+                switch (tutorialPhase)
+                {
+                    case 0:
+#if WINDOWS
+                        sp.DrawString(game.font1, "USE " + game.bindings.LEFT + " AND " + game.bindings.RIGHT + " TO WALK.", new Vector2(72, -16.0f), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.bindings.JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.bindings.ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.bindings.UP + " AND " + game.bindings.DOWN + " TO AIM.", new Vector2(72, 32), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.bindings.SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+#endif
+#if ANDROID
+                    sp.DrawString(game.font1, "TOUCH THE ARROWS TO WALK.", new Vector2(72, -16.0f), Color.White);
+                    sp.DrawString(game.font1, "PRESS " + game.JUMP + " TO JUMP.", new Vector2(72, 0), Color.White);
+                    sp.DrawString(game.font1, "PRESS " + game.ATTACK + " TO ATTACK.", new Vector2(72, 16), Color.White);
+                    sp.DrawString(game.font1, "PRESS " + game.UP + " AND " + game.DOWN + " TO ATTACK VERTICALLY.", new Vector2(72, 32), Color.White);
+                    sp.DrawString(game.font1, "PRESS " + game.SPECIAL + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+#endif
+                        break;
+                    case 9:
+                    case 7:
+                    case 4:
+                    case 1:
+                        sp.DrawString(game.font1, "AN ENEMY IS BEING SENT YOUR WAY...", new Vector2(52, 0.0f), Color.White);
+                        break;
+                    case 3:
+                        sp.DrawString(game.font1, "IT FEELS GOOD TO WEAR THE SKIN", new Vector2(56, 0.0f), Color.White);
+                        sp.DrawString(game.font1, "OF YOUR ENEMIES, DOESN'T IT?", new Vector2(56, 16.0f), Color.White);
+                        break;
+                    case 6:
+                        sp.DrawString(game.font1, "YOU CAN FLY NOW.", new Vector2(56, 0.0f), Color.White);
+#if WINDOWS
+                        sp.DrawString(game.font1, "(USE YOUR SPECIAL ABILITY IN THE AIR)", new Vector2(56, 16.0f), Color.White);
+#endif
+#if ANDROID
+                    sp.DrawString(game.font1, "(HOLD J WHILE IN THE AIR)", new Vector2(56, 16.0f), Color.White);
+#endif
+                        break;
+                    case 11:
+                        sp.DrawString(game.font1, "GOOD WORK. NOW DIE!!!", new Vector2(80, 0.0f), Color.White);
+                        break;
+                }
+
+            }
+            for (int x = 0; x < entities.GetLength(0); x++)
+            {
+                if (x != TYPE_BEAM && x != TYPE_PROP)
+                {
+                    for (int y = 0; y < entities.GetLength(1); y++)
+                    {
+                        if (entities[x, y] != null)
+                        {
+                            entities[x, y].Draw(sp);
+#if DEBUG
+                        //sp.Draw(game.textures[6], new Rectangle((int)(entities[x, y].position.X - entities[x, y].hitboxSize.X), (int)(entities[x, y].position.Y - entities[x, y].hitboxSize.Y), (int)(entities[x, y].hitboxSize.X * 2.0f), (int)(entities[x, y].hitboxSize.Y * 2.0f)), Color.White);
+#endif
+
+                        }
+                    }
+                }
+            }
+            if (lavaHeight < gui.cameraPosition.Y + 240)
+            {
+                int cx = (int)Math.Floor(gui.cameraPosition.X / 16.0f);
+                int ch = (int)Math.Ceiling((gui.cameraPosition.Y + 240 - lavaHeight) / 16.0f);
+                for (int j = 0; j < 22; j++)
+                {
+                    sp.Draw(game.textures[5], new Vector2((cx + j) * 16, lavaHeight), lavaTop, Color.White);
+                    for (int k = 1; k < ch; k++)
+                    {
+                        sp.Draw(game.textures[5], new Vector2((cx + j) * 16, lavaHeight + (k * 16)), lavaBase, Color.White);
+                    }
+                }
+            }
+
+
+
+            sp.End();
+            sp.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Matrix.CreateTranslation(new Vector3(-gui.cameraPosition, 0f)));
+            for (int j = 0; j < particles.Length; j++)
+            {
+                if (particles[j] != null) particles[j].Draw(sp);
+            }
+            sp.End();
+            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null); //HUD
+            if (!game.paused)
+            {
+#if DEBUG
+            sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
+#endif
+                sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
+                sp.Draw(game.textures[2], new Rectangle(12, 2, (int)(((float)humanPlayer.health / humanPlayer.maxHealth) * 104.0f), 12), hbRect, Color.White);
+                sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)humanPlayer.magic / humanPlayer.maxMagic) * 104.0f), 12), mbRect, Color.White);
+                if (!tutorial)
+                {
+                    sp.DrawString(game.font1, "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
+                    if (humanPlayer.deathTimer == 0 && humanPlayer.dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
+                    if (gui.nearestEnemy != 0 && humanPlayer.deathTimer == 0 && humanPlayer.dead == false)
+                    {
+                        if (gui.nearestEnemy == 1)
+                        {
+                            sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
+                        }
+                        else
+                        {
+                            sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
+                        }
+                    }
+                    if (waveTimer > 0)
+                    {
+                        if (waveTimer >= 100 && waveAlpha < 1.0f)
+                        {
+                            waveAlpha += 0.1f;
+                        }
+                        else if (waveTimer <= 10 && waveAlpha > 0.0f)
+                        {
+                            waveAlpha -= 0.1f;
+                        }
+                        if (wave == 1)
+                        {
+                            sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
+                        }
+                        else
+                        {
+                            if (wave != 1) sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+                            sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
+                            sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
+                        }
+
+                    }
+                }
+                if (humanPlayer.dead)
+                {
+                    sp.Draw(game.textures[2], gui.deathThingy, deathThingyRect, Color.White);
+                    if (humanPlayer.deathTimer == 150)
+                    {
+                        gui.fadeOut = 1.0f;
+                    }
+                }
+#if ANDROID
+            game.android.DrawControls(sp);
+#endif
+            }
+            if (gui.fadeOut > 0.0f)
+            {
+                gui.fadeOut -= 0.025f;
+                if (gui.fadeOut < 0.025f) gui.fadeOut = 0.025f;
+                sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * (1.0f - gui.fadeOut));
+            }
+            if (gui.fadeIn > 0.0f)
+            {
+                gui.fadeIn -= 0.025f;
+                sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * gui.fadeIn);
+            }
+            if (game.paused)
+            {
+                sp.Draw(game.textures[2], new Vector2(100, 72), pauseThingyRect, Color.White);
+                sp.DrawString(game.font1, "PRESS ESCAPE TO RETURN TO THE MENU", new Vector2(4, 32), Color.White);
+            }
+            sp.End();
             sp.GraphicsDevice.SetRenderTarget(null);
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, null, null, null);
-            int scrWidth = (int)(160 * game.scaleFactor);
-            int scrHeight = (int)(120 * game.scaleFactor);
-            sp.Draw(guis[0].renderTarget, new Rectangle(screenOffset, 0, scrWidth, scrHeight), Color.White * game.fade);
-            sp.Draw(guis[1].renderTarget, new Rectangle(screenOffset + scrWidth, 0, scrWidth, scrHeight), Color.White * game.fade);
-            sp.Draw(guis[2].renderTarget, new Rectangle(screenOffset, scrHeight, scrWidth, scrHeight), Color.White * game.fade);
-            sp.Draw(guis[3].renderTarget, new Rectangle(screenOffset + scrWidth, scrHeight, scrWidth, scrHeight), Color.White * game.fade);
+            sp.Draw(gui.renderTarget, new Rectangle(screenOffset, 0, 960, 720), Color.White * game.fade);
             sp.End();
         }
         public void AddEntity(Entity e)
@@ -1045,19 +980,7 @@ namespace Mors_Arcium
         }
         public bool IsHuman(Player p)
         {
-            for (int i = 0; i < humanPlayers.Length; i++)
-            {
-                if (humanPlayers[i] == p) return true;
-            }
-            return false;
-        }
-        public int GetHumanID(Player p)
-        {
-            for (int i = 0; i < humanPlayers.Length; i++)
-            {
-                if (humanPlayers[i] == p) return i;
-            }
-            return -1;
+            return humanPlayer == p;
         }
         public void ChangePlayerType(Player p, int srcRctY)
         {
@@ -1083,15 +1006,7 @@ namespace Mors_Arcium
                 }
                 if (IsHuman(p))
                 {
-                    int id = GetHumanID(p);
-                    if (id >= 0)
-                    {
-                        humanPlayers[id] = newPlayer;
-                    }
-                    else
-                    {
-                        Console.WriteLine("What in tarnation!!??");
-                    }
+                    humanPlayer = newPlayer;
                 }
                 newPlayer.position = p.position;
                 newPlayer.health = p.health;

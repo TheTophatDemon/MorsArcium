@@ -10,11 +10,21 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Optimize GUI elements
-        //TODO: Make new rebindings savable to settings
-        //TODO: Add Joystick Hat Capability
+        //TODO: Refine resource loading system
+        //TODO: Refine sound system
+        //TODO: Separate GUI class
+        //TODO: Move settings into separate class
+        //TODO: Redo settings system to use .ini
+        //TODO: Make resolution dynamic
+        //TODO: Refine tutorial startup
+        //TODO: Refine Joystick Hat Capability
         //TODO: Add Joystick Axis Capability
         //TODO: Add proper keyboard key names
+        //TODO: Restructure player class
+        //TODO: Polish player class change
+        //TODO: Optimize GUI elements
+        //TODO: Polish new Eli attack
+        //TODO: Change "Zero Gravity" to "Low Gravity"
         //TODO: Add Android HUD customization
 
         //TODO: Multiplayer
@@ -33,7 +43,7 @@ namespace Mors_Arcium
             public IBinding SPECIAL;
             public IBinding PAUSE;
         }
-        public PlayerBindings[] bindings = new PlayerBindings[4];
+        public PlayerBindings bindings = new PlayerBindings();
 
         public AndroidOutlet android;
         GraphicsDeviceManager graphics;
@@ -54,8 +64,8 @@ namespace Mors_Arcium
 
         public Song currentMusic;
         private Song nextMusic;
-        private bool musictransition = false;
-        private float eeeeearnis = 1.0f;
+        private bool musicInTransition = false;
+        private float musicVolume = 1.0f;
 
         public KeyboardState prevState;
         public bool prevJump = false;
@@ -110,7 +120,7 @@ namespace Mors_Arcium
             {
                 nextMusic = null;
             }
-            musictransition = true;
+            musicInTransition = true;
         }
         public void ToggleVsync()
         {
@@ -217,13 +227,13 @@ namespace Mors_Arcium
             henry = Keyboard.GetState().IsKeyDown(Keys.O);
 #endif
             
-            if (musictransition)
+            if (musicInTransition)
             {
-                eeeeearnis -= 0.01f;
-                if (eeeeearnis <= 0.0f)
+                musicVolume -= 0.01f;
+                if (musicVolume <= 0.0f)
                 {
-                    eeeeearnis = 0.5f;
-                    musictransition = false;
+                    musicVolume = 0.5f;
+                    musicInTransition = false;
                     if (currentMusic != null)
                     {
                         MediaPlayer.Stop();
@@ -246,14 +256,14 @@ namespace Mors_Arcium
                 }
                 else
                 {
-                    MediaPlayer.Volume = eeeeearnis;
+                    MediaPlayer.Volume = musicVolume;
                 }
             }
-            if ((bindings[0].PAUSE.IsDown() || android.pause) && !grecc)
+            if ((bindings.PAUSE.IsDown() || android.pause) && !grecc)
             {
                 paused = !paused;
             }
-            grecc = bindings[0].PAUSE.IsDown();
+            grecc = bindings.PAUSE.IsDown();
 #if ANDROID
             grecc = android.pause;
 #endif
@@ -355,17 +365,14 @@ namespace Mors_Arcium
         }
         public void LoadSettings()
         {
-            for (int i = 0; i < bindings.Length; i++)
-            {
-                bindings[i].UP = new KeyBinding(Keys.W);
-                bindings[i].DOWN = new KeyBinding(Keys.S);
-                bindings[i].RIGHT = new KeyBinding(Keys.D);
-                bindings[i].LEFT = new KeyBinding(Keys.A);
-                bindings[i].JUMP = new KeyBinding(Keys.Space);
-                bindings[i].ATTACK = new KeyBinding(Keys.J);
-                bindings[i].SPECIAL = new KeyBinding(Keys.K);
-                bindings[i].PAUSE = new KeyBinding(Keys.Enter);
-            }
+            bindings.UP = new KeyBinding(Keys.W);
+            bindings.DOWN = new KeyBinding(Keys.S);
+            bindings.RIGHT = new KeyBinding(Keys.D);
+            bindings.LEFT = new KeyBinding(Keys.A);
+            bindings.JUMP = new KeyBinding(Keys.Space);
+            bindings.ATTACK = new KeyBinding(Keys.J);
+            bindings.SPECIAL = new KeyBinding(Keys.K);
+            bindings.PAUSE = new KeyBinding(Keys.Enter);
             try
             {
                 /*StreamReader asgore = new StreamReader("settings.txt");

@@ -81,12 +81,11 @@ namespace Mors_Arcium
         {
             if (game.IsHuman(this) && game.game.bugJumpFly)
             {
-                int id = game.GetHumanID(this);
-                if ((game.game.bindings[id].JUMP.IsDown() || game.game.android.jump) && (!wasJump && !game.game.prevJump) && !granddad)
+                if ((game.game.bindings.JUMP.IsDown() || game.game.android.jump) && (!wasJump && !game.game.prevJump) && !granddad)
                 {
                     flymode = true;
                 }
-                if ((!game.game.bindings[id].JUMP.IsDown() && !game.game.android.jump) && (wasJump || game.game.prevJump))
+                if ((!game.game.bindings.JUMP.IsDown() && !game.game.android.jump) && (wasJump || game.game.prevJump))
                 {
                     flymode = false;
                 }
@@ -94,7 +93,7 @@ namespace Mors_Arcium
                 {
                     Special();
                 }
-                wasJump = game.game.bindings[id].JUMP.IsDown();
+                wasJump = game.game.bindings.JUMP.IsDown();
             }
             if (animationState == "fly")
             {

@@ -14,8 +14,6 @@ namespace Mors_Arcium
         float f = 0.0f;
         Vector2 backgroundPosition;
         Color backgroundColor = Color.Gray;
-        int[] selections = new int[4];
-        int selection = 0;
         public ClassMenu(MorsArcium g) : base(g)
         {
             buttons = new Button[4];
@@ -74,13 +72,8 @@ namespace Mors_Arcium
             {
                 if (buttons[i].hover)
                 {
-                    selections[selection] = i;
-                    selection++;
-                    if (selection == selections.Length)
-                    {
-                        game.ChangeMenuState(null);
-                        if (game.game.started == false) game.game.Initialize(selections);
-                    }
+                    game.ChangeMenuState(null);
+                    if (game.game.started == false) game.game.Initialize(i);
                     break;
                 }
             }

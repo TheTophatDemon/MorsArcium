@@ -95,7 +95,7 @@ namespace Mors_Arcium
         {
             game.ChangeMenuState(null);
             game.game.tutorial = true;
-            game.game.Initialize(new int[] { 0, 0, 0, 0 });
+            game.game.Initialize(0);
         }
         private void GotoOptions()
         {
