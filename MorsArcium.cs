@@ -10,12 +10,14 @@ namespace Mors_Arcium
 {
     public class MorsArcium : Game
     {
-        //TODO: Refine resource loading system
+        //TODO: Ensure 64 bit & Android API Level 28
         //TODO: Refine sound system
+        //TODO: Refine resource loading system
         //TODO: Separate GUI class
         //TODO: Move settings into separate class
         //TODO: Redo settings system to use .ini
         //TODO: Make resolution dynamic
+        //TODO: Make dynamic timing
         //TODO: Refine tutorial startup
         //TODO: Refine Joystick Hat Capability
         //TODO: Add Joystick Axis Capability
@@ -26,6 +28,11 @@ namespace Mors_Arcium
         //TODO: Polish new Eli attack
         //TODO: Change "Zero Gravity" to "Low Gravity"
         //TODO: Add Android HUD customization
+        //TODO: Add crossfading music system
+        //TODO: Add pitch variations to sounds
+        //TODO: Add Eli slicing sound
+        //TODO: Remove automatic teleporting at edges for Mr.B
+        //TODO: Polish player spawning
 
         //TODO: Multiplayer
         //TODO: Multiplayer match setup interface
@@ -57,15 +64,7 @@ namespace Mors_Arcium
         private bool fadeIn = false;
         public bool vsync = false;
         public Texture2D[] textures;
-        public Song[] music;
-        public SoundEffect[] sounds;
-        public SoundEffectInstance[] soundInstances;
         public SpriteFont font1;
-
-        public Song currentMusic;
-        private Song nextMusic;
-        private bool musicInTransition = false;
-        private float musicVolume = 1.0f;
 
         public KeyboardState prevState;
         public bool prevJump = false;
@@ -101,26 +100,14 @@ namespace Mors_Arcium
             graphics.ApplyChanges();
 
             scaleFactor = GraphicsDevice.Viewport.Height / 240f;
-            MediaPlayer.IsRepeating = true;
-            MediaPlayer.Volume = 0.5f;
             graphics.SynchronizeWithVerticalRetrace = vsync;
             graphics.ApplyChanges();
+
+            AudioSystem.Initialize(this);
         }
         private void LoadTexture(string path, int index)
         {
             textures[index] = Content.Load<Texture2D>("textures/" + Path.GetFileNameWithoutExtension(path));
-        }
-        public void ChangeMusic(int i)
-        {
-            if (i != 15)
-            {
-                nextMusic = music[i];
-            }
-            else
-            {
-                nextMusic = null;
-            }
-            musicInTransition = true;
         }
         public void ToggleVsync()
         {
@@ -145,37 +132,7 @@ namespace Mors_Arcium
             LoadTexture("Content/textures/particles.png", 7);  
             LoadTexture("Content/textures/misc.png", 8);
 
-            music = new Song[16];
-            music[0] = Content.Load<Song>("AsinosFacio");
-            music[1] = Content.Load<Song>("frozenhell");
-            music[2] = Content.Load<Song>("gasconade");
-            music[3] = Content.Load<Song>("unholywars");
-            music[11] = Content.Load<Song>("welcometohell");
-            music[12] = Content.Load<Song>("skelesong");
-            music[14] = Content.Load<Song>("tehcrankles");
-
-            sounds = new SoundEffect[32];
-            sounds[0] = Content.Load<SoundEffect>("sounds/die");
-            sounds[1] = Content.Load<SoundEffect>("sounds/explosion");
-            sounds[2] = Content.Load<SoundEffect>("sounds/freeze");
-            sounds[3] = Content.Load<SoundEffect>("sounds/jump");
-            sounds[4] = Content.Load<SoundEffect>("sounds/land");
-            sounds[5] = Content.Load<SoundEffect>("sounds/mrb_teleport");
-            sounds[6] = Content.Load<SoundEffect>("sounds/throw");
-            sounds[7] = Content.Load<SoundEffect>("sounds/wizard_blast");
-            sounds[8] = Content.Load<SoundEffect>("sounds/wizard_fusdorah");
-            sounds[9] = Content.Load<SoundEffect>("sounds/powerup");
-            sounds[10] = Content.Load<SoundEffect>("sounds/slotmachine");
-            sounds[11] = Content.Load<SoundEffect>("sounds/hurt");
-
-            soundInstances = new SoundEffectInstance[sounds.Length];
-            for (int i = 0; i < sounds.Length; i++)
-            {
-                if (sounds[i] != null)
-                {
-                    soundInstances[i] = sounds[i].CreateInstance();
-                }
-            }
+            AudioSystem.LoadContent(this);
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);
@@ -184,19 +141,11 @@ namespace Mors_Arcium
         }
         protected override void UnloadContent()
         {
-            for (int i = 0; i < sounds.Length; i++)
-            {
-                if (soundInstances[i] != null) soundInstances[i].Dispose();
-                if (sounds[i] != null) sounds[i].Dispose();
-            }
             for (int i = 0; i < textures.Length; i++)
             {
                 if (textures[i] != null) textures[i].Dispose();
             }
-            for (int i = 0; i < music.Length; i++)
-            {
-                if (music[i] != null) music[i].Dispose();
-            }
+            AudioSystem.UnloadContent();
         }
         public void ToggleFullscreen()
         {
@@ -222,43 +171,12 @@ namespace Mors_Arcium
             base.Update(gameTime);
 #if DEBUG
             if (Keyboard.GetState().IsKeyDown(Keys.P)) paused = true;
-            if (Keyboard.GetState().IsKeyDown(Keys.O) && !henry) skip = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.O) && !prevState.IsKeyDown(Keys.O)) skip = true;
             if (Keyboard.GetState().IsKeyDown(Keys.I)) paused = false;
-            henry = Keyboard.GetState().IsKeyDown(Keys.O);
 #endif
-            
-            if (musicInTransition)
-            {
-                musicVolume -= 0.01f;
-                if (musicVolume <= 0.0f)
-                {
-                    musicVolume = 0.5f;
-                    musicInTransition = false;
-                    if (currentMusic != null)
-                    {
-                        MediaPlayer.Stop();
-                        //currentMusic.Dispose();
-                    }
-                    currentMusic = nextMusic;
-                    if (currentMusic != null)
-                    {
-                        MediaPlayer.Play(currentMusic);
-                        
-                    }
-                    nextMusic = null;
-                }
-            }
-            if (currentMusic != null)
-            {
-                if (!musicEnabled)
-                {
-                    MediaPlayer.Volume = 0.0f;
-                }
-                else
-                {
-                    MediaPlayer.Volume = musicVolume;
-                }
-            }
+
+            AudioSystem.Update(gameTime);
+
             if ((bindings.PAUSE.IsDown() || android.pause) && !grecc)
             {
                 paused = !paused;

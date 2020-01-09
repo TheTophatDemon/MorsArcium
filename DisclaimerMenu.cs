@@ -40,7 +40,13 @@ namespace Mors_Arcium
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
             sp.Draw(game.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
             DrawButtons(sp);
-            sp.DrawString(game.font1, "IF YOU DO NOT WANT YOUR BUTT\nHANDED TO YOU ON A SILVER PLATTER, \nYOU SHOULD CLICK ON THAT \n'HOW TO PLAY' BUTTON.\n\nESPECIALLY YOU, JACOB.", new Vector2(8, 8), Color.White);
+            sp.DrawString(game.font1, 
+                "IF YOU DO NOT WANT YOUR BUTT\n" +
+                "HANDED TO YOU ON A SILVER PLATTER, \n" +
+                "YOU SHOULD CLICK ON THAT \n" +
+                "'HOW TO PLAY' BUTTON." +
+                "\n\n" +
+                "ESPECIALLY YOU, JACOB.", new Vector2(8, 8), Color.White);
             sp.End();
         }
         public override void OnButtonPress(Button source)

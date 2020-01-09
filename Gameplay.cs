@@ -28,7 +28,9 @@ namespace Mors_Arcium
         public const int TYPE_PROP = 1;
         public const int TYPE_ITEM = 2;
         public const int TYPE_BEAM = 7;
-        
+
+        private static readonly string[] GAMEPLAY_SONGS = { "asinosfacio", "frozenhell", "gasconade", "unholywars", "welcometohell" };
+
         public MorsArcium game;
         public bool started = false;
 
@@ -101,7 +103,11 @@ namespace Mors_Arcium
 
             int mapw = 129;
             int plhlha = 0;
-            if (tutorial) { difficulty = "normal"; game.ChangeMusic(11); }
+            if (tutorial)
+            {
+                difficulty = "normal";
+                AudioSystem.ChangeMusic("welcometohell", true);
+            }
             if (difficulty != "????")
             {
                 StreamReader ronaldMcDonald = new StreamReader(difficulty + "_difficulty.txt");
@@ -248,18 +254,6 @@ namespace Mors_Arcium
                 }
             }
         }
-        public void PlaySound(int index, Vector2 position, float pitch = 0.0f)
-        {
-            if (game.soundEnabled)
-            {
-                float dist = Math.Abs(position.X - humanPlayer.position.X);
-                if (dist < 240.0f)
-                {
-                    game.soundInstances[index].Stop();
-                    game.soundInstances[index].Play();
-                }
-            }
-        }
         public void Update(GameTime gt)
         {
 #if ANDROID
@@ -399,6 +393,7 @@ namespace Mors_Arcium
                 if (gui.deathThingy.Y < 73) gui.deathThingy.Y = 72;
                 humanPlayer.deathTimer += 1;
             }
+            AudioSystem.ListenerPosition = humanPlayer.position;
 
 
             if (healthPackTimer > 0 && eventSelectorIndex != 3)
@@ -528,9 +523,9 @@ namespace Mors_Arcium
             if (wave <= 1) eventSelectorIndex = 0;
             if (waveTimer > 0)
             {
-                if (game.currentMusic != null && !tutorial)
+                if (!tutorial)
                 {
-                    game.ChangeMusic(15);
+                    AudioSystem.ChangeMusic("");
                 }
                 waveTimer -= 1;
                 if (eventsEnabled && wave > 1)//96, 120
@@ -543,7 +538,7 @@ namespace Mors_Arcium
                         eventSelectorIndex += 1;
                         if (eventSelectorIndex > 7) eventSelectorIndex = 0;
                         eventSelectorText.Y = 152 + (eventSelectorIndex * 11);
-                        PlaySound(10, humanPlayer.position);
+                        AudioSystem.Play2DSound("slotmachine");
                     }
                     if (waveTimer % 10 == 0)
                     {
@@ -575,9 +570,10 @@ namespace Mors_Arcium
                         }
                     }
                     eventThingy = 240.0f;
+                    //Play random music track
                     if (game.musicEnabled)
                     {
-                        game.ChangeMusic(game.random.Next(0, 4));
+                        AudioSystem.ChangeMusic(GAMEPLAY_SONGS[game.random.Next(0, GAMEPLAY_SONGS.Length)]);
                     }
                 }
             }
@@ -739,9 +735,9 @@ namespace Mors_Arcium
                     SpawnEnemies();
                     SpawnEnemies();
                 }
-                if (tutorialPhase == 11 && numPlayers == 1 && game.currentMusic != game.music[12] && tutorialTimer > 10)
+                if (tutorialPhase == 11 && numPlayers == 1 && tutorialTimer > 10)
                 {
-                    game.ChangeMusic(12);
+                    AudioSystem.ChangeMusic("skelesong", true);
                 }
                 if (tutorialPhase == 11 && numPlayers == 1 && tutorialTimer % 50 == 0 && tutorialTimer > 10)
                 {

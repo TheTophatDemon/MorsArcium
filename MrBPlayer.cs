@@ -158,7 +158,7 @@ namespace Mors_Arcium
             base.Attack();
             if (cooldown == 0 && animationState != "teleport" && deathTimer == 0)
             {
-                game.PlaySound(6, position);
+                AudioSystem.Play3DSound("throw", position);
                 if (spriteEffects == SpriteEffects.None)
                 {
                     game.AddEntity(new Crab(game, position, new Vector2(2f, aimDirection * 4f), this));
@@ -188,7 +188,7 @@ namespace Mors_Arcium
                 magic -= 75;
                 ChangeAnimationState("teleport");
                 knockback = Vector2.Zero;
-                game.PlaySound(5, position);
+                AudioSystem.Play3DSound("mrb_teleport", position);
             }
         }
         protected override void ChangeAnimationState(string st)

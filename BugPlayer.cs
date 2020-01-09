@@ -114,7 +114,7 @@ namespace Mors_Arcium
             base.Attack();
             if (cooldown == 0 && deathTimer == 0)
             {
-                game.PlaySound(6, position);
+                AudioSystem.Play3DSound("throw", position);
                 attacking = true;
                 cooldown = attackSpeed + game.reloadOffset;
                 float spdx = 8.0f;

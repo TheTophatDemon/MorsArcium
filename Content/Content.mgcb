@@ -19,30 +19,6 @@
 /processorParam:TextureFormat=Compressed
 /build:Font1.spritefont
 
-#begin AsinosFacio.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:AsinosFacio.ogg
-
-#begin frozenhell.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:frozenhell.ogg
-
-#begin gasconade.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:gasconade.ogg
-
-#begin unholywars.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:unholywars.ogg
-
 #begin sounds/die.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -115,21 +91,45 @@
 /processorParam:Quality=Best
 /build:sounds/hurt.wav
 
-#begin tehcrankles.ogg
+#begin music/asinosfacio.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:tehcrankles.ogg
+/build:music/asinosfacio.ogg
 
-#begin skelesong.ogg
+#begin music/frozenhell.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:skelesong.ogg
+/build:music/frozenhell.ogg
 
-#begin welcometohell.ogg
+#begin music/gasconade.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:welcometohell.ogg
+/build:music/gasconade.ogg
+
+#begin music/skelesong.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:music/skelesong.ogg
+
+#begin music/tehcrankles.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:music/tehcrankles.ogg
+
+#begin music/unholywars.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:music/unholywars.ogg
+
+#begin music/welcometohell.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:music/welcometohell.ogg
 

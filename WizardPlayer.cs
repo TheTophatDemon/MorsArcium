@@ -104,20 +104,7 @@ namespace Mors_Arcium
             {
                 attacking = true;
                 cooldown = attackSpeed + game.reloadOffset;
-                game.PlaySound(7, position);
-                /*float spdx = 8.0f;
-                if (spriteEffects == SpriteEffects.FlipHorizontally) spdx = -8.0f;
-                Bullet b = new Bullet(game, position + new Vector2(spdx * 1.25f, (aimDirection * 8.0f) + 4), new Vector2(spdx, aimDirection * 8), this);
-                game.AddEntity(b);
-                b = null;
-                Particle p = new Particle(game, position, new Vector2(((float)game.game.random.NextDouble() * 2.5f) * -Math.Sign(spdx), -0.5f), 100, 8, 5);
-                game.AddParticle(p);
-                p = null;*/
-                //Check a square of tiles around the ray being cast
-                //Collect the tiles that hit the ray into a list
-                //Find the closest tile and get its collision x,y
-                //chargeUp = 1;
-                //color = Color.Red;
+                AudioSystem.Play3DSound("wizard_blast", position);
                 FireBeam();
             }
         }
@@ -263,7 +250,7 @@ namespace Mors_Arcium
         {
             if (magic == maxMagic && collision_bottom && deathTimer == 0)
             {
-                game.PlaySound(8, position);
+                AudioSystem.Play3DSound("wizard_fusdorah", position);
                 magic = 0;
                 ChangeAnimationState("special");
                 walk = 0.0f;

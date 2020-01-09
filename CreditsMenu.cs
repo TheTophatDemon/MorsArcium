@@ -13,7 +13,7 @@ namespace Mors_Arcium
             buttons = new Button[1];
             buttons[0].source = new Rectangle(384, 152, 128, 24); //Back button
             buttons[0].position = new Vector2(16, 16);
-            game.ChangeMusic(14);
+            AudioSystem.ChangeMusic("tehcrankles");
         }
         public override void DrawExtra(SpriteBatch sp)
         {
