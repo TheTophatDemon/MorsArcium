@@ -31,7 +31,7 @@ namespace Mors_Arcium
             TryMove((speed + knockback) * game.projectileSpeedMultiplier, false);
             if ((collision_left || collision_right || collision_bottom || collision_top) && !landed)
             {
-                AudioSystem.Play3DSound("land", position);
+                game.game.audio.Play3DSound("land", position);
                 landed = true;
                 speed = Vector2.Zero;
             }

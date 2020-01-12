@@ -465,7 +465,7 @@ namespace Mors_Arcium
                 health = 0;
                 deathTimer = 1;
                 ChangeAnimationState("dead");
-                AudioSystem.Play3DSound("freeze", position);
+                game.game.audio.Play3DSound("freeze", position);
             }
             if (position.Y + hitboxOffset.Y + hitboxSize.Y > game.lavaHeight && deathTimer == 0)
             {
@@ -489,7 +489,7 @@ namespace Mors_Arcium
                 {
                     dead = true;
                     game.Explode(position.X, position.Y, 16f, 15);
-                    AudioSystem.Play3DSound("die", position);
+                    game.game.audio.Play3DSound("die", position);
                     for(int i = 0; i < 5; i++)
                     {
                         Particle p = new Particle(game, position, new Vector2(((float)game.game.random.NextDouble() * 5f) - 2.5f, -((float)game.game.random.NextDouble() * 2.5f) - 1.5f), 100, 8, 3);
@@ -516,7 +516,7 @@ namespace Mors_Arcium
         {
             if (hurtTimer == 0)
             {
-                if (perpetrator is EliPlayer) AudioSystem.Play3DSound("jump", position);
+                if (perpetrator is EliPlayer) game.game.audio.Play3DSound("jump", position);
                 if (game.reloadOffset >= 0)
                 {
                     health -= amount;

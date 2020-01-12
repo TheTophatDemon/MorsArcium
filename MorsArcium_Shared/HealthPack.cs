@@ -55,7 +55,7 @@ namespace Mors_Arcium
                 {
                     game.AddParticle(new Particle(game, position, new Vector2(((float)game.game.random.NextDouble() * 2.5f) - 1.25f, ((float)game.game.random.NextDouble() * 2.5f) - 1.25f), 25, 8, 4));
                 }
-                AudioSystem.Play3DSound("powerup", position);
+                game.game.audio.Play3DSound("powerup", position);
             }
         }
     }

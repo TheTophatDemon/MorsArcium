@@ -40,7 +40,7 @@ namespace Mors_Arcium
             if (timer <= 0)
             {
                 game.Explode(position.X, position.Y, 16f, 20, false);
-                AudioSystem.Play3DSound("explosion", position);
+                game.game.audio.Play3DSound("explosion", position);
                 killMe = true;
             }
         }

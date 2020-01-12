@@ -11,22 +11,35 @@ namespace MorsArcium_Desktop
     public class MorsArcium : Game, IPlatformOutlet
     {
         public Rectangle GameViewport { get => gameViewport; }
+        public Settings GameSettings { get => settings; }
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RenderTarget2D renderTarget;
-        GameManager gMan;
         Rectangle gameViewport;
 
+        GameManager gMan;
+        Settings settings;
+
         MouseState mouseState;
-        MouseState prevMouseState;
         Vector2 mouseMenuCoords;
 
         public MorsArcium()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            Settings.Load();
+
+            //TODO: Load settings from .ini
+            settings = new Settings();
+            settings.aimUp = new KeyBinding(Keys.W);
+            settings.aimDown = new KeyBinding(Keys.S);
+            settings.moveLeft = new KeyBinding(Keys.A);
+            settings.moveRight = new KeyBinding(Keys.D);
+            settings.jump = new KeyBinding(Keys.Space);
+            settings.attack = new KeyBinding(Keys.J);
+            settings.special = new KeyBinding(Keys.K);
+            settings.pause = new KeyBinding(Keys.Enter);
+
             gMan = new GameManager(this);
         }
 
@@ -39,8 +52,9 @@ namespace MorsArcium_Desktop
             graphics.PreferredBackBufferWidth = 960;
             graphics.PreferredBackBufferHeight = 720;
             IsMouseVisible = true;
-            graphics.SynchronizeWithVerticalRetrace = Settings.vSync;
             graphics.ApplyChanges();
+
+            ApplyVideoSettings();
 
             gameViewport = GraphicsDevice.Viewport.Bounds;
 
@@ -60,8 +74,8 @@ namespace MorsArcium_Desktop
 
             mouseState = Mouse.GetState();
             mouseMenuCoords = new Vector2(mouseState.X / 3.0f, mouseState.Y / 3.0f);
+
             gMan.Update(gameTime);
-            prevMouseState = mouseState;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -76,23 +90,35 @@ namespace MorsArcium_Desktop
             spriteBatch.End();
         }
 
-        public MenuButtonState ProcessMenuButton(MenuButton button)
+        public Mors_Arcium.GUI.Button.State ProcessMenuButton(Mors_Arcium.GUI.Button button)
         {
-            if (mouseMenuCoords.X > button.position.X 
-                && mouseMenuCoords.X < button.position.X + button.source.Width
-                && mouseMenuCoords.Y > button.position.Y
-                && mouseMenuCoords.Y < button.position.Y + button.source.Height)
+            if (mouseMenuCoords.X > button.Position.X 
+                && mouseMenuCoords.X < button.Position.X + button.Source.Width
+                && mouseMenuCoords.Y > button.Position.Y
+                && mouseMenuCoords.Y < button.Position.Y + button.Source.Height)
             {
-                if (mouseState.LeftButton == ButtonState.Pressed && prevMouseState.LeftButton == ButtonState.Released)
+                if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    return MenuButtonState.PRESSED;
+                    return Mors_Arcium.GUI.Button.State.PRESSED;
                 }
                 else
                 {
-                    return MenuButtonState.HOVER;
+                    return Mors_Arcium.GUI.Button.State.HOVER;
                 }
             }
-            return MenuButtonState.DEFAULT;
+            return Mors_Arcium.GUI.Button.State.DEFAULT;
+        }
+
+        public void ApplyVideoSettings()
+        {
+            graphics.SynchronizeWithVerticalRetrace = settings.vSync;
+            if (graphics.IsFullScreen != settings.fullScreen) graphics.ToggleFullScreen();
+            graphics.ApplyChanges();
+        }
+
+        public void SaveSettings()
+        {
+
         }
     }
 }

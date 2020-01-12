@@ -9,9 +9,18 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Mors_Arcium
 {
+    /// <summary>
+    /// Provides access to various platform-specific functions from within the shared code.
+    /// </summary>
     public interface IPlatformOutlet
     {
         Rectangle GameViewport { get; }
-        MenuButtonState ProcessMenuButton(MenuButton button);
+        Settings GameSettings { get; }
+
+        Mors_Arcium.GUI.Button.State ProcessMenuButton(Mors_Arcium.GUI.Button button);
+
+        void ApplyVideoSettings();
+        void SaveSettings();
+        void Exit();
     }
 }

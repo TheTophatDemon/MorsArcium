@@ -60,6 +60,7 @@
     <StartupObject>MorsArcium_Desktop.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GUI\RebindMenu.cs" />
     <Compile Include="MorsArcium.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

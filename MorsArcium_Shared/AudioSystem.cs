@@ -12,23 +12,30 @@ namespace Mors_Arcium
 {
     public class AudioSystem
     {
-        private static Dictionary<string, SoundEffect> sounds = new Dictionary<string, SoundEffect>();
+        private Dictionary<string, SoundEffect> sounds = new Dictionary<string, SoundEffect>();
 
         private static readonly float MAX_MUSIC_VOLUME = 0.5f;
-        private static Dictionary<string, Song> songs = new Dictionary<string, Song>();
-        private static Song currentSong;
-        private static Song nextSong;
-        private static float musicVolume = MAX_MUSIC_VOLUME;
+        private Dictionary<string, Song> songs = new Dictionary<string, Song>();
+        private Song currentSong;
+        private Song nextSong;
+        private float musicVolume = MAX_MUSIC_VOLUME;
 
-        public static Vector2 ListenerPosition { get; set; }
+        private IPlatformOutlet platform;
 
-        public static void Initialize()
+        /// <summary>
+        /// Sounds are attenuated based off of their distances to this position.
+        /// Must be continually set to the center of the screen in world-space.
+        /// </summary>
+        public Vector2 ListenerPosition { get; set; }
+
+        public AudioSystem(IPlatformOutlet platform)
         {
+            this.platform = platform;
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = MAX_MUSIC_VOLUME;
         }
 
-        public static void LoadContent(ContentManager content)
+        public void LoadContent(ContentManager content)
         {
             DirectoryInfo soundDir = new DirectoryInfo(Directory.GetCurrentDirectory() + "/Content/sounds");
             foreach (FileInfo file in soundDir.EnumerateFiles())
@@ -47,7 +54,7 @@ namespace Mors_Arcium
             }
         }
 
-        public static void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (nextSong != currentSong)
             {
@@ -66,7 +73,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-            MediaPlayer.Volume = Settings.musicEnabled ? musicVolume : 0.0f;
+            MediaPlayer.Volume = platform.GameSettings.musicEnabled ? musicVolume : 0.0f;
         }
 
         /// <summary>
@@ -74,7 +81,7 @@ namespace Mors_Arcium
         /// </summary>
         /// <param name="songName">Filename (without extension) of song. Use blank string to stop playing music.</param>
         /// <param name="instantly">If true, the music will change instantly without fading out the previous track.</param>
-        public static void ChangeMusic(string songName, bool instantly = false)
+        public void ChangeMusic(string songName, bool instantly = false)
         {
             if (songName.Equals(""))
             {
@@ -90,18 +97,29 @@ namespace Mors_Arcium
             }
         }
 
-        public static void Play3DSound(string soundName, Vector2 sourcePosition)
+        /// <summary>
+        /// Plays a sound that gets quieter when it is off-screen.
+        /// </summary>
+        /// <param name="soundName"></param>
+        /// <param name="sourcePosition">Position of the object emitting the sound.</param>
+        public void Play3DSound(string soundName, Vector2 sourcePosition)
         {
-            if (Settings.soundEnabled)
+            if (platform.GameSettings.soundEnabled)
             {
                 float distance = (sourcePosition - ListenerPosition).Length();
                 float attenuation = 1.0f - (Math.Max(0.0f, distance - 160.0f) / 80.0f);
                 if (attenuation > 0.0f) Play2DSound(soundName, attenuation);
             }
         }
-        public static void Play2DSound(string soundName, float volume = 1.0f)
+
+        /// <summary>
+        /// Plays a sound with a set volume.
+        /// </summary>
+        /// <param name="soundName"></param>
+        /// <param name="volume"></param>
+        public void Play2DSound(string soundName, float volume = 1.0f)
         {
-            if (Settings.soundEnabled)
+            if (platform.GameSettings.soundEnabled)
             {
                 sounds[soundName].Play(volume, 0.0f, 0.0f);
             }

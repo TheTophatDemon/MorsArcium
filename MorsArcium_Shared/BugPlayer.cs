@@ -79,13 +79,13 @@ namespace Mors_Arcium
         }
         public override void Update(GameTime gt)
         {
-            if (game.IsHuman(this) && Settings.jumpFly)
+            if (game.IsHuman(this) && game.game.platform.GameSettings.jumpFly)
             {
-                if (Settings.bindings.jump.IsDown() && !wasJump && !granddad)
+                if (game.game.platform.GameSettings.jump.IsDown() && !wasJump && !granddad)
                 {
                     flymode = true;
                 }
-                if (!Settings.bindings.jump.IsDown() && wasJump)
+                if (!game.game.platform.GameSettings.jump.IsDown() && wasJump)
                 {
                     flymode = false;
                 }
@@ -93,7 +93,7 @@ namespace Mors_Arcium
                 {
                     Special();
                 }
-                wasJump = Settings.bindings.jump.IsDown();
+                wasJump = game.game.platform.GameSettings.jump.IsDown();
             }
             if (animationState == "fly")
             {
@@ -114,7 +114,7 @@ namespace Mors_Arcium
             base.Attack();
             if (cooldown == 0 && deathTimer == 0)
             {
-                AudioSystem.Play3DSound("throw", position);
+                game.game.audio.Play3DSound("throw", position);
                 attacking = true;
                 cooldown = attackSpeed + game.reloadOffset;
                 float spdx = 8.0f;

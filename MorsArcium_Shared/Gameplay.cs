@@ -10,7 +10,7 @@ namespace Mors_Arcium
 {
     public class Gameplay
     {
-        public class GUI
+        public class GameHUD
         {
             public Vector2 cameraPosition;
             public Vector2 deathThingy = new Vector2(100, 200);
@@ -48,7 +48,7 @@ namespace Mors_Arcium
         Rectangle pauseThingyRect = new Rectangle(0, 99, 124, 25);
         public int healthPackFrequency = 500;
         public Player humanPlayer;
-        public GUI gui;
+        public GameHUD gui;
         
         public int numCPUs = 20;
         public int numPlayers = 11;
@@ -92,14 +92,14 @@ namespace Mors_Arcium
         
         public void Initialize(int playerClass)
         {
-            gui = new GUI();
+            gui = new GameHUD();
 
             int mapw = 129;
             int plhlha = 0;
             if (tutorial)
             {
                 difficulty = "normal";
-                AudioSystem.ChangeMusic("welcometohell", true);
+                game.audio.ChangeMusic("welcometohell", true);
             }
             if (difficulty != "????")
             {
@@ -251,7 +251,7 @@ namespace Mors_Arcium
         {
             if ((Keyboard.GetState().IsKeyDown(Keys.Escape)) && game.currentMenu == null)
             {
-                game.ChangeMenuState(new MainMenu(game));
+                game.ChangeMenuState(new GUI.MainMenu(game));
             }
             Keys[] pressedKeys = Keyboard.GetState().GetPressedKeys();
             if (pressedKeys.Length > 0)
@@ -268,10 +268,9 @@ namespace Mors_Arcium
                     cheatString += pressedKeys[0].ToString();
                 }
             }
-            if (!Settings.playedBefore)
+            if (!game.platform.GameSettings.playedBefore)
             {
-                Settings.playedBefore = true;
-                Settings.Save();
+                game.platform.GameSettings.playedBefore = true;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D6))
             {
@@ -338,26 +337,26 @@ namespace Mors_Arcium
             {
                 if (humanPlayer.deathTimer == 0 && humanPlayer.controllable)
                 {
-                    if (Settings.bindings.jump.IsDown())
+                    if (game.platform.GameSettings.jump.IsDown())
                     {
                         humanPlayer.Jump();
                     }
 
-                    if (Settings.bindings.right.IsDown())
+                    if (game.platform.GameSettings.moveRight.IsDown())
                     {
                         humanPlayer.spriteEffects = SpriteEffects.None;
                         humanPlayer.Walk();
                     }
-                    else if (Settings.bindings.left.IsDown())
+                    else if (game.platform.GameSettings.moveLeft.IsDown())
                     {
                         humanPlayer.spriteEffects = SpriteEffects.FlipHorizontally;
                         humanPlayer.Walk();
                     }
-                    if (Settings.bindings.up.IsDown())
+                    if (game.platform.GameSettings.aimUp.IsDown())
                     {
                         humanPlayer.aimDirection = -1;
                     }
-                    else if (Settings.bindings.down.IsDown())
+                    else if (game.platform.GameSettings.aimDown.IsDown())
                     {
                         humanPlayer.aimDirection = 1;
                     }
@@ -365,11 +364,11 @@ namespace Mors_Arcium
                     {
                         humanPlayer.aimDirection = 0;
                     }
-                    if (Settings.bindings.attack.IsDown())
+                    if (game.platform.GameSettings.attack.IsDown())
                     {
                         humanPlayer.Attack();
                     }
-                    if (Settings.bindings.special.IsDown())
+                    if (game.platform.GameSettings.special.IsDown())
                     {
                         humanPlayer.Special();
                     }
@@ -381,7 +380,7 @@ namespace Mors_Arcium
                 if (gui.deathThingy.Y < 73) gui.deathThingy.Y = 72;
                 humanPlayer.deathTimer += 1;
             }
-            AudioSystem.ListenerPosition = humanPlayer.position;
+            game.audio.ListenerPosition = humanPlayer.position;
 
 
             if (healthPackTimer > 0 && eventSelectorIndex != 3)
@@ -471,19 +470,7 @@ namespace Mors_Arcium
                     }
                 }
             }
-#if DEBUG
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-            {
-                /*int x = (int)Math.Floor(((float)(Mouse.GetState().Position.X / game.scaleFactor) + cameraPosition.X) / 16);
-                int y = (int)Math.Floor(((float)(Mouse.GetState().Position.Y / game.scaleFactor) + cameraPosition.Y) / 16);
-                if (x < 0) x = 0;
-                if (y < 0) y = 0;
-                if (x >= tilemap.width) x = tilemap.width - 1;
-                if (y >= tilemap.height) y = tilemap.height - 1;
-                tilemap.data[x, y] = -1;
-                tilemap.RefreshTiles();*/
-            }
-#endif
+
             if (terrainModified)
             {
                 terrainModified = false;
@@ -513,7 +500,7 @@ namespace Mors_Arcium
             {
                 if (!tutorial)
                 {
-                    AudioSystem.ChangeMusic("");
+                    game.audio.ChangeMusic("");
                 }
                 waveTimer -= 1;
                 if (eventsEnabled && wave > 1)//96, 120
@@ -526,7 +513,7 @@ namespace Mors_Arcium
                         eventSelectorIndex += 1;
                         if (eventSelectorIndex > 7) eventSelectorIndex = 0;
                         eventSelectorText.Y = 152 + (eventSelectorIndex * 11);
-                        AudioSystem.Play2DSound("slotmachine");
+                        game.audio.Play2DSound("slotmachine");
                     }
                     if (waveTimer % 10 == 0)
                     {
@@ -541,7 +528,7 @@ namespace Mors_Arcium
                     if (humanPlayer.dead)
                     {
                         humanPlayer = SpawnPlayer(game.random.Next(4), humanPlayer.healthHandicap);
-                        gui = new GUI();
+                        gui = new GameHUD();
                     }
 
                     for (int y = 0; y < entities.GetLength(1); y++)
@@ -557,9 +544,9 @@ namespace Mors_Arcium
                     }
                     eventThingy = 240.0f;
                     //Play random music track
-                    if (Settings.musicEnabled)
+                    if (game.platform.GameSettings.musicEnabled)
                     {
-                        AudioSystem.ChangeMusic(GAMEPLAY_SONGS[game.random.Next(0, GAMEPLAY_SONGS.Length)]);
+                        game.audio.ChangeMusic(GAMEPLAY_SONGS[game.random.Next(0, GAMEPLAY_SONGS.Length)]);
                     }
                 }
             }
@@ -567,7 +554,7 @@ namespace Mors_Arcium
             {
                 if (tutorial)
                 {
-                    game.ChangeMenuState(new MainMenu(game));
+                    game.ChangeMenuState(new GUI.MainMenu(game));
                     started = false;
                 }
                 else
@@ -723,7 +710,7 @@ namespace Mors_Arcium
                 }
                 if (tutorialPhase == 11 && numPlayers == 1 && tutorialTimer > 10)
                 {
-                    AudioSystem.ChangeMusic("skelesong", true);
+                    game.audio.ChangeMusic("skelesong", true);
                 }
                 if (tutorialPhase == 11 && numPlayers == 1 && tutorialTimer % 50 == 0 && tutorialTimer > 10)
                 {
@@ -769,11 +756,11 @@ namespace Mors_Arcium
                 switch (tutorialPhase)
                 {
                     case 0:
-                        sp.DrawString(game.font1, "USE " + Settings.bindings.left + " AND " + Settings.bindings.right + " TO WALK.", new Vector2(72, -16.0f), Color.White);
-                        sp.DrawString(game.font1, "USE " + Settings.bindings.jump + " TO JUMP.", new Vector2(72, 0), Color.White);
-                        sp.DrawString(game.font1, "USE " + Settings.bindings.attack + " TO ATTACK.", new Vector2(72, 16), Color.White);
-                        sp.DrawString(game.font1, "USE " + Settings.bindings.up + " AND " + Settings.bindings.down + " TO AIM.", new Vector2(72, 32), Color.White);
-                        sp.DrawString(game.font1, "USE " + Settings.bindings.special + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.moveLeft + " AND " + game.platform.GameSettings.moveRight + " TO WALK.", new Vector2(72, -16.0f), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.jump + " TO JUMP.", new Vector2(72, 0), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.attack + " TO ATTACK.", new Vector2(72, 16), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.aimUp + " AND " + game.platform.GameSettings.aimDown + " TO AIM.", new Vector2(72, 32), Color.White);
+                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.special + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
                         break;
                     case 9:
                     case 7:

@@ -9,39 +9,44 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Mors_Arcium
 {
+    /// <summary>
+    /// Handles transitions between menus and the game.
+    /// Provides access to global subsystems.
+    /// (For now) Contains all texture and font assets
+    /// </summary>
     public class GameManager
     {
         //TODO: Ensure 64 bit & Android API Level 28
-        //TODO: Re-Implement fade
-        //TODO: Interface for applying graphics settings
+        //TODO: Fix player count bug
+        //TODO: Reimplement saving and loading of settings
         //TODO: Refine resource loading system
         //TODO: Separate GUI class
-        //TODO: Redo settings system to use .ini
+        //TODO: Optimize GUI elements
+        //TODO: Re-Implement fade
+        //TODO: Redo class select menu
+        //TODO: Restructure player class
+        //TODO: Make enums for player & entity types
         //TODO: Make resolution dynamic
         //TODO: Make dynamic timing
-        //TODO: Refine tutorial startup
+        //TODO: Refine tutorial code
         //TODO: Refine Joystick Hat Capability
         //TODO: Add Joystick Axis Capability
         //TODO: Add proper keyboard key names
-        //TODO: Restructure player class
         //TODO: Polish player class change
-        //TODO: Optimize GUI elements
         //TODO: Polish new Eli attack
         //TODO: Change "Zero Gravity" to "Low Gravity"
-        //TODO: Add Android HUD customization
         //TODO: Add crossfading music system
         //TODO: Add pitch variations to sounds
         //TODO: Add Eli slicing sound
         //TODO: Remove automatic teleporting at edges for Mr.B
         //TODO: Polish player spawning
-
-        //TODO: Multiplayer?
+        //TODO: Add Android HUD customization
 
         SpriteBatch spriteBatch;
 
         public Gameplay game;
-        public Menu currentMenu = null;
-        private Menu nextMenu = null;
+        public GUI.Menu currentMenu = null;
+        private GUI.Menu nextMenu = null;
         private bool menutransition = false;
         public float fade = 1.0f;
         private bool fadeIn = false;
@@ -51,11 +56,12 @@ namespace Mors_Arcium
         public Random random;
 
         public IPlatformOutlet platform;
+        public AudioSystem audio;
         
         public GameManager(IPlatformOutlet platform)
         {
             this.platform = platform;
-            AudioSystem.Initialize();
+            audio = new AudioSystem(platform);
         }
         
         public void LoadContent(GraphicsDevice graphicsDevice, ContentManager content)
@@ -78,16 +84,16 @@ namespace Mors_Arcium
             LoadTexture("Content/textures/particles.png", 7);  
             LoadTexture("Content/textures/misc.png", 8);
 
-            AudioSystem.LoadContent(content);
+            audio.LoadContent(content);
 
             random = new Random(DateTime.Now.Millisecond);
             game = new Gameplay(this);
-            currentMenu = new MainMenu(this);
+            currentMenu = new GUI.MainMenu(this);
         }
 
         public void Update(GameTime gameTime)
         {
-            AudioSystem.Update(gameTime);
+            audio.Update(gameTime);
 
             if (menutransition)
             {
@@ -97,6 +103,8 @@ namespace Mors_Arcium
                     if (fade <= 0.0f)
                     {
                         fade = 0.0f;
+                        currentMenu?.OnLeave();
+                        nextMenu?.OnEnter();
                         currentMenu = nextMenu;
                         nextMenu = null;
                         fadeIn = true;
@@ -141,7 +149,7 @@ namespace Mors_Arcium
             return ((x2 - x) / (x2 - x1)) * Q11 + ((x - x1) / (x2 - x1)) * Q21;
         }
 
-        public void ChangeMenuState(Menu men)
+        public void ChangeMenuState(GUI.Menu men)
         {
             nextMenu = men;
             menutransition = true;

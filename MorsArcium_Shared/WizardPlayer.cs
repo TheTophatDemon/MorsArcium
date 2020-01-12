@@ -104,7 +104,7 @@ namespace Mors_Arcium
             {
                 attacking = true;
                 cooldown = attackSpeed + game.reloadOffset;
-                AudioSystem.Play3DSound("wizard_blast", position);
+                game.game.audio.Play3DSound("wizard_blast", position);
                 FireBeam();
             }
         }
@@ -250,7 +250,7 @@ namespace Mors_Arcium
         {
             if (magic == maxMagic && collision_bottom && deathTimer == 0)
             {
-                AudioSystem.Play3DSound("wizard_fusdorah", position);
+                game.game.audio.Play3DSound("wizard_fusdorah", position);
                 magic = 0;
                 ChangeAnimationState("special");
                 walk = 0.0f;
