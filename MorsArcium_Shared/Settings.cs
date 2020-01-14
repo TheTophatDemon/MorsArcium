@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 
 namespace Mors_Arcium
 {
     public class Settings
     {
-        public IBinding aimUp;
-        public IBinding aimDown;
-        public IBinding moveRight;
-        public IBinding moveLeft;
-        public IBinding jump;
-        public IBinding attack;
-        public IBinding special;
-        public IBinding pause;
+        public Binding aimUp;
+        public Binding aimDown;
+        public Binding moveRight;
+        public Binding moveLeft;
+        public Binding jump;
+        public Binding attack;
+        public Binding special;
+        public Binding pause;
+
         public bool musicEnabled;
         public bool soundEnabled;
         public bool fullScreen;

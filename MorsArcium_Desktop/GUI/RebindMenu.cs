@@ -14,10 +14,10 @@ namespace Mors_Arcium.GUI
         private class BindingGroup
         {
             public Button button;
-            public IBinding binding;
-            public Action<IBinding> setFunc;
+            public Binding binding;
+            public Action<Binding> setFunc;
             public string label;
-            public BindingGroup(string label, IBinding binding, Action<IBinding> setFunc)
+            public BindingGroup(string label, Binding binding, Action<Binding> setFunc)
             {
                 this.binding = binding;
                 this.setFunc = setFunc;
@@ -44,21 +44,21 @@ namespace Mors_Arcium.GUI
             
             bindingGroups = new BindingGroup[]{
                 new BindingGroup("AIM UP", settings.aimUp, 
-                    (IBinding b) => { settings.aimUp = b; }),
+                    (Binding b) => { settings.aimUp = b; }),
                 new BindingGroup("AIM DOWN", settings.aimDown, 
-                    (IBinding b) => { settings.aimDown = b; }),
+                    (Binding b) => { settings.aimDown = b; }),
                 new BindingGroup("MOVE LEFT", settings.moveLeft, 
-                    (IBinding b) => { settings.moveLeft = b; }),
+                    (Binding b) => { settings.moveLeft = b; }),
                 new BindingGroup("MOVE RIGHT", settings.moveRight, 
-                    (IBinding b) => { settings.moveRight = b; }),
+                    (Binding b) => { settings.moveRight = b; }),
                 new BindingGroup("JUMP", settings.jump, 
-                    (IBinding b) => { settings.jump = b; }),
+                    (Binding b) => { settings.jump = b; }),
                 new BindingGroup("ATTACK", settings.attack, 
-                    (IBinding b) => { settings.attack = b; }),
+                    (Binding b) => { settings.attack = b; }),
                 new BindingGroup("SPECIAL ATTACK", settings.special, 
-                    (IBinding b) => { settings.special = b; }),
+                    (Binding b) => { settings.special = b; }),
                 new BindingGroup("PAUSE", settings.pause, 
-                    (IBinding b) => { settings.pause = b; }),
+                    (Binding b) => { settings.pause = b; }),
             };
 
             //Generate buttons for all of the bindings groups
@@ -74,7 +74,7 @@ namespace Mors_Arcium.GUI
 
         }
 
-        public void SetCurrentBinding(IBinding binding)
+        public void SetCurrentBinding(Binding binding)
         {
             currentBindingGroup.binding = binding;
             currentBindingGroup.setFunc?.Invoke(binding);

@@ -18,7 +18,6 @@ namespace Mors_Arcium
     {
         //TODO: Ensure 64 bit & Android API Level 28
         //TODO: Fix player count bug
-        //TODO: Reimplement saving and loading of settings
         //TODO: Refine resource loading system
         //TODO: Separate GUI class
         //TODO: Optimize GUI elements

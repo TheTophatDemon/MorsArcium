@@ -4,21 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
+using System.Xml;
 
 namespace Mors_Arcium
 {
-    public interface IBinding
+    public abstract class Binding
     {
-        bool IsDown();
+        public abstract bool IsDown();
+        public abstract XmlElement Serialize(XmlDocument doc);
     }
-    public class KeyBinding : IBinding
+    public class KeyBinding : Binding
     {
         readonly Keys key;
         public KeyBinding(Keys key)
         {
             this.key = key;
         }
-        public bool IsDown()
+        public override bool IsDown()
         {
             return Keyboard.GetState().IsKeyDown(key);
         }
@@ -26,8 +28,22 @@ namespace Mors_Arcium
         {
             return key.ToString();
         }
+        public override XmlElement Serialize(XmlDocument doc)
+        {
+            XmlElement elem = doc.CreateElement("keyBinding");
+
+            XmlAttribute keyAttr = doc.CreateAttribute("key");
+            keyAttr.Value = ((int)key).ToString();
+            elem.Attributes.Append(keyAttr);
+
+            return elem;
+        }
+        public static KeyBinding Deserialize(XmlElement elem)
+        {
+            return new KeyBinding((Keys) int.Parse(elem.SelectSingleNode("./@key").Value));
+        }
     }
-    public class MouseButtonBinding : IBinding
+    public class MouseButtonBinding : Binding
     {
         public enum Button
         {
@@ -40,7 +56,7 @@ namespace Mors_Arcium
         {
             this.button = button;
         }
-        public bool IsDown()
+        public override bool IsDown()
         {
             switch (button)
             {
@@ -63,8 +79,22 @@ namespace Mors_Arcium
             }
             return "Invalid Mouse";
         }
+        public override XmlElement Serialize(XmlDocument doc)
+        {
+            XmlElement elem = doc.CreateElement("mouseButtonBinding");
+
+            XmlAttribute buttonAttr = doc.CreateAttribute("button");
+            buttonAttr.Value = ((int)button).ToString();
+            elem.Attributes.Append(buttonAttr);
+
+            return elem;
+        }
+        public static MouseButtonBinding Deserialize(XmlElement elem)
+        {
+            return new MouseButtonBinding((Button) int.Parse(elem.SelectSingleNode("./@button").Value));
+        }
     }
-    public class JoystickButtonBinding : IBinding
+    public class JoystickButtonBinding : Binding
     {
         readonly int joyIndex;
         readonly int button;
@@ -73,7 +103,7 @@ namespace Mors_Arcium
             this.joyIndex = joyIndex;
             this.button = button;
         }
-        public bool IsDown()
+        public override bool IsDown()
         {
             return Joystick.GetState(joyIndex).Buttons[button] == ButtonState.Pressed;
         }
@@ -81,8 +111,29 @@ namespace Mors_Arcium
         {
             return "Joystick Button " + button.ToString();
         }
+        public override XmlElement Serialize(XmlDocument doc)
+        {
+            XmlElement elem = doc.CreateElement("joystickButtonBinding");
+
+            XmlAttribute buttonAttr = doc.CreateAttribute("button");
+            buttonAttr.Value = button.ToString();
+            elem.Attributes.Append(buttonAttr);
+
+            XmlAttribute indAttr = doc.CreateAttribute("joystick");
+            indAttr.Value = joyIndex.ToString();
+            elem.Attributes.Append(indAttr);
+
+            return elem;
+        }
+        public static JoystickButtonBinding Deserialize(XmlElement elem)
+        {
+            return new JoystickButtonBinding(
+                int.Parse(elem.SelectSingleNode("./@joystick").Value),
+                int.Parse(elem.SelectSingleNode("./@button").Value)
+                );
+        }
     }
-    public class JoystickHatBinding : IBinding
+    public class JoystickHatBinding : Binding
     {
         public enum Button
         {
@@ -100,7 +151,7 @@ namespace Mors_Arcium
             this.hat = hat;
             this.button = button;
         }
-        public bool IsDown()
+        public override bool IsDown()
         {
             switch (button)
             {
@@ -111,9 +162,46 @@ namespace Mors_Arcium
             }
             return false;
         }
-        //Forgot ToString!
+        public override string ToString()
+        {
+            string s = "Joystick Hat " + hat.ToString() + " ";
+            switch (button)
+            {
+                case Button.UP: s += "Up"; break;
+                case Button.DOWN: s += "Down"; break;
+                case Button.LEFT: s += "Left"; break;
+                case Button.RIGHT: s += "Right"; break;
+            }
+            return s;
+        }
+        public override XmlElement Serialize(XmlDocument doc)
+        {
+            XmlElement elem = doc.CreateElement("joystickHatBinding");
+
+            XmlAttribute joyAttr = doc.CreateAttribute("joystick");
+            joyAttr.Value = joyIndex.ToString();
+            elem.Attributes.Append(joyAttr);
+
+            XmlAttribute hatAttr = doc.CreateAttribute("hat");
+            hatAttr.Value = hat.ToString();
+            elem.Attributes.Append(hatAttr);
+
+            XmlAttribute buttAttr = doc.CreateAttribute("button");
+            buttAttr.Value = ((int)button).ToString();
+            elem.Attributes.Append(buttAttr);
+
+            return elem;
+        }
+        public static JoystickHatBinding Deserialize(XmlElement elem)
+        {
+            return new JoystickHatBinding(
+                int.Parse(elem.SelectSingleNode("./@joystick").Value),
+                int.Parse(elem.SelectSingleNode("./@hat").Value),
+                (Button) int.Parse(elem.SelectSingleNode("./@button").Value)
+                );
+        }
     }
-    public class JoystickAxisBinding : IBinding
+    public class JoystickAxisBinding : Binding
     {
         readonly int joyIndex;
         readonly int axis;
@@ -124,7 +212,7 @@ namespace Mors_Arcium
             this.axis = axis;
             this.positive = positive;
         }
-        public bool IsDown()
+        public override bool IsDown()
         {
             if (positive)
             {
@@ -134,7 +222,34 @@ namespace Mors_Arcium
         }
         public override string ToString()
         {
-            return "Joystick Axis " + axis.ToString();
+            return "Joystick Axis " + axis.ToString() + (positive ? "+" : "-");
+        }
+        public override XmlElement Serialize(XmlDocument doc)
+        {
+            XmlElement elem = doc.CreateElement("joystickAxisBinding");
+
+            XmlAttribute joyAttr = doc.CreateAttribute("joystick");
+            joyAttr.Value = joyIndex.ToString();
+            elem.Attributes.Append(joyAttr);
+
+            XmlAttribute axisAttr = doc.CreateAttribute("axis");
+            axisAttr.Value = axis.ToString();
+            elem.Attributes.Append(axisAttr);
+
+            XmlAttribute sgnAttr = doc.CreateAttribute("positive");
+            sgnAttr.Value = positive.ToString();
+            elem.Attributes.Append(sgnAttr);
+
+            return elem;
+        }
+
+        public static JoystickAxisBinding Deserialize(XmlElement elem)
+        {
+            return new JoystickAxisBinding(
+                int.Parse(elem.SelectSingleNode("./@joystick").Value),
+                int.Parse(elem.SelectSingleNode("./@axis").Value),
+                bool.Parse(elem.SelectSingleNode("./@positive").Value)
+                );
         }
     }
 }

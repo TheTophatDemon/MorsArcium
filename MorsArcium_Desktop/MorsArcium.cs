@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using System.IO;
+using System.Xml;
+using System.Xml.XPath;
 using System;
 using Mors_Arcium;
 
@@ -29,16 +31,52 @@ namespace MorsArcium_Desktop
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            //TODO: Load settings from .ini
+
             settings = new Settings();
-            settings.aimUp = new KeyBinding(Keys.W);
-            settings.aimDown = new KeyBinding(Keys.S);
-            settings.moveLeft = new KeyBinding(Keys.A);
-            settings.moveRight = new KeyBinding(Keys.D);
-            settings.jump = new KeyBinding(Keys.Space);
-            settings.attack = new KeyBinding(Keys.J);
-            settings.special = new KeyBinding(Keys.K);
-            settings.pause = new KeyBinding(Keys.Enter);
+
+            //Load settings from XML
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.Load(Directory.GetCurrentDirectory() + "/settings.xml");
+
+                DeserializeBoolSetting(doc, "musicEnabled", out settings.musicEnabled);
+                DeserializeBoolSetting(doc, "soundEnabled", out settings.soundEnabled);
+                DeserializeBoolSetting(doc, "vSync", out settings.vSync);
+                DeserializeBoolSetting(doc, "fullScreen", out settings.fullScreen);
+                DeserializeBoolSetting(doc, "jumpFly", out settings.jumpFly);
+                DeserializeBoolSetting(doc, "playedBefore", out settings.playedBefore);
+                DeserializeBinding(doc, "aimUp", out settings.aimUp);
+                DeserializeBinding(doc, "aimDown", out settings.aimDown);
+                DeserializeBinding(doc, "moveLeft", out settings.moveLeft);
+                DeserializeBinding(doc, "moveRight", out settings.moveRight);
+                DeserializeBinding(doc, "jump", out settings.jump);
+                DeserializeBinding(doc, "attack", out settings.attack);
+                DeserializeBinding(doc, "special", out settings.special);
+                DeserializeBinding(doc, "pause", out settings.pause);
+
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine("Settings file not found. Creating new one.");
+
+                settings.aimUp = new KeyBinding(Keys.W);
+                settings.aimDown = new KeyBinding(Keys.S);
+                settings.moveLeft = new KeyBinding(Keys.A);
+                settings.moveRight = new KeyBinding(Keys.D);
+                settings.jump = new KeyBinding(Keys.Space);
+                settings.attack = new KeyBinding(Keys.J);
+                settings.special = new KeyBinding(Keys.K);
+                settings.pause = new KeyBinding(Keys.Enter);
+                settings.musicEnabled = true;
+                settings.soundEnabled = true;
+                settings.vSync = false;
+                settings.fullScreen = false;
+                settings.jumpFly = false;
+                settings.playedBefore = false;
+
+                SaveSettings();
+            }
 
             gMan = new GameManager(this);
         }
@@ -118,7 +156,68 @@ namespace MorsArcium_Desktop
 
         public void SaveSettings()
         {
+            XmlDocument doc = new XmlDocument();
+            XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", "utf-8", null);
 
+            XmlElement settingsElem = doc.CreateElement("settings");
+            
+            SerializeBoolSetting(settingsElem, "musicEnabled", settings.musicEnabled);
+            SerializeBoolSetting(settingsElem, "soundEnabled", settings.soundEnabled);
+            SerializeBoolSetting(settingsElem, "fullScreen", settings.fullScreen);
+            SerializeBoolSetting(settingsElem, "vSync", settings.vSync);
+            SerializeBoolSetting(settingsElem, "jumpFly", settings.jumpFly);
+            SerializeBoolSetting(settingsElem, "playedBefore", settings.playedBefore);
+            SerializeBinding(settingsElem, "aimUp", settings.aimUp);
+            SerializeBinding(settingsElem, "aimDown", settings.aimDown);
+            SerializeBinding(settingsElem, "moveLeft", settings.moveLeft);
+            SerializeBinding(settingsElem, "moveRight", settings.moveRight);
+            SerializeBinding(settingsElem, "jump", settings.jump);
+            SerializeBinding(settingsElem, "attack", settings.attack);
+            SerializeBinding(settingsElem, "special", settings.special);
+            SerializeBinding(settingsElem, "pause", settings.pause);
+
+            doc.AppendChild(settingsElem);
+
+            doc.Save("settings.xml");
+
+            Console.WriteLine("Saved settings.");
+        }
+
+        private void SerializeBinding(XmlElement parent, string name, Binding binding)
+        {
+            XmlElement elem = parent.OwnerDocument.CreateElement(name);
+            elem.AppendChild(binding.Serialize(parent.OwnerDocument));
+            parent.AppendChild(elem);
+        }
+
+        private void DeserializeBinding(XmlDocument doc, string name, out Binding binding)
+        {
+            XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode(name + "/*");
+            switch (elem.Name)
+            {
+                case "keyBinding": binding = KeyBinding.Deserialize(elem); break;
+                case "mouseButtonBinding": binding = MouseButtonBinding.Deserialize(elem); break;
+                case "joystickButtonBinding": binding = JoystickButtonBinding.Deserialize(elem); break;
+                case "joystickHatBinding": binding = JoystickHatBinding.Deserialize(elem); break;
+                case "joystickAxisBinding": binding = JoystickAxisBinding.Deserialize(elem); break;
+                default: binding = null; break;
+            }
+        }
+
+        private void SerializeBoolSetting(XmlElement parent, string name, bool value)
+        {
+            XmlElement element = parent.OwnerDocument.CreateElement(name);
+            
+            XmlAttribute attribute = parent.OwnerDocument.CreateAttribute("value");
+            attribute.Value = value.ToString();
+            element.Attributes.Append(attribute);
+
+            parent.AppendChild(element);
+        }
+
+        private void DeserializeBoolSetting(XmlDocument doc, string name, out bool setting)
+        {
+            Boolean.TryParse(doc.DocumentElement.SelectSingleNode(name + "/@value").Value, out setting);
         }
     }
 }
