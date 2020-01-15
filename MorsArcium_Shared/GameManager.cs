@@ -21,7 +21,6 @@ namespace Mors_Arcium
         //TODO: Fix player count bug
         //TODO: Separate GUI class
         //TODO: Optimize GUI elements
-        //TODO: Re-Implement fade
         //TODO: Redo class select menu
         //TODO: Restructure player class
         //TODO: Make enums for player & entity types
@@ -40,15 +39,18 @@ namespace Mors_Arcium
         //TODO: Remove automatic teleporting at edges for Mr.B
         //TODO: Polish player spawning
         //TODO: Add Android HUD customization
+        //TODO: Make knockback slower and more controllable
+
+        private static readonly Rectangle FADE_RECT = new Rectangle(496, 0, 16, 16);
 
         SpriteBatch spriteBatch;
 
         public Gameplay game;
         public GUI.Menu currentMenu = null;
         private GUI.Menu nextMenu = null;
-        private bool menutransition = false;
-        public float fade = 1.0f;
-        private bool fadeIn = false;
+        private bool menuTransition = false;
+        public float menuFadeAlpha = 0.0f;
+        private bool menuFadingIn = false;
 
         public Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
         public Dictionary<string, SpriteFont> fonts = new Dictionary<string, SpriteFont>();
@@ -100,32 +102,33 @@ namespace Mors_Arcium
         {
             audio.Update(gameTime);
 
-            if (menutransition)
+            if (menuTransition)
             {
-                if (!fadeIn)
+                if (!menuFadingIn)
                 {
-                    fade -= 0.1f;
-                    if (fade <= 0.0f)
+                    menuFadeAlpha += 0.1f;
+                    if (menuFadeAlpha >= 1.0f)
                     {
-                        fade = 0.0f;
+                        menuFadeAlpha = 1.0f;
                         currentMenu?.OnLeave();
                         nextMenu?.OnEnter();
                         currentMenu = nextMenu;
                         nextMenu = null;
-                        fadeIn = true;
+                        menuFadingIn = true;
                     }
                 }
                 else
                 {
-                    fade += 0.1f;
-                    if (fade > 1.0f)
+                    menuFadeAlpha -= 0.1f;
+                    if (menuFadeAlpha < 0.0f)
                     {
-                        fade = 1.0f;
-                        menutransition = false;
-                        fadeIn = false;
+                        menuFadeAlpha = 0.0f;
+                        menuTransition = false;
+                        menuFadingIn = false;
                     }
                 }
             }
+
             if (currentMenu != null)
             {
                 currentMenu.Update(gameTime);
@@ -147,6 +150,10 @@ namespace Mors_Arcium
             {
                 game.Draw(spriteBatch);
             }
+
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
+            spriteBatch.Draw(textures["hud"], device.Viewport.Bounds, FADE_RECT, new Color(Color.White, menuFadeAlpha));
+            spriteBatch.End();
         }
 
         public static float WeightedAverage(float x2, float x, float x1, float Q11, float Q21)
@@ -157,7 +164,7 @@ namespace Mors_Arcium
         public void ChangeMenuState(GUI.Menu men)
         {
             nextMenu = men;
-            menutransition = true;
+            menuTransition = true;
         }
     }
 }
