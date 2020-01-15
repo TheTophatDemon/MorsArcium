@@ -14,7 +14,7 @@ namespace Mors_Arcium.GUI
             settings = gMan.platform.GameSettings;
 
             //Back button
-            buttons.Add(new Button(gMan, gMan.textures[2], 
+            buttons.Add(new Button(gMan, gMan.textures["hud"], 
                 new Rectangle(384, 152, 128, 24), 
                 new Vector2(16, 16), 
                 (Button b) => {
@@ -27,7 +27,7 @@ namespace Mors_Arcium.GUI
             }, gMan.platform.GameSettings.fullScreen));
 
             //Rebind menu button
-            buttons.Add(new Button(gMan, gMan.textures[2], 
+            buttons.Add(new Button(gMan, gMan.textures["hud"], 
                 new Rectangle(384, 128, 128, 24),
                 new Vector2(16, 200),
                 (Button b) => {
@@ -69,12 +69,12 @@ namespace Mors_Arcium.GUI
             DrawButtons(sp);
 
 #if WINDOWS
-            sp.DrawString(gMan.font1, "FULLSCREEN", new Vector2(52, 68), Color.White);
+            sp.DrawString(gMan.fonts["default"], "FULLSCREEN", new Vector2(52, 68), Color.White);
 #endif
-            sp.DrawString(gMan.font1, "SOUND", new Vector2(52, 100), Color.White);
-            sp.DrawString(gMan.font1, "MUSIC", new Vector2(52, 132), Color.White);
-            sp.DrawString(gMan.font1, "FLY BY JUMPING IN MIDAIR", new Vector2(52, 164), Color.White);
-            sp.DrawString(gMan.font1, "VSYNC", new Vector2(196, 132), Color.White);
+            sp.DrawString(gMan.fonts["default"], "SOUND", new Vector2(52, 100), Color.White);
+            sp.DrawString(gMan.fonts["default"], "MUSIC", new Vector2(52, 132), Color.White);
+            sp.DrawString(gMan.fonts["default"], "FLY BY JUMPING IN MIDAIR", new Vector2(52, 164), Color.White);
+            sp.DrawString(gMan.fonts["default"], "VSYNC", new Vector2(196, 132), Color.White);
 
             sp.End();
         }

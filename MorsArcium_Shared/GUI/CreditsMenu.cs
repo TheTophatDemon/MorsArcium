@@ -11,7 +11,7 @@ namespace Mors_Arcium.GUI
         public CreditsMenu(GameManager gMan) : base(gMan)
         {
             //Back button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(384, 152, 128, 24), new Vector2(16, 16),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(384, 152, 128, 24), new Vector2(16, 16),
                 (Button b) => {
                     gMan.ChangeMenuState(new MainMenu(gMan));
                 }));
@@ -22,7 +22,7 @@ namespace Mors_Arcium.GUI
         {
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
 
-            sp.Draw(gMan.textures[4], Vector2.Zero, Color.White);
+            sp.Draw(gMan.textures["credits"], Vector2.Zero, Color.White);
             DrawButtons(sp);
 
             sp.End();

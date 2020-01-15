@@ -31,8 +31,8 @@ namespace Mors_Arcium
         }
         public override void Draw(SpriteBatch sp)
         {
-            //sp.Draw(game.game.textures[3], position, sourceRect, Color.White * alpha, rotation, origin, 1.0f, SpriteEffects.None, 0);
-            sp.Draw(game.game.textures[3], new Vector2((int)Math.Floor(position.X + cos), (int)Math.Floor(position.Y + sin)), sourceRect, Color.White * alpha, rotation, origin, 1.0f, SpriteEffects.None, 0);
+            //sp.Draw(game.game.textures["projectiles"], position, sourceRect, Color.White * alpha, rotation, origin, 1.0f, SpriteEffects.None, 0);
+            sp.Draw(game.game.textures["projectiles"], new Vector2((int)Math.Floor(position.X + cos), (int)Math.Floor(position.Y + sin)), sourceRect, Color.White * alpha, rotation, origin, 1.0f, SpriteEffects.None, 0);
         }
         public override void Collide(Entity perpetrator)
         {

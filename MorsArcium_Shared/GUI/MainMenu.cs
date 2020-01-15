@@ -16,14 +16,14 @@ namespace Mors_Arcium.GUI
             if (gMan.game.started)
             {
                 //Resume game button
-                buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(0, 200, 128, 24), new Vector2(96, 88), 
+                buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(0, 200, 128, 24), new Vector2(96, 88), 
                     (Button b) => {
                         gMan.ChangeMenuState(null);
                     }));
             }
 
             //Start game button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(0, 128, 128, 24), new Vector2(96, 128),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(0, 128, 128, 24), new Vector2(96, 128),
                 (Button b) => {
                     if (!gMan.platform.GameSettings.playedBefore)
                     {
@@ -37,7 +37,7 @@ namespace Mors_Arcium.GUI
                 }));
 
             //Tutorial button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(0, 152, 128, 24), new Vector2(96, 168),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(0, 152, 128, 24), new Vector2(96, 168),
                 (Button b) => {
                     gMan.ChangeMenuState(null);
                     gMan.game.tutorial = true;
@@ -45,13 +45,13 @@ namespace Mors_Arcium.GUI
                 }));
 
             //Options button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(0, 176, 128, 24), new Vector2(96, 208),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(0, 176, 128, 24), new Vector2(96, 208),
                 (Button b) => {
                     gMan.ChangeMenuState(new OptionsMenu(gMan));
                 }));
 
             //Credits button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(384, 176, 64, 24), new Vector2(16, 208),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(384, 176, 64, 24), new Vector2(16, 208),
                 (Button b) => {
                     gMan.ChangeMenuState(new CreditsMenu(gMan));
                 }));
@@ -71,7 +71,7 @@ namespace Mors_Arcium.GUI
             sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, null);
 
             DrawTrippyBackground(sp);
-            sp.Draw(gMan.textures[2], new Vector2(64, 4 + (float)Math.Sin(timer) * 4.0f), titleRect, Color.White);
+            sp.Draw(gMan.textures["hud"], new Vector2(64, 4 + (float)Math.Sin(timer) * 4.0f), titleRect, Color.White);
             DrawButtons(sp);
 
             sp.End();

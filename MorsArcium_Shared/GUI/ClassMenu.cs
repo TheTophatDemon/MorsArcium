@@ -14,25 +14,25 @@ namespace Mors_Arcium.GUI
         public ClassMenu(GameManager g) : base(g)
         {
             //Mr. B's portrait
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(160, 128, 96, 96), new Vector2(56, 40), 
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(160, 128, 96, 96), new Vector2(56, 40), 
                 (Button b) => {
                     SelectPlayer(0);
                 }));
 
             //Wizard's portrait
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(160, 224, 96, 96), new Vector2(168, 40),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(160, 224, 96, 96), new Vector2(168, 40),
                 (Button b) => {
                     SelectPlayer(1);
                 }));
 
             //Fingers' portrait
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(64, 224, 96, 96), new Vector2(56, 136),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(64, 224, 96, 96), new Vector2(56, 136),
                 (Button b) => {
                     SelectPlayer(2);
                 }));
 
             //Bug's portrait
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(160, 320, 96, 96), new Vector2(168, 136),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(160, 320, 96, 96), new Vector2(168, 136),
                 (Button b) => {
                     SelectPlayer(3);
                 }));
@@ -51,11 +51,11 @@ namespace Mors_Arcium.GUI
             {
                 if (b.Status != Button.State.DEFAULT)
                 {
-                    sp.Draw(gMan.textures[2], b.Position, goldFrame, Color.White);
+                    sp.Draw(gMan.textures["hud"], b.Position, goldFrame, Color.White);
                 }
             }
 
-            sp.Draw(gMan.textures[2], new Vector2(70, 16), selectClass, Color.White);
+            sp.Draw(gMan.textures["hud"], new Vector2(70, 16), selectClass, Color.White);
 
             sp.End();
         }

@@ -55,7 +55,7 @@ namespace Mors_Arcium
         {
             healthHandicap = hhh;
             collisionMask = PlayerCollisionMask;
-            texture = g.game.textures[0];
+            texture = g.game.textures["characters"];
             type = Gameplay.TYPE_PLAYER;
             
             hitboxSize = new Vector2(8, 16); //Half of the actual hitbox's size

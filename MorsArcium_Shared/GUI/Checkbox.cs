@@ -12,7 +12,7 @@ namespace Mors_Arcium.GUI
 
         protected bool isChecked = false;
         public CheckBox(GameManager gMan, Vector2 position, Action<Button> clickAction, bool isChecked = false)
-            : base(gMan, gMan.textures[2], new Rectangle(isChecked ? 32 : 0, 320, 32, 32), position, clickAction)
+            : base(gMan, gMan.textures["hud"], new Rectangle(isChecked ? 32 : 0, 320, 32, 32), position, clickAction)
         {
             this.isChecked = isChecked;
         }

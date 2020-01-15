@@ -14,7 +14,7 @@ namespace Mors_Arcium
         public Crab(Gameplay g, Vector2 pos, Vector2 initialSpeed, Entity own) : base(g, own)
         {
             collisionMask = CrabCollisionMask;
-            texture = g.game.textures[3];
+            texture = g.game.textures["projectiles"];
             type = Gameplay.TYPE_PROJECTILE;
             sourceRect = new Rectangle(0, 0, 16, 16);
             hitboxSize = new Vector2(8, 8); //Half of the actual hitbox's size

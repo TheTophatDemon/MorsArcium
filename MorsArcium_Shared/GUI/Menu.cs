@@ -50,10 +50,10 @@ namespace Mors_Arcium.GUI
             if (backgroundPosition.X < -320.0f) backgroundPosition.X = 0.0f;
             if (backgroundPosition.Y < -240.0f) backgroundPosition.Y = 0.0f;
 
-            sp.Draw(gMan.textures[1], backgroundPosition, backgroundColor);
-            sp.Draw(gMan.textures[1], backgroundPosition + new Vector2(320, 0), backgroundColor);
-            sp.Draw(gMan.textures[1], backgroundPosition + new Vector2(320, 240), backgroundColor);
-            sp.Draw(gMan.textures[1], backgroundPosition + new Vector2(0, 240), backgroundColor);
+            sp.Draw(gMan.textures["sky"], backgroundPosition, backgroundColor);
+            sp.Draw(gMan.textures["sky"], backgroundPosition + new Vector2(320, 0), backgroundColor);
+            sp.Draw(gMan.textures["sky"], backgroundPosition + new Vector2(320, 240), backgroundColor);
+            sp.Draw(gMan.textures["sky"], backgroundPosition + new Vector2(0, 240), backgroundColor);
         }
         public virtual void Draw(SpriteBatch sp)
         {

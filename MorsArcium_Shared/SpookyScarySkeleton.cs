@@ -40,7 +40,7 @@ namespace Mors_Arcium
         }
         public override void Draw(SpriteBatch sp)
         {
-            sp.Draw(game.game.textures[0], position - origin, sourceRect, Color.White);
+            sp.Draw(game.game.textures["characters"], position - origin, sourceRect, Color.White);
         }
         public override void Collide(Entity perpetrator)
         {

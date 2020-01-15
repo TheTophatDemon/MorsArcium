@@ -35,7 +35,7 @@ namespace Mors_Arcium.GUI
         public RebindMenu(GameManager gMan) : base(gMan)
         {
             //Back button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(384, 152, 128, 24), new Vector2(16, 16),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(384, 152, 128, 24), new Vector2(16, 16),
                 (Button b) => {
                     gMan.ChangeMenuState(new OptionsMenu(gMan));
                 }));
@@ -65,7 +65,7 @@ namespace Mors_Arcium.GUI
             for (int i = 0; i < bindingGroups.Length; ++i)
             {
                 BindingGroup bg = bindingGroups[i];
-                bg.button = new Button(gMan, gMan.textures[2], rebindButtonRect, new Vector2(16, 64 + i * 20),
+                bg.button = new Button(gMan, gMan.textures["hud"], rebindButtonRect, new Vector2(16, 64 + i * 20),
                     (Button b) => {
                         currentBindingGroup = bg;
                     });
@@ -180,7 +180,7 @@ namespace Mors_Arcium.GUI
 
             foreach (BindingGroup bg in bindingGroups)
             {
-                sp.DrawString(gMan.font1, bg.label + ": " + bg.binding.ToString(), bg.button.Position + new Vector2(72, 0), Color.White);
+                sp.DrawString(gMan.fonts["default"], bg.label + ": " + bg.binding.ToString(), bg.button.Position + new Vector2(72, 0), Color.White);
             }
 
             sp.End();

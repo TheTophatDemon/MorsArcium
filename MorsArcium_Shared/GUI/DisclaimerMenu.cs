@@ -11,7 +11,7 @@ namespace Mors_Arcium.GUI
         public DisclaimerMenu(GameManager gMan) : base(gMan)
         {
             //Tutorial button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(0, 152, 128, 24), new Vector2(16, 200),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(0, 152, 128, 24), new Vector2(16, 200),
                 (Button b) => {
                     gMan.ChangeMenuState(null);
                     gMan.game.tutorial = true;
@@ -19,7 +19,7 @@ namespace Mors_Arcium.GUI
                 }));
 
             //Continue button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(0, 128, 128, 24), new Vector2(176, 200),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(0, 128, 128, 24), new Vector2(176, 200),
                 (Button b) => {
                     gMan.ChangeMenuState(new DifficultyMenu(gMan));
                     gMan.game.tutorial = false;
@@ -32,7 +32,7 @@ namespace Mors_Arcium.GUI
             DrawTrippyBackground(sp);
             DrawButtons(sp);
 
-            sp.DrawString(gMan.font1, 
+            sp.DrawString(gMan.fonts["default"], 
                 "IF YOU DO NOT WANT YOUR BUTT\n" +
                 "HANDED TO YOU ON A SILVER PLATTER, \n" +
                 "YOU SHOULD CLICK ON THAT \n" +

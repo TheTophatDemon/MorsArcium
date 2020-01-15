@@ -15,7 +15,7 @@ namespace Mors_Arcium
         {
             type = Gameplay.TYPE_PROP;
             origin = Vector2.Zero;
-            texture = g.game.textures[5];
+            texture = g.game.textures["tileset"];
             sourceRect = src;
             position = pos;
             collisions = false;

@@ -104,7 +104,7 @@ namespace Mors_Arcium
         }
         public void Draw(SpriteBatch sp)
         {
-            sp.Draw(game.game.textures[7], position, rect, Color.White * alpha, 0.0f, origin, scale, SpriteEffects.None, 0);
+            sp.Draw(game.game.textures["particles"], position, rect, Color.White * alpha, 0.0f, origin, scale, SpriteEffects.None, 0);
         }
     }
 }

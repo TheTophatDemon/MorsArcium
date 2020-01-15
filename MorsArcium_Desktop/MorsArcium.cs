@@ -58,6 +58,8 @@ namespace MorsArcium_Desktop
             }
             catch (FileNotFoundException ex)
             {
+                ex.ToString(); //Get rid of IDE warning
+
                 Console.WriteLine("Settings file not found. Creating new one.");
 
                 settings.aimUp = new KeyBinding(Keys.W);

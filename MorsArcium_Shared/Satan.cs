@@ -26,7 +26,7 @@ namespace Mors_Arcium
             attackAnimation.speed = 3;
             attackAnimation.looping = false;
             animation = idleAnimation;
-            texture = game.game.textures[0];
+            texture = game.game.textures["characters"];
         }
         public override void Update(GameTime gt)
         {

@@ -13,28 +13,28 @@ namespace Mors_Arcium.GUI
         public DifficultyMenu(GameManager gMan) : base(gMan)
         {
             //Easy button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(128, 0, 128, 24), new Vector2(96, 144),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(128, 0, 128, 24), new Vector2(96, 144),
                 (Button b) => {
                     gMan.game.difficulty = "easy";
                     gMan.ChangeMenuState(new ClassMenu(gMan));
                 }));
 
             //Medium button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(128, 24, 128, 24), new Vector2(96, 112), 
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(128, 24, 128, 24), new Vector2(96, 112), 
                 (Button b) => {
                     gMan.game.difficulty = "normal";
                     gMan.ChangeMenuState(new ClassMenu(gMan));
                 }));
 
             //Hard button
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(128, 48, 128, 24), new Vector2(96, 80),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(128, 48, 128, 24), new Vector2(96, 80),
                 (Button b) => {
                     gMan.game.difficulty = "hard";
                     gMan.ChangeMenuState(new ClassMenu(gMan));
                 }));
 
             //Random difficulty
-            buttons.Add(new Button(gMan, gMan.textures[2], new Rectangle(128, 72, 128, 24), new Vector2(96, 176),
+            buttons.Add(new Button(gMan, gMan.textures["hud"], new Rectangle(128, 72, 128, 24), new Vector2(96, 176),
                 (Button b) => {
                     gMan.game.difficulty = "????";
                     gMan.ChangeMenuState(new ClassMenu(gMan));
@@ -55,7 +55,7 @@ namespace Mors_Arcium.GUI
             DrawTrippyBackground(sp);
             DrawButtons(sp);
 
-            sp.Draw(gMan.textures[2], new Vector2(53, 20), textRect, Color.White);
+            sp.Draw(gMan.textures["hud"], new Vector2(53, 20), textRect, Color.White);
 
             sp.End();
         }

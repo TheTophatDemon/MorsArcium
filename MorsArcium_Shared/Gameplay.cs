@@ -137,7 +137,7 @@ namespace Mors_Arcium
             particles = new Particle[128];
             if (tutorial)
             {
-                tilemap = new Tilemap(this, game.textures[5], 25, 24);
+                tilemap = new Tilemap(this, game.textures["tileset"], 25, 24);
                 int h = 0;
                 for (int i = 0; i < tilemap.width; i++)
                 {
@@ -158,7 +158,7 @@ namespace Mors_Arcium
             }
             else
             {
-                tilemap = new Tilemap(this, game.textures[5], mapw, 24);
+                tilemap = new Tilemap(this, game.textures["tileset"], mapw, 24);
                 tilemap.Generate();
             }
             
@@ -756,33 +756,33 @@ namespace Mors_Arcium
                 switch (tutorialPhase)
                 {
                     case 0:
-                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.moveLeft + " AND " + game.platform.GameSettings.moveRight + " TO WALK.", new Vector2(72, -16.0f), Color.White);
-                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.jump + " TO JUMP.", new Vector2(72, 0), Color.White);
-                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.attack + " TO ATTACK.", new Vector2(72, 16), Color.White);
-                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.aimUp + " AND " + game.platform.GameSettings.aimDown + " TO AIM.", new Vector2(72, 32), Color.White);
-                        sp.DrawString(game.font1, "USE " + game.platform.GameSettings.special + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
+                        sp.DrawString(game.fonts["default"], "USE " + game.platform.GameSettings.moveLeft + " AND " + game.platform.GameSettings.moveRight + " TO WALK.", new Vector2(72, -16.0f), Color.White);
+                        sp.DrawString(game.fonts["default"], "USE " + game.platform.GameSettings.jump + " TO JUMP.", new Vector2(72, 0), Color.White);
+                        sp.DrawString(game.fonts["default"], "USE " + game.platform.GameSettings.attack + " TO ATTACK.", new Vector2(72, 16), Color.White);
+                        sp.DrawString(game.fonts["default"], "USE " + game.platform.GameSettings.aimUp + " AND " + game.platform.GameSettings.aimDown + " TO AIM.", new Vector2(72, 32), Color.White);
+                        sp.DrawString(game.fonts["default"], "USE " + game.platform.GameSettings.special + " TO USE A SPECIAL ABILITY", new Vector2(72, 48), Color.White);
                         break;
                     case 9:
                     case 7:
                     case 4:
                     case 1:
-                        sp.DrawString(game.font1, "AN ENEMY IS BEING SENT YOUR WAY...", new Vector2(52, 0.0f), Color.White);
+                        sp.DrawString(game.fonts["default"], "AN ENEMY IS BEING SENT YOUR WAY...", new Vector2(52, 0.0f), Color.White);
                         break;
                     case 3:
-                        sp.DrawString(game.font1, "IT FEELS GOOD TO WEAR THE SKIN", new Vector2(56, 0.0f), Color.White);
-                        sp.DrawString(game.font1, "OF YOUR ENEMIES, DOESN'T IT?", new Vector2(56, 16.0f), Color.White);
+                        sp.DrawString(game.fonts["default"], "IT FEELS GOOD TO WEAR THE SKIN", new Vector2(56, 0.0f), Color.White);
+                        sp.DrawString(game.fonts["default"], "OF YOUR ENEMIES, DOESN'T IT?", new Vector2(56, 16.0f), Color.White);
                         break;
                     case 6:
-                        sp.DrawString(game.font1, "YOU CAN FLY NOW.", new Vector2(56, 0.0f), Color.White);
+                        sp.DrawString(game.fonts["default"], "YOU CAN FLY NOW.", new Vector2(56, 0.0f), Color.White);
 #if WINDOWS
-                        sp.DrawString(game.font1, "(USE YOUR SPECIAL ABILITY IN THE AIR)", new Vector2(56, 16.0f), Color.White);
+                        sp.DrawString(game.fonts["default"], "(USE YOUR SPECIAL ABILITY IN THE AIR)", new Vector2(56, 16.0f), Color.White);
 #endif
 #if ANDROID
                     sp.DrawString(game.font1, "(HOLD J WHILE IN THE AIR)", new Vector2(56, 16.0f), Color.White);
 #endif
                         break;
                     case 11:
-                        sp.DrawString(game.font1, "GOOD WORK. NOW DIE!!!", new Vector2(80, 0.0f), Color.White);
+                        sp.DrawString(game.fonts["default"], "GOOD WORK. NOW DIE!!!", new Vector2(80, 0.0f), Color.White);
                         break;
                 }
 
@@ -810,10 +810,10 @@ namespace Mors_Arcium
                 int ch = (int)Math.Ceiling((gui.cameraPosition.Y + 240 - lavaHeight) / 16.0f);
                 for (int j = 0; j < 22; j++)
                 {
-                    sp.Draw(game.textures[5], new Vector2((cx + j) * 16, lavaHeight), lavaTop, Color.White);
+                    sp.Draw(game.textures["tileset"], new Vector2((cx + j) * 16, lavaHeight), lavaTop, Color.White);
                     for (int k = 1; k < ch; k++)
                     {
-                        sp.Draw(game.textures[5], new Vector2((cx + j) * 16, lavaHeight + (k * 16)), lavaBase, Color.White);
+                        sp.Draw(game.textures["tileset"], new Vector2((cx + j) * 16, lavaHeight + (k * 16)), lavaBase, Color.White);
                     }
                 }
             }
@@ -831,24 +831,24 @@ namespace Mors_Arcium
             //if (!game.paused)
             {
 #if DEBUG
-            sp.DrawString(game.font1, "FPS: " + fps, new Vector2(0, 120), Color.White);
+            sp.DrawString(game.fonts["default"], "FPS: " + fps, new Vector2(0, 120), Color.White);
 #endif
-                sp.Draw(game.textures[2], Vector2.Zero, mbhbRect, Color.White);
-                sp.Draw(game.textures[2], new Rectangle(12, 2, (int)(((float)humanPlayer.health / humanPlayer.maxHealth) * 104.0f), 12), hbRect, Color.White);
-                sp.Draw(game.textures[2], new Rectangle(12, 18, (int)(((float)humanPlayer.magic / humanPlayer.maxMagic) * 104.0f), 12), mbRect, Color.White);
+                sp.Draw(game.textures["hud"], Vector2.Zero, mbhbRect, Color.White);
+                sp.Draw(game.textures["hud"], new Rectangle(12, 2, (int)(((float)humanPlayer.health / humanPlayer.maxHealth) * 104.0f), 12), hbRect, Color.White);
+                sp.Draw(game.textures["hud"], new Rectangle(12, 18, (int)(((float)humanPlayer.magic / humanPlayer.maxMagic) * 104.0f), 12), mbRect, Color.White);
                 if (!tutorial)
                 {
-                    sp.DrawString(game.font1, "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
-                    if (humanPlayer.deathTimer == 0 && humanPlayer.dead == false) sp.DrawString(game.font1, "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
+                    sp.DrawString(game.fonts["default"], "WAVE " + wave, new Vector2(252, 0), Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0);
+                    if (humanPlayer.deathTimer == 0 && humanPlayer.dead == false) sp.DrawString(game.fonts["default"], "ENEMIES LEFT: " + (numPlayers - 1), new Vector2(0, 36), Color.White);
                     if (gui.nearestEnemy != 0 && humanPlayer.deathTimer == 0 && humanPlayer.dead == false)
                     {
                         if (gui.nearestEnemy == 1)
                         {
-                            sp.DrawString(game.font1, "TO THE RIGHT!", new Vector2(0, 52), Color.White);
+                            sp.DrawString(game.fonts["default"], "TO THE RIGHT!", new Vector2(0, 52), Color.White);
                         }
                         else
                         {
-                            sp.DrawString(game.font1, "TO THE LEFT!", new Vector2(0, 52), Color.White);
+                            sp.DrawString(game.fonts["default"], "TO THE LEFT!", new Vector2(0, 52), Color.White);
                         }
                     }
                     if (waveTimer > 0)
@@ -863,20 +863,20 @@ namespace Mors_Arcium
                         }
                         if (wave == 1)
                         {
-                            sp.DrawString(game.font1, "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
+                            sp.DrawString(game.fonts["default"], "GET READY!!!", new Vector2(112, 72), Color.White * waveAlpha);
                         }
                         else
                         {
-                            if (wave != 1) sp.DrawString(game.font1, "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
-                            sp.Draw(game.textures[2], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
-                            sp.Draw(game.textures[2], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
+                            if (wave != 1) sp.DrawString(game.fonts["default"], "WAVE " + (wave - 1) + " COMPLETED", new Vector2(80, 72), Color.White * waveAlpha);
+                            sp.Draw(game.textures["hud"], new Vector2(96, eventThingy), eventRect, Color.White * waveAlpha);
+                            sp.Draw(game.textures["hud"], new Vector2(103, eventThingy + 7), eventSelectorText, Color.White * waveAlpha);
                         }
 
                     }
                 }
                 if (humanPlayer.dead)
                 {
-                    sp.Draw(game.textures[2], gui.deathThingy, deathThingyRect, Color.White);
+                    sp.Draw(game.textures["hud"], gui.deathThingy, deathThingyRect, Color.White);
                     if (humanPlayer.deathTimer == 150)
                     {
                         gui.fadeOut = 1.0f;
@@ -890,16 +890,16 @@ namespace Mors_Arcium
             {
                 gui.fadeOut -= 0.025f;
                 if (gui.fadeOut < 0.025f) gui.fadeOut = 0.025f;
-                sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * (1.0f - gui.fadeOut));
+                sp.Draw(game.textures["hud"], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * (1.0f - gui.fadeOut));
             }
             if (gui.fadeIn > 0.0f)
             {
                 gui.fadeIn -= 0.025f;
-                sp.Draw(game.textures[2], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * gui.fadeIn);
+                sp.Draw(game.textures["hud"], sp.GraphicsDevice.Viewport.Bounds, hbRect, Color.Black * gui.fadeIn);
             }
             /*if (game.paused)
             {
-                sp.Draw(game.textures[2], new Vector2(100, 72), pauseThingyRect, Color.White);
+                sp.Draw(game.textures["hud"], new Vector2(100, 72), pauseThingyRect, Color.White);
                 sp.DrawString(game.font1, "PRESS ESCAPE TO RETURN TO THE MENU", new Vector2(4, 32), Color.White);
             }*/
             sp.End();

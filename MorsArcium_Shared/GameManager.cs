@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using System.IO;
 using System;
 using Microsoft.Xna.Framework.Media;
+using System.Collections.Generic;
 
 namespace Mors_Arcium
 {
@@ -18,7 +19,6 @@ namespace Mors_Arcium
     {
         //TODO: Ensure 64 bit & Android API Level 28
         //TODO: Fix player count bug
-        //TODO: Refine resource loading system
         //TODO: Separate GUI class
         //TODO: Optimize GUI elements
         //TODO: Re-Implement fade
@@ -50,8 +50,8 @@ namespace Mors_Arcium
         public float fade = 1.0f;
         private bool fadeIn = false;
 
-        public Texture2D[] textures;
-        public SpriteFont font1;
+        public Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
+        public Dictionary<string, SpriteFont> fonts = new Dictionary<string, SpriteFont>();
         public Random random;
 
         public IPlatformOutlet platform;
@@ -62,26 +62,32 @@ namespace Mors_Arcium
             this.platform = platform;
             audio = new AudioSystem(platform);
         }
-        
+
+        private void LoadTexture(ContentManager content, string name)
+        {
+            textures.Add(name, content.Load<Texture2D>("textures/" + name));
+        }
+
+        private void LoadFont(ContentManager content, string name)
+        {
+            fonts.Add(name, content.Load<SpriteFont>(name));
+        }
+
         public void LoadContent(GraphicsDevice graphicsDevice, ContentManager content)
         {
             spriteBatch = new SpriteBatch(graphicsDevice);
-            font1 = content.Load<SpriteFont>("Font1");
 
-            textures = new Texture2D[512];
+            LoadFont(content, "default");
 
-            Action<string, int> LoadTexture = (string path, int index) => {
-                textures[index] = content.Load<Texture2D>("textures/" + Path.GetFileNameWithoutExtension(path));
-            };
-            LoadTexture("Content/textures/characters.png", 0);
-            LoadTexture("Content/textures/sky.png", 1);
-            LoadTexture("Content/textures/hud.png", 2);        
-            LoadTexture("Content/textures/projectiles.png", 3);
-            LoadTexture("Content/textures/credits.png", 4);
-            LoadTexture("Content/textures/tileset.png", 5);    
-            LoadTexture("Content/textures/hitbox.png", 6);    
-            LoadTexture("Content/textures/particles.png", 7);  
-            LoadTexture("Content/textures/misc.png", 8);
+            LoadTexture(content, "characters");
+            LoadTexture(content, "sky");
+            LoadTexture(content, "hud");        
+            LoadTexture(content, "projectiles");
+            LoadTexture(content, "credits");
+            LoadTexture(content, "tileset");
+            LoadTexture(content, "hitbox");    
+            LoadTexture(content, "particles");  
+            LoadTexture(content, "misc");
 
             audio.LoadContent(content);
 
