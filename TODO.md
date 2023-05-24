@@ -24,7 +24,7 @@
 - [ ] Add animation for player spawning
 - [ ] Make knockback slower and more controllable
 - [ ] Refine Android HUD
-- [ ] Upddate android version to use API 28
+- [ ] Update android version to use API 28
 
 ## Features
 
