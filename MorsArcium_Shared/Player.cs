@@ -478,7 +478,7 @@ namespace Mors_Arcium
                     health = 0;
                 }
                 //deathTimer = 99;
-                Console.WriteLine("THIS IS MADNESS! " + sourceRect.Y);
+                //Console.WriteLine("Player fell into pit: " + sourceRect.Y);
             }
             
             Animate();

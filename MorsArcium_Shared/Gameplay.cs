@@ -211,6 +211,11 @@ namespace Mors_Arcium
         }
         private void SpawnEnemies()
         {
+            //Clear out existing enemies
+            for (int i = 0; i < entities.GetLength(1); ++i) {
+                if (i == humanPlayer.index) continue;
+                RemoveEntity(entities[TYPE_PLAYER, i]);
+            }
             if (!tutorial || tutorialPhase == 11)
             {
                 for (int i = 0; i < num_mr_b; i++)
@@ -925,12 +930,13 @@ namespace Mors_Arcium
         }
         public void ReplaceEntity(Entity e, int index)
         {
-            entities[e.type, index] = null;
+            entities[e.type, e.index] = null;
             e.index = index;
             entities[e.type, index] = e;
         }
         public void RemoveEntity(Entity e)
         {
+            if (e == null) return;
             entities[e.type, e.index] = null;
         }
         public bool IsHuman(Player p)

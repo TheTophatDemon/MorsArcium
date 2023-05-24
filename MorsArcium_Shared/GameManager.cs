@@ -17,30 +17,6 @@ namespace Mors_Arcium
     /// </summary>
     public class GameManager
     {
-        //TODO: Ensure 64 bit & Android API Level 28
-        //TODO: Fix player count bug
-        //TODO: Separate GUI class
-        //TODO: Optimize GUI elements
-        //TODO: Redo class select menu
-        //TODO: Restructure player class
-        //TODO: Make enums for player & entity types
-        //TODO: Make resolution dynamic
-        //TODO: Make dynamic timing
-        //TODO: Refine tutorial code
-        //TODO: Refine Joystick Hat Capability
-        //TODO: Add Joystick Axis Capability
-        //TODO: Add proper keyboard key names
-        //TODO: Polish player class change
-        //TODO: Polish new Eli attack
-        //TODO: Change "Zero Gravity" to "Low Gravity"
-        //TODO: Add crossfading music system
-        //TODO: Add pitch variations to sounds
-        //TODO: Add Eli slicing sound
-        //TODO: Remove automatic teleporting at edges for Mr.B
-        //TODO: Polish player spawning
-        //TODO: Add Android HUD customization
-        //TODO: Make knockback slower and more controllable
-
         private static readonly Rectangle FADE_RECT = new Rectangle(496, 0, 16, 16);
 
         SpriteBatch spriteBatch;

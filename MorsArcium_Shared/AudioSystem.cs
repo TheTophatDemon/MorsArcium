@@ -37,7 +37,7 @@ namespace Mors_Arcium
 
         public void LoadContent(ContentManager content)
         {
-            DirectoryInfo soundDir = new DirectoryInfo(Directory.GetCurrentDirectory() + "/Content/sounds");
+            DirectoryInfo soundDir = new DirectoryInfo(content.RootDirectory + "/sounds");
             foreach (FileInfo file in soundDir.EnumerateFiles())
             {
                 string name = Path.GetFileNameWithoutExtension(file.Name);
@@ -45,7 +45,7 @@ namespace Mors_Arcium
                 Console.WriteLine("Sound Loaded: " + file.Name);
             }
 
-            DirectoryInfo musicDir = new DirectoryInfo(Directory.GetCurrentDirectory() + "/Content/music");
+            DirectoryInfo musicDir = new DirectoryInfo(content.RootDirectory + "/music");
             foreach (FileInfo file in musicDir.EnumerateFiles())
             {
                 string name = Path.GetFileNameWithoutExtension(file.Name);

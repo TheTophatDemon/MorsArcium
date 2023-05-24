@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AudioSystem.cs" />
@@ -47,38 +48,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)WizardPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\die.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\explosion.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\freeze.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\hurt.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\jump.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\land.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\mrb_teleport.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\powerup.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\slotmachine.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\throw.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\wizard_blast.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\sounds\wizard_fusdorah.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\characters.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\credits.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\hitbox.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\hud.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\misc.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\particles.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\projectiles.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\sky.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Content\textures\tileset.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Default.spritefont" />
-    <None Include="$(MSBuildThisFileDirectory)Content\music\asinosfacio.ogg" />
-    <None Include="$(MSBuildThisFileDirectory)Content\music\frozenhell.ogg" />
-    <None Include="$(MSBuildThisFileDirectory)Content\music\gasconade.ogg" />
-    <None Include="$(MSBuildThisFileDirectory)Content\music\skelesong.ogg" />
-    <None Include="$(MSBuildThisFileDirectory)Content\music\tehcrankles.ogg" />
-    <None Include="$(MSBuildThisFileDirectory)Content\music\unholywars.ogg" />
-    <None Include="$(MSBuildThisFileDirectory)Content\music\welcometohell.ogg" />
+    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
   </ItemGroup>
 </Project>

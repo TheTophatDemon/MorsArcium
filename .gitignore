@@ -15,5 +15,7 @@ bin/DesktopGL/x86/**/*.txt
 MorsArcium_Shared/Icon.ico
 MorsArcium_Desktop/Content/*
 MorsArcium_Desktop/bin/
-MorsArcium_Desktop/obj/**
+MorsArcium_Desktop/obj
 /.vs/
+.vscode
+.config
