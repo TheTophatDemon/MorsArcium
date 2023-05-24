@@ -4,7 +4,7 @@ A chaotic battle platformer where you play as one of four player classes in an
 endless death arena. Every kill causes you to turn into the class of your victim.
 Each wave of battles may be complicated by randomly chosen effects such as low gravity, sudden death, flooding, and visits from Satan.
 
-This game was originally released in 2016, but I have just recently moved the
+**This game was originally released in 2016**, but I have just recently moved the
 source repository from BitBucket to Github so I can have more of my major projects
 on the same platform. Most of the code here was written at a time before I started
 to really care about writing "clean" code, so my apologies for that.
@@ -17,3 +17,6 @@ This game uses the Monogame framework for rendering, sound, and input. The folde
 
 There you will also find links to an Android version, although it is not up to date with this repository.
 
+![screenshot 1](screenshot_1.jpg)
+
+![screenshot 2](screenshot_2.jpg)
